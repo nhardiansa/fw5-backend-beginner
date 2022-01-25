@@ -1,0 +1,23 @@
+{
+  "name": "fw5-vehicle-rent-api",
+  "version": "1.0.0",
+  "description": "membuat api untuk aplikasi rental kendaraan",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "rental",
+    "kendaraan",
+    "api",
+    "rest"
+  ],
+  "author": "Nabil Hardiansa",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.2"
+  },
+  "devDependencies": {
+    "nodemon": "^2.0.15"
+  }
+}
