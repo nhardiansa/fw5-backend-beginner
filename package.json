@@ -4,7 +4,8 @@
   "description": "membuat api untuk aplikasi rental kendaraan",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "nodemon index.js"
   },
   "keywords": [
     "rental",
@@ -15,7 +16,8 @@
   "author": "Nabil Hardiansa",
   "license": "ISC",
   "dependencies": {
-    "express": "^4.17.2"
+    "express": "^4.17.2",
+    "mysql": "^2.18.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
