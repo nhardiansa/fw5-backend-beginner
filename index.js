@@ -20,6 +20,13 @@ app.get('/vehicles', (req, res) => {
   database.getVehicle(res);
 })
 
+// Get a vehicle by Id
+app.get('/vehicle/:id', (req, res) => {
+  const {id} = req.params
+  
+  database.getVehicleById(Number(id), res);
+})
+
 // Insert a vehicle
 app.post('/vehicle', (req, res) => {
   const {merk, brand, type, price} = req.body
