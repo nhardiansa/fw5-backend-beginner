@@ -23,7 +23,6 @@ app.get('/vehicles', (req, res) => {
 // Get a vehicle by Id
 app.get('/vehicle/:id', (req, res) => {
   const {id} = req.params
-  
   database.getVehicleById(Number(id), res);
 })
 
@@ -47,8 +46,6 @@ app.patch('/vehicle/:id', (req, res) => {
 // delete a vehicle
 app.delete('/vehicle/:id', (req, res) => {
   const {id} = req.params
-  // const {merk, brand, type, price} = req.body
-
   database.deleteVehicle(res, id);
 })
 
