@@ -51,27 +51,22 @@ module.exports = {
       });
     }
 
-    return res.status(200).json({
-      success: false,
-      message: '',
+    vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
+      if (checkResults.length > 0) {
+        return res.status(200).json({
+          success: false,
+          message: 'Vehicle already exist',
+          results,
+        });
+      }
+
+      vehiclesModel.insertVehicle(clientData, (results) => {
+        return res.status(201).json({
+          success: true,
+          message: 'Success add new vehicle',
+        });
+      });
     });
-
-    // vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
-    //   if (checkResults.length > 0) {
-    //     return res.status(200).json({
-    //       success: false,
-    //       message: 'Vehicle already exist',
-    //       results,
-    //     });
-    //   }
-
-    //   vehiclesModel.insertVehicle(clientData, (results) => {
-    //     return res.status(201).json({
-    //       success: true,
-    //       message: 'Success add new vehicle',
-    //     });
-    //   });
-    // });
   },
 
   updateVehicle: (req, res) => {
