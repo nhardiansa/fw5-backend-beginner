@@ -17,14 +17,24 @@ module.exports = {
   },
 
   checkExistVehicle: (data, cb) => {
-    const query = db.query(`
-      SELECT merk, brand, type FROM ${table} WHERE merk = ? && brand = ? && type = ?
-    `, data, (err, results) => {
+
+    // make custom query depends keys of object
+    let dataInArr = Object.keys(data)
+    dataInArr = dataInArr.map(el => {
+      return `${el} = ?`
+    })
+    const customQuery = dataInArr.join(' && ')
+
+    // get values of data
+    const dataValues = Object.values(data)
+    const columns = Object.keys(data)
+
+    const ss = db.query(`SELECT ?? FROM ${table} WHERE ${customQuery}`, [columns, ...dataValues], (err, results) => {
       if (err) throw err;
       cb(results);
     });
 
-    console.log(query.sql);
+    console.log(ss.sql);
   },
 
   insertVehicle: (data, cb) => {
