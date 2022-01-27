@@ -5,7 +5,7 @@ const {
   getVehicle,
   addNewVehicle,
   updateVehicle,
-  deleteVehicle
+  deleteVehicle,
 } = require('../controllers/vehicles');
 
 vehicles.get('/', getVehicles);

@@ -1,4 +1,5 @@
-const route = require('express').Router();
+const express = require('express');
+const route = new express.Router();
 
 route.use('/vehicles', require('./vehicles'));
 

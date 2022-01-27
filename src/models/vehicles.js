@@ -3,7 +3,9 @@ const table = 'vehicles';
 
 module.exports = {
   getVehicles: (cb) => {
-    db.query(`SELECT id, merk, brand, type, isAvailable, price FROM ${table}`, (err, results) => {
+    db.query(`
+    SELECT id, merk, brand, type, isAvailable, price FROM ${table}
+  `, (err, results) => {
       if (err) throw err;
       cb(results);
     });
@@ -17,19 +19,20 @@ module.exports = {
   },
 
   checkExistVehicle: (data, cb) => {
-
     // make custom query depends keys of object
-    let dataInArr = Object.keys(data)
-    dataInArr = dataInArr.map(el => {
-      return `${el} = ?`
-    })
-    const customQuery = dataInArr.join(' && ')
+    let dataInArr = Object.keys(data);
+    dataInArr = dataInArr.map((el) => {
+      return `${el} = ?`;
+    });
+    const customQuery = dataInArr.join(' && ');
 
     // get values of data
-    const dataValues = Object.values(data)
-    const columns = Object.keys(data)
+    const dataValues = Object.values(data);
+    const columns = Object.keys(data);
 
-    db.query(`SELECT ?? FROM ${table} WHERE ${customQuery}`, [columns, ...dataValues], (err, results) => {
+    db.query(`
+    SELECT ?? FROM ${table} WHERE ${customQuery}
+    `, [columns, ...dataValues], (err, results) => {
       if (err) throw err;
       cb(results);
     });
@@ -43,7 +46,9 @@ module.exports = {
   },
 
   updateVehicle: (id, data, cb) => {
-    db.query(`UPDATE ${table} SET ? WHERE id = ?`, [data, id], (err, results) => {
+    db.query(`
+    UPDATE ${table} SET ? WHERE id = ?
+    `, [data, id], (err, results) => {
       if (err) throw err;
       cb(results);
     });
@@ -54,5 +59,5 @@ module.exports = {
       if (err) throw err;
       cb(results);
     });
-  }
+  },
 };

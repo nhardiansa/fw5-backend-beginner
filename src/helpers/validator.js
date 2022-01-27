@@ -2,8 +2,10 @@ exports.dataValidator = (data) => {
   const dump = [];
 
   for (const el in data) {
-    dump.push(data[el]);
+    if (Object.prototype.hasOwnProperty.call(data, el)) {
+      dump.push(data[el]);
+    }
   }
 
-  return dump.every(el => el);
+  return dump.every((el) => el);
 };
