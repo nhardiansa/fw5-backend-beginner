@@ -16,10 +16,10 @@ module.exports = {
     })
   },
 
-  checkExistVehicle: (data) => {
-    db.query(`SELECT merk, brand FROM ${table} WHERE merk = ? && brand = ?`, data, (err, results) => {
+  checkExistVehicle: (data, cb) => {
+    db.query(`SELECT merk, brand, type FROM ${table} WHERE merk = ? && brand = ? && type = ?`, data, (err, results) => {
       if (err) throw err;
-      cb(results);
+      cb(results)
     })
   },
 

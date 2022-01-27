@@ -31,7 +31,7 @@ module.exports = {
   },
 
   addNewVehicle: (req, res) => {
-    const data = {
+    const newData = {
       merk: req.body.merk,
       brand: req.body.brand,
       type: req.body.type,
@@ -39,11 +39,23 @@ module.exports = {
       isAvailable: req.body.isAvailable,
     }
 
-    vehiclesModel.insertVehicle(data, results => {
-      console.log(results);
-      return res.status(201).json({
-        success: true,
-        message: `Success add new vehicle`,
+    const checkExisting = [newData.merk, newData.brand, newData.type]
+
+    vehiclesModel.checkExistVehicle(checkExisting, results => {
+      if (results.length > 0) {
+        return res.status(200).json({
+          success: false,
+          message: `Vehicle already exist`,
+          results
+        })
+      }
+
+      vehiclesModel.insertVehicle(newData, results => {
+        console.log(results);
+        return res.status(201).json({
+          success: true,
+          message: `Success add new vehicle`,
+        })
       })
     })
   },
@@ -53,7 +65,7 @@ module.exports = {
       id
     } = req.params
 
-    const data = {
+    const newData = {
       merk: req.body.merk,
       brand: req.body.brand,
       type: req.body.type,
@@ -61,7 +73,7 @@ module.exports = {
       isAvailable: req.body.isAvailable,
     }
 
-    vehiclesModel.updateVehicle(id, data, results => {
+    vehiclesModel.updateVehicle(id, newData, results => {
       if (results.affectedRows < 1) {
         return res.status(404).json({
           success: false,
