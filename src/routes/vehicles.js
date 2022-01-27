@@ -14,4 +14,4 @@ vehicles.post('/', addNewVehicle)
 vehicles.put('/:id', updateVehicle)
 vehicles.delete('/:id', deleteVehicle)
 
-module.exports = vehicles;
+module.exports = vehicles

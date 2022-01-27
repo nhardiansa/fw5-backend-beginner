@@ -1,4 +1,4 @@
-const vehiclesModel = require("../models/vehicles");
+const vehiclesModel = require('../models/vehicles')
 
 module.exports = {
   getVehicles: (req, res) => {
@@ -36,7 +36,7 @@ module.exports = {
       brand: req.body.brand,
       type: req.body.type,
       price: req.body.price,
-      isAvailable: req.body.isAvailable,
+      isAvailable: req.body.isAvailable
     }
 
     const checkExisting = [newData.merk, newData.brand, newData.type]
@@ -45,16 +45,16 @@ module.exports = {
       if (results.length > 0) {
         return res.status(200).json({
           success: false,
-          message: `Vehicle already exist`,
+          message: 'Vehicle already exist',
           results
         })
       }
 
       vehiclesModel.insertVehicle(newData, results => {
-        console.log(results);
+        console.log(results)
         return res.status(201).json({
           success: true,
-          message: `Success add new vehicle`,
+          message: 'Success add new vehicle'
         })
       })
     })
@@ -70,21 +70,39 @@ module.exports = {
       brand: req.body.brand,
       type: req.body.type,
       price: req.body.price,
-      isAvailable: req.body.isAvailable,
+      isAvailable: req.body.isAvailable
     }
 
+    // let checkExisting = []
+
+    // for (const el in newData) {
+    //   // console.log(el);
+    //   checkExisting.push(`${el} = ${newData[el]} &&`)
+    // }
+
+    // console.log(checkExisting);
+
+    // vehiclesModel.checkExistVehicle(newData, results => {
+    //   if (results.length > 0) {
+    //     return res.status(200).json({
+    //       success: false,
+    //       message: `Vehicle already exist`,
+    //       results
+    //     })
+    //   }
+    // })
     vehiclesModel.updateVehicle(id, newData, results => {
       if (results.affectedRows < 1) {
         return res.status(404).json({
           success: false,
-          message: `Vehicle with id ${id} not found`,
+          message: `Vehicle with id ${id} not found`
         })
       }
       return res.status(200).json({
         success: true,
-        message: `Success update vehicle with id ${id}`,
+        message: `Success update vehicle with id ${id}`
       })
-    });
+    })
   },
 
   deleteVehicle: (req, res) => {
@@ -96,13 +114,13 @@ module.exports = {
       if (results.affectedRows < 1) {
         return res.status(404).json({
           success: false,
-          message: `Vehicle with id ${id} not found`,
+          message: `Vehicle with id ${id} not found`
         })
       }
       return res.status(200).json({
         success: true,
-        message: `Success delete vehicle with id ${id}`,
+        message: `Success delete vehicle with id ${id}`
       })
     })
   }
-};
+}
