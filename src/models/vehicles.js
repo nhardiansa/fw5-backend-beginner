@@ -8,4 +8,39 @@ module.exports = {
       cb(results)
     })
   },
+
+  getVehicle: (id, cb) => {
+    db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
+      if (err) throw err;
+      cb(results)
+    })
+  },
+
+  checkExistVehicle: (data) => {
+    db.query(`SELECT merk, brand FROM ${table} WHERE merk = ? && brand = ?`, data, (err, results) => {
+      if (err) throw err;
+      cb(results);
+    })
+  },
+
+  insertVehicle: (data, cb) => {
+    db.query(`INSERT INTO ${table} SET ?`, data, (err, results) => {
+      if (err) throw err;
+      cb(results)
+    })
+  },
+
+  updateVehicle: (id, data, cb) => {
+    db.query(`UPDATE ${table} SET ? WHERE id = ?`, [data, id], (err, results) => {
+      if (err) throw err;
+      cb(results);
+    })
+  },
+
+  deleteVehicle: (id, cb) => {
+    db.query(`DELETE FROM ${table} WHERE id = ?`, [id], (err, results) => {
+      if (err) throw err;
+      cb(results);
+    })
+  }
 }
