@@ -29,12 +29,10 @@ module.exports = {
     const dataValues = Object.values(data)
     const columns = Object.keys(data)
 
-    const ss = db.query(`SELECT ?? FROM ${table} WHERE ${customQuery}`, [columns, ...dataValues], (err, results) => {
+    db.query(`SELECT ?? FROM ${table} WHERE ${customQuery}`, [columns, ...dataValues], (err, results) => {
       if (err) throw err;
       cb(results);
     });
-
-    console.log(ss.sql);
   },
 
   insertVehicle: (data, cb) => {

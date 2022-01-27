@@ -58,8 +58,7 @@ module.exports = {
         })
       }
 
-      vehiclesModel.insertVehicle(newData, results => {
-        console.log(results)
+      vehiclesModel.insertVehicle(clientData, results => {
         return res.status(201).json({
           success: true,
           message: 'Success add new vehicle'
@@ -73,7 +72,7 @@ module.exports = {
       id
     } = req.params;
 
-    const newData = {
+    const clientData = {
       merk: req.body.merk,
       brand: req.body.brand,
       type: req.body.type,
@@ -81,18 +80,38 @@ module.exports = {
       isAvailable: req.body.isAvailable
     };
 
-    vehiclesModel.updateVehicle(id, newData, results => {
-      if (results.affectedRows < 1) {
-        return res.status(404).json({
-          success: false,
-          message: `Vehicle with id ${id} not found`
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        message: `Success update vehicle with id ${id}`
+    // validator data
+    if (!dataValidator(clientData)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Your data not validate'
       });
-    });
+    }
+
+    vehiclesModel.checkExistVehicle(clientData, checkResults => {
+      // check if the data is changed or not
+      if (checkResults.length > 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'Vehicle with inputed data already exist',
+          checkResults
+        })
+      }
+
+      vehiclesModel.updateVehicle(id, clientData, results => {
+        if (results.affectedRows < 1) {
+          return res.status(404).json({
+            success: false,
+            message: `Vehicle with id ${id} not found`
+          });
+        }
+        return res.status(200).json({
+          success: true,
+          message: `Success update vehicle with id ${id}`
+        });
+      });
+    })
+
   },
 
   deleteVehicle: (req, res) => {
