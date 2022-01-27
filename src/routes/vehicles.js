@@ -1,4 +1,5 @@
-const vehicles = require('express').Router();
+const express = require('express');
+const vehicles = new express.Router();
 
 const {
   getVehicles,
