@@ -5,7 +5,15 @@ const vehiclesModel = require('../models/vehicles');
 
 module.exports = {
   getVehicles: (req, res) => {
-    vehiclesModel.getVehicles((results) => {
+    const keys = [
+      'id',
+      'merk',
+      'capacity',
+      'location',
+      'isAvailable',
+      'price',
+    ];
+    vehiclesModel.getVehicles(keys, (results) => {
       return res.json({
         success: true,
         message: 'List Vehicles',
@@ -36,10 +44,13 @@ module.exports = {
   addNewVehicle: (req, res) => {
     const clientData = {
       merk: req.body.merk,
-      brand: req.body.brand,
-      type: req.body.type,
       price: req.body.price,
+      has_prepayment: req.body.has_prepayment,
+      capacity: req.body.capacity,
+      type: req.body.type,
       isAvailable: req.body.isAvailable,
+      location: req.body.location,
+      stock: req.body.stock,
     };
 
     console.log(clientData);

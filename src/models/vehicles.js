@@ -2,11 +2,10 @@ const db = require('../helpers/db');
 const table = 'vehicles';
 
 module.exports = {
-  getVehicles: (cb) => {
-    db.query(`
-    SELECT id, merk, brand, type, isAvailable, price FROM ${table}
-  `, (err, results) => {
+  getVehicles: (keys, cb) => {
+    db.query(`SELECT ?? FROM ${table}`, [keys], (err, results, fields) => {
       if (err) throw err;
+      console.log(fields);
       cb(results);
     });
   },
