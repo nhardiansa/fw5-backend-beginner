@@ -63,10 +63,9 @@ module.exports = {
 
     vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
       if (checkResults.length > 0) {
-        return res.status(200).json({
+        return res.status(202).json({
           success: false,
           message: 'Vehicle already exist',
-          checkResults,
         });
       }
 
@@ -86,10 +85,12 @@ module.exports = {
 
     const clientData = {
       merk: req.body.merk,
-      brand: req.body.brand,
-      type: req.body.type,
       price: req.body.price,
+      has_prepayment: req.body.has_prepayment,
+      capacity: req.body.capacity,
+      type: req.body.type,
       isAvailable: req.body.isAvailable,
+      location: req.body.location,
     };
 
     // validator data
@@ -103,10 +104,9 @@ module.exports = {
     vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
       // check if the data is changed or not
       if (checkResults.length > 0) {
-        return res.status(400).json({
+        return res.status(202).json({
           success: false,
           message: 'Vehicle with inputed data already exist',
-          checkResults,
         });
       }
 
