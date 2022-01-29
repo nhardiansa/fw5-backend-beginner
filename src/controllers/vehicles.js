@@ -50,10 +50,9 @@ module.exports = {
       type: req.body.type,
       isAvailable: req.body.isAvailable,
       location: req.body.location,
-      stock: req.body.stock,
     };
 
-    console.log(clientData);
+    // console.log(clientData);
 
     if (!dataValidator(clientData)) {
       return res.status(400).json({
@@ -67,11 +66,11 @@ module.exports = {
         return res.status(200).json({
           success: false,
           message: 'Vehicle already exist',
-          results,
+          checkResults,
         });
       }
 
-      vehiclesModel.insertVehicle(clientData, (results) => {
+      vehiclesModel.insertVehicle(clientData, () => {
         return res.status(201).json({
           success: true,
           message: 'Success add new vehicle',

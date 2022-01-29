@@ -3,9 +3,8 @@ const table = 'vehicles';
 
 module.exports = {
   getVehicles: (keys, cb) => {
-    db.query(`SELECT ?? FROM ${table}`, [keys], (err, results, fields) => {
+    db.query(`SELECT ?? FROM ${table}`, [keys], (err, results) => {
       if (err) throw err;
-      console.log(fields);
       cb(results);
     });
   },
