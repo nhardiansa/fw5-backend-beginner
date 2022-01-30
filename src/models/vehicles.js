@@ -1,16 +1,18 @@
 const db = require('../helpers/db');
-const table = 'vehicles';
+const vehiclesTable = 'vehicles';
 
 module.exports = {
   getVehicles: (keys, cb) => {
-    db.query(`SELECT ?? FROM ${table}`, [keys], (err, results) => {
+    db.query(`SELECT ?? FROM ${vehiclesTable}`, [keys], (err, results) => {
       if (err) throw err;
       cb(results);
     });
   },
 
   getVehicle: (id, cb) => {
-    db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
+    db.query(`
+    SELECT * FROM ${vehiclesTable} WHERE id = ?
+    `, [id], (err, results) => {
       if (err) throw err;
       cb(results);
     });
@@ -29,7 +31,7 @@ module.exports = {
     const columns = Object.keys(data);
 
     db.query(`
-    SELECT ?? FROM ${table} WHERE ${customQuery}
+    SELECT ?? FROM ${vehiclesTable} WHERE ${customQuery}
     `, [columns, ...dataValues], (err, results) => {
       if (err) throw err;
       cb(results);
@@ -37,7 +39,7 @@ module.exports = {
   },
 
   insertVehicle: (data, cb) => {
-    db.query(`INSERT INTO ${table} SET ?`, data, (err, results) => {
+    db.query(`INSERT INTO ${vehiclesTable} SET ?`, data, (err, results) => {
       if (err) throw err;
       cb(results);
     });
@@ -45,7 +47,7 @@ module.exports = {
 
   updateVehicle: (id, data, cb) => {
     db.query(`
-    UPDATE ${table} SET ? WHERE id = ?
+    UPDATE ${vehiclesTable} SET ? WHERE id = ?
     `, [data, id], (err, results) => {
       if (err) throw err;
       cb(results);
@@ -53,7 +55,9 @@ module.exports = {
   },
 
   deleteVehicle: (id, cb) => {
-    db.query(`DELETE FROM ${table} WHERE id = ?`, [id], (err, results) => {
+    db.query(`
+    DELETE FROM ${vehiclesTable} WHERE id = ?
+    `, [id], (err, results) => {
       if (err) throw err;
       cb(results);
     });
