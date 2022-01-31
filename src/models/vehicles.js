@@ -1,11 +1,11 @@
 const db = require('../helpers/db');
-const vehiclesTable = 'vehicles';
+const table = require('../helpers/constant').vehiclesTable;
 
 exports.getVehicles = (limit, offset, search) => {
   return new Promise((resolve, reject) => {
     db.query(`
     SELECT id, merk, price, prepayment, capacity, type, isAvailable, location 
-    FROM ${vehiclesTable} WHERE merk LIKE '${search}%' 
+    FROM ${table} WHERE merk LIKE '${search}%' 
     LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
         reject(err);
@@ -17,7 +17,7 @@ exports.getVehicles = (limit, offset, search) => {
 };
 
 exports.getVehicle = (id, cb) => {
-  db.query(`SELECT * FROM ${vehiclesTable} WHERE id = ?`, [id], (err, results) => {
+  db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
     if (err) throw err;
     cb(results);
   });
@@ -35,28 +35,28 @@ exports.checkExistVehicle = (data, cb) => {
   const dataValues = Object.values(data);
   const columns = Object.keys(data);
 
-  db.query(`SELECT ?? FROM ${vehiclesTable} WHERE ${customQuery}`, [columns, ...dataValues], (err, results) => {
+  db.query(`SELECT ?? FROM ${table} WHERE ${customQuery}`, [columns, ...dataValues], (err, results) => {
     if (err) throw err;
     cb(results);
   });
 };
 
 exports.insertVehicle = (data, cb) => {
-  db.query(`INSERT INTO ${vehiclesTable} SET ?`, data, (err, results) => {
+  db.query(`INSERT INTO ${table} SET ?`, data, (err, results) => {
     if (err) throw err;
     cb(results);
   });
 };
 
 exports.updateVehicle = (id, data, cb) => {
-  db.query(`UPDATE ${vehiclesTable} SET ? WHERE id = ?`, [data, id], (err, results) => {
+  db.query(`UPDATE ${table} SET ? WHERE id = ?`, [data, id], (err, results) => {
     if (err) throw err;
     cb(results);
   });
 };
 
 exports.deleteVehicle = (id, cb) => {
-  db.query(`DELETE FROM ${vehiclesTable} WHERE id = ?`, [id], (err, results) => {
+  db.query(`DELETE FROM ${table} WHERE id = ?`, [id], (err, results) => {
     if (err) throw err;
     cb(results);
   });
@@ -64,7 +64,7 @@ exports.deleteVehicle = (id, cb) => {
 
 exports.listLimitVehicle = (page, limit) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT id, merk, price, prepayment, capacity, type, isAvailable, location FROM ${vehiclesTable} LIMIT = ? OFFSET = ?`, [page, limit], (err, results) => {
+    db.query(`SELECT id, merk, price, prepayment, capacity, type, isAvailable, location FROM ${table} LIMIT = ? OFFSET = ?`, [page, limit], (err, results) => {
       if (err) {
         reject(err);
       } else {
@@ -76,7 +76,7 @@ exports.listLimitVehicle = (page, limit) => {
 
 exports.countData = () => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT COUNT(*) AS 'row' FROM ${vehiclesTable};`, (err, results) => {
+    db.query(`SELECT COUNT(*) AS 'row' FROM ${table};`, (err, results) => {
       if (err) {
         reject(err);
       } else {
