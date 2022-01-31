@@ -1,6 +1,10 @@
 const {
-  dataValidator
+  dataValidator,
+  validateId
 } = require('../helpers/requestHandler');
+const {
+  returningError
+} = require('../helpers/responseHandler');
 const usersModel = require('../models/users');
 
 // as receiver just for user controller
@@ -28,10 +32,7 @@ exports.getUser = (req, res) => {
 
   usersModel.getUser(id, (result) => {
     if (result.length < 1) {
-      return res.status(404).json({
-        success: false,
-        message: `User with id ${id} not found`
-      });
+      return returningError(res, 404, `User with id ${id} not found`);
     }
     return res.status(200).json({
       success: true,
@@ -46,27 +47,103 @@ exports.addUser = async (req, res) => {
     const data = requestReceiver(req.body);
 
     if (!dataValidator(data)) {
-      return res.json({
-        success: false,
-        message: "Your data isn't validate!"
-      });
+      return returningError(res, 400, "Your data isn't validate!");
     }
 
     const results = await usersModel.insertUser(data);
     const user = await usersModel.getUser(results.insertId);
 
     if (results.affectedRows > 0) {
-      return res.json({
-        success: false,
+      return res.status(201).json({
+        success: true,
         message: 'Success insert new user',
         results: user[0]
       });
     }
   } catch (error) {
-    console.log(error.sqlMessage);
-    return res.json({
+    const err = error.sqlMessage ? error.sqlMessage : 'Failed to insert data';
+    const code = error.sqlMessage ? 400 : 500;
+    return returningError(res, code, err);
+  }
+};
+
+exports.deleteUser = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
+    }
+
+    const user = await usersModel.getUser(id);
+
+    if (user.length > 0) {
+      const results = await usersModel.deleteUser(id);
+
+      if (results.affectedRows > 0) {
+        return res.status(200).json({
+          success: true,
+          message: 'Success delete a user',
+          results: user[0]
+        });
+      } else {
+        throw new Error('Failed to delete data');
+      }
+    }
+
+    return res.status(404).json({
       success: false,
-      message: error.sqlMessage
+      message: `User with id ${id} not found`
     });
+  } catch (error) {
+    const err = error.sqlMessage ? error.sqlMessage : 'Failed to delete user';
+    return returningError(res, 500, err);
+  }
+};
+
+exports.updateUser = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+    const data = requestReceiver(req.body);
+
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
+    }
+
+    if (!dataValidator(data)) {
+      return returningError(res, 400, 'Data is not validate!');
+    }
+
+    const isEmailExist = await usersModel.findEmail(data.email);
+    const isPhoneExist = await usersModel.findPhone(data.phone);
+
+    if (isEmailExist[0].rows > 0) {
+      return returningError(res, 400, 'Email already registered');
+    }
+
+    if (isPhoneExist[0].rows > 0) {
+      return returningError(res, 400, 'Phone already registered');
+    }
+
+    const results = await usersModel.updateUser(id, data);
+
+    if (results.affectedRows > 0) {
+      const user = await usersModel.getUser(id);
+
+      return res.status(200).json({
+        success: true,
+        message: 'Success update a user',
+        results: user[0]
+      });
+    }
+
+    return returningError(res, 500, 'Failed to delete an user');
+  } catch (error) {
+    const err = error.sqlMessage ? error.sqlMessage : 'Failed to delete user';
+    return returningError(res, 500, err);
   }
 };
