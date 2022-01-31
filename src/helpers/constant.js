@@ -1,5 +1,6 @@
 module.exports = {
-  usersTable: 'users',
+  exporusersTable: 'users',
   historiesTable: 'histories',
-  vehiclesTable: 'vehicles'
+  vehiclesTable: 'vehicles',
+  baseURL: 'http://localhost:5000'
 };

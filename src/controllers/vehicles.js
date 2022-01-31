@@ -1,4 +1,7 @@
 const {
+  baseURL
+} = require('../helpers/constant');
+const {
   dataValidator
 } = require('../helpers/validator');
 const vehiclesModel = require('../models/vehicles');
@@ -7,14 +10,28 @@ exports.getVehicles = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5;
+    const search = req.query.search || '';
     const offset = (page - 1) * limit;
 
-    const results = await vehiclesModel.getVehicles(limit, offset);
+    const results = await vehiclesModel.getVehicles(limit, offset, search);
 
+    console.log(results.length);
+
+    const countData = await vehiclesModel.countData();
+    const totalData = countData[0].row;
+
+    const lastPage = search ? Math.ceil(results.length / limit) : Math.ceil(totalData / limit);
     return res.json({
       success: false,
       message: 'List of vehicles',
-      results
+      results,
+      pageInfo: {
+        totalData: search ? results.length : totalData,
+        currentPage: page,
+        nextPage: page < lastPage ? `${baseURL}/vehicles?page=${page + 1}&limit=${limit}` : null,
+        prevPage: page > 1 ? `${baseURL}/vehicles?page=${page - 1}&limit=${limit}` : null,
+        lastPage
+      }
     });
   } catch (error) {
     console.log(error);
@@ -44,7 +61,7 @@ exports.addNewVehicle = (req, res) => {
   const clientData = {
     merk: req.body.merk,
     price: Number(req.body.price),
-    has_prepayment: req.body.has_prepayment,
+    prepayment: req.body.prepayment,
     capacity: Number(req.body.capacity),
     type: req.body.type,
     isAvailable: Number(req.body.isAvailable),
@@ -53,7 +70,7 @@ exports.addNewVehicle = (req, res) => {
 
   console.log(clientData);
 
-  const prepayment = clientData.has_prepayment;
+  const prepayment = clientData.prepayment;
 
   if (Number(prepayment) > 1 || Number(prepayment) < 0) {
     return res.status(400).json({
@@ -84,7 +101,7 @@ exports.addNewVehicle = (req, res) => {
         message: 'Success add new vehicle',
         results: {
           ...clientData,
-          has_prepayment: Number(clientData.has_prepayment)
+          prepayment: Number(clientData.prepayment)
         }
       });
     });
@@ -99,14 +116,14 @@ exports.updateVehicle = (req, res) => {
   const clientData = {
     merk: req.body.merk,
     price: Number(req.body.price),
-    has_prepayment: req.body.has_prepayment,
+    prepayment: req.body.prepayment,
     capacity: Number(req.body.capacity),
     type: req.body.type,
     isAvailable: Number(req.body.isAvailable),
     location: req.body.location
   };
 
-  const prepayment = clientData.has_prepayment;
+  const prepayment = clientData.prepayment;
 
   if (Number(prepayment) > 1 || Number(prepayment) < 0) {
     return res.status(400).json({
@@ -145,7 +162,7 @@ exports.updateVehicle = (req, res) => {
         results: {
           id: Number(id),
           ...clientData,
-          has_prepayment: Number(clientData.has_prepayment)
+          prepayment: Number(clientData.prepayment)
         }
       });
     });
