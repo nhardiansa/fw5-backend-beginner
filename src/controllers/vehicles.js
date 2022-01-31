@@ -11,6 +11,7 @@ module.exports = {
       'capacity',
       'location',
       'isAvailable',
+      'has_prepayment',
       'price'
     ];
     vehiclesModel.getVehicles(keys, (results) => {
@@ -44,15 +45,24 @@ module.exports = {
   addNewVehicle: (req, res) => {
     const clientData = {
       merk: req.body.merk,
-      price: req.body.price,
+      price: Number(req.body.price),
       has_prepayment: req.body.has_prepayment,
-      capacity: req.body.capacity,
+      capacity: Number(req.body.capacity),
       type: req.body.type,
-      isAvailable: req.body.isAvailable,
+      isAvailable: Number(req.body.isAvailable),
       location: req.body.location
     };
 
-    // console.log(clientData);
+    console.log(clientData);
+
+    const prepayment = clientData.has_prepayment;
+
+    if (Number(prepayment) > 1 || Number(prepayment) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Your data not validate'
+      });
+    }
 
     if (!dataValidator(clientData)) {
       return res.status(400).json({
@@ -73,7 +83,11 @@ module.exports = {
         console.log(results);
         return res.status(201).json({
           success: true,
-          message: 'Success add new vehicle'
+          message: 'Success add new vehicle',
+          results: {
+            ...clientData,
+            has_prepayment: Number(clientData.has_prepayment)
+          }
         });
       });
     });
@@ -86,13 +100,22 @@ module.exports = {
 
     const clientData = {
       merk: req.body.merk,
-      price: req.body.price,
+      price: Number(req.body.price),
       has_prepayment: req.body.has_prepayment,
-      capacity: req.body.capacity,
+      capacity: Number(req.body.capacity),
       type: req.body.type,
-      isAvailable: req.body.isAvailable,
+      isAvailable: Number(req.body.isAvailable),
       location: req.body.location
     };
+
+    const prepayment = clientData.has_prepayment;
+
+    if (Number(prepayment) > 1 || Number(prepayment) < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'Your data not validate'
+      });
+    }
 
     // validator data
     if (!dataValidator(clientData)) {
@@ -120,7 +143,12 @@ module.exports = {
         }
         return res.status(200).json({
           success: true,
-          message: `Success update vehicle with id ${id}`
+          message: `Success update vehicle with id ${id}`,
+          results: {
+            id,
+            ...clientData,
+            has_prepayment: Number(clientData.has_prepayment)
+          }
         });
       });
     });
