@@ -13,3 +13,10 @@ exports.dataValidator = (data) => {
 
   return dump.every((el) => el);
 };
+
+exports.validateId = (id) => {
+  if (isNaN(Number(id))) {
+    return false;
+  }
+  return true;
+};
