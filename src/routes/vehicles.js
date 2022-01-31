@@ -1,5 +1,5 @@
-const express = require('express')
-const vehicles = new express.Router()
+const express = require('express');
+const vehicles = new express.Router();
 
 const {
   getVehicles,
@@ -7,12 +7,12 @@ const {
   addNewVehicle,
   updateVehicle,
   deleteVehicle
-} = require('../controllers/vehicles')
+} = require('../controllers/vehicles');
 
-vehicles.get('/', getVehicles)
-vehicles.get('/:id', getVehicle)
-vehicles.post('/', addNewVehicle)
-vehicles.put('/:id', updateVehicle)
-vehicles.delete('/:id', deleteVehicle)
+vehicles.get('/', getVehicles);
+vehicles.get('/:id', getVehicle);
+vehicles.post('/', addNewVehicle);
+vehicles.put('/:id', updateVehicle);
+vehicles.delete('/:id', deleteVehicle);
 
-module.exports = vehicles
+module.exports = vehicles;

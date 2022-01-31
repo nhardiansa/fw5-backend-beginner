@@ -1,5 +1,5 @@
-const db = require('../helpers/db')
-const usersTable = 'users'
+const db = require('../helpers/db');
+const usersTable = 'users';
 
 module.exports = {
   getUser: (id) => {
@@ -7,10 +7,10 @@ module.exports = {
       db.query(`
       SELECT * FROM ${usersTable} WHERE id = ?`, [id], (err, results) => {
         if (err) {
-          reject(err)
+          reject(err);
         }
-        resolve(results)
-      })
-    })
+        resolve(results);
+      });
+    });
   }
-}
+};
