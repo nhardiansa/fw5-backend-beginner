@@ -1,10 +1,18 @@
 const db = require('../helpers/db');
 const vehiclesTable = 'vehicles';
 
-exports.getVehicles = (keys, cb) => {
-  db.query(`SELECT ?? FROM ${vehiclesTable}`, [keys], (err, results) => {
-    if (err) throw err;
-    cb(results);
+exports.getVehicles = (limit, offset) => {
+  return new Promise((resolve, reject) => {
+    const ss = db.query(`
+    SELECT id, merk, price, has_prepayment, capacity, type, isAvailable, location 
+    FROM ${vehiclesTable} LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+    console.log(ss.sql);
   });
 };
 
@@ -51,5 +59,29 @@ exports.deleteVehicle = (id, cb) => {
   db.query(`DELETE FROM ${vehiclesTable} WHERE id = ?`, [id], (err, results) => {
     if (err) throw err;
     cb(results);
+  });
+};
+
+exports.listLimitVehicle = (page, limit) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT id, merk, price, has_prepayment, capacity, type, isAvailable, location FROM ${vehiclesTable} LIMIT = ? OFFSET = ?`, [page, limit], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.countPage = () => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT COUNT(*) AS 'row' FROM ${vehiclesTable};`, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
   });
 };
