@@ -3,7 +3,7 @@ const {
 } = require('../helpers/constant');
 const {
   dataValidator
-} = require('../helpers/validator');
+} = require('../helpers/requestHandler');
 const vehiclesModel = require('../models/vehicles');
 
 exports.getVehicles = async (req, res) => {
@@ -14,8 +14,6 @@ exports.getVehicles = async (req, res) => {
     const offset = (page - 1) * limit;
 
     const results = await vehiclesModel.getVehicles(limit, offset, search);
-
-    console.log(results.length);
 
     const countData = await vehiclesModel.countData();
     const totalData = countData[0].row;

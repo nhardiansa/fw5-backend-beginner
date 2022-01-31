@@ -1,6 +1,6 @@
 const {
   dataValidator
-} = require('../helpers/validator');
+} = require('../helpers/requestHandler');
 const historiesModel = require('../models/histories');
 const usersModel = require('../models/users');
 
