@@ -36,7 +36,6 @@ module.exports = {
   addNewVehicle: (req, res) => {
     const clientData = {
       merk: req.body.merk,
-      brand: req.body.brand,
       type: req.body.type,
       price: req.body.price,
       isAvailable: req.body.isAvailable,
@@ -76,7 +75,6 @@ module.exports = {
 
     const clientData = {
       merk: req.body.merk,
-      brand: req.body.brand,
       type: req.body.type,
       price: req.body.price,
       isAvailable: req.body.isAvailable,
