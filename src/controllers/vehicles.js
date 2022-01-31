@@ -1,7 +1,7 @@
 const {
-  dataValidator,
-} = require('../helpers/validator');
-const vehiclesModel = require('../models/vehicles');
+  dataValidator
+} = require('../helpers/validator')
+const vehiclesModel = require('../models/vehicles')
 
 module.exports = {
   getVehicles: (req, res) => {
@@ -11,34 +11,34 @@ module.exports = {
       'capacity',
       'location',
       'isAvailable',
-      'price',
-    ];
+      'price'
+    ]
     vehiclesModel.getVehicles(keys, (results) => {
       return res.json({
         success: true,
         message: 'List Vehicles',
-        results,
-      });
-    });
+        results
+      })
+    })
   },
 
   getVehicle: (req, res) => {
     const {
-      id,
-    } = req.params;
+      id
+    } = req.params
     vehiclesModel.getVehicle(id, (results) => {
       if (results.length < 1) {
         return res.status(404).json({
           success: false,
-          message: `Vehicle with id ${id} not found`,
-        });
+          message: `Vehicle with id ${id} not found`
+        })
       }
       return res.status(200).json({
         success: true,
         message: `Success getting vehicle with id ${id}`,
-        result: results[0],
-      });
-    });
+        result: results[0]
+      })
+    })
   },
 
   addNewVehicle: (req, res) => {
@@ -49,39 +49,39 @@ module.exports = {
       capacity: req.body.capacity,
       type: req.body.type,
       isAvailable: req.body.isAvailable,
-      location: req.body.location,
-    };
+      location: req.body.location
+    }
 
     // console.log(clientData);
 
     if (!dataValidator(clientData)) {
       return res.status(400).json({
         success: false,
-        message: 'Your data not validate',
-      });
+        message: 'Your data not validate'
+      })
     }
 
     vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
       if (checkResults.length > 0) {
         return res.status(202).json({
           success: false,
-          message: 'Vehicle already exist',
-        });
+          message: 'Vehicle already exist'
+        })
       }
 
       vehiclesModel.insertVehicle(clientData, () => {
         return res.status(201).json({
           success: true,
-          message: 'Success add new vehicle',
-        });
-      });
-    });
+          message: 'Success add new vehicle'
+        })
+      })
+    })
   },
 
   updateVehicle: (req, res) => {
     const {
-      id,
-    } = req.params;
+      id
+    } = req.params
 
     const clientData = {
       merk: req.body.merk,
@@ -90,15 +90,15 @@ module.exports = {
       capacity: req.body.capacity,
       type: req.body.type,
       isAvailable: req.body.isAvailable,
-      location: req.body.location,
-    };
+      location: req.body.location
+    }
 
     // validator data
     if (!dataValidator(clientData)) {
       return res.status(400).json({
         success: false,
-        message: 'Your data not validate',
-      });
+        message: 'Your data not validate'
+      })
     }
 
     vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
@@ -106,41 +106,41 @@ module.exports = {
       if (checkResults.length > 0) {
         return res.status(202).json({
           success: false,
-          message: 'Vehicle with inputed data already exist',
-        });
+          message: 'Vehicle with inputed data already exist'
+        })
       }
 
       vehiclesModel.updateVehicle(id, clientData, (results) => {
         if (results.affectedRows < 1) {
           return res.status(404).json({
             success: false,
-            message: `Vehicle with id ${id} not found`,
-          });
+            message: `Vehicle with id ${id} not found`
+          })
         }
         return res.status(200).json({
           success: true,
-          message: `Success update vehicle with id ${id}`,
-        });
-      });
-    });
+          message: `Success update vehicle with id ${id}`
+        })
+      })
+    })
   },
 
   deleteVehicle: (req, res) => {
     const {
-      id,
-    } = req.params;
+      id
+    } = req.params
 
     vehiclesModel.deleteVehicle(id, (results) => {
       if (results.affectedRows < 1) {
         return res.status(404).json({
           success: false,
-          message: `Vehicle with id ${id} not found`,
-        });
+          message: `Vehicle with id ${id} not found`
+        })
       }
       return res.status(200).json({
         success: true,
-        message: `Success delete vehicle with id ${id}`,
-      });
-    });
-  },
-};
+        message: `Success delete vehicle with id ${id}`
+      })
+    })
+  }
+}

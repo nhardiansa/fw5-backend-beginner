@@ -1,12 +1,12 @@
-const express = require('express');
-const histories = new express.Router();
+const express = require('express')
+const histories = new express.Router()
 
 const {
   getHistories,
-  addHistory,
-} = require('../controllers/histories');
+  addHistory
+} = require('../controllers/histories')
 
-histories.get('/', getHistories);
-histories.post('/', addHistory);
+histories.get('/', getHistories)
+histories.post('/', addHistory)
 
-module.exports = histories;
+module.exports = histories

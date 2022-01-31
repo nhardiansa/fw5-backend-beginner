@@ -5,11 +5,12 @@
         "node": true
     },
     "extends": [
-        "google"
+        "standard"
     ],
     "parserOptions": {
         "ecmaVersion": "latest"
     },
     "rules": {
+      "semi":"error"
     }
 }
