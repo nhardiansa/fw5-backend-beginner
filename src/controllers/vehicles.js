@@ -17,7 +17,8 @@ module.exports = {
   getVehicle: (req, res) => {
     const {
       id,
-    } = req.params;
+    } = req.params; // destructuring object
+
     vehiclesModel.getVehicle(id, (results) => {
       if (results.length < 1) {
         return res.status(404).json({
@@ -41,8 +42,6 @@ module.exports = {
       isAvailable: req.body.isAvailable,
     };
 
-    console.log(clientData);
-
     if (!dataValidator(clientData)) {
       return res.status(400).json({
         success: false,
@@ -55,7 +54,6 @@ module.exports = {
         return res.status(200).json({
           success: false,
           message: 'Vehicle already exist',
-          results,
         });
       }
 
@@ -94,7 +92,6 @@ module.exports = {
         return res.status(400).json({
           success: false,
           message: 'Vehicle with inputed data already exist',
-          checkResults,
         });
       }
 
