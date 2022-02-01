@@ -10,6 +10,7 @@ const {
 } = require('../controllers/users');
 
 users.get('/', listUsers);
+users.get('/profile/:id', getUser);
 users.get('/:id', getUser);
 users.delete('/:id', deleteUser);
 users.put('/:id', updateUser);
