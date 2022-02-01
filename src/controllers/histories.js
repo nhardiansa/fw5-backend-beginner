@@ -1,6 +1,7 @@
 const {
   dataValidator,
-  requestReceiver
+  requestReceiver,
+  validateId
 } = require('../helpers/requestHandler');
 const {
   returningError,
@@ -9,19 +10,20 @@ const {
 const historiesModel = require('../models/histories');
 const usersModel = require('../models/users');
 
-exports.getHistories = (req, res) => {
-  const keys = [
-    'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
-    'prepayment'
-  ];
+exports.listHistories = async (req, res) => {
+  try {
+    const keys = [
+      'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
+      'prepayment'
+    ];
 
-  historiesModel.getHistories(keys, (results) => {
-    return res.status(200).json({
-      success: true,
-      message: 'Success getting histories',
-      results
-    });
-  });
+    const results = await historiesModel.getHistories(keys);
+
+    return returningSuccess(res, 200, 'Success getting histories', results);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get list of history');
+  }
 };
 
 exports.addHistory = async (req, res) => {
@@ -82,7 +84,7 @@ exports.deleteHistory = async (req, res) => {
     } = req.params;
 
     // validate inputed id
-    if (isNaN(Number(id))) {
+    if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
     }
 
@@ -123,7 +125,7 @@ exports.upadateHistory = async (req, res) => {
     const data = requestReceiver(req.body, keys);
 
     // validate inputed id
-    if (isNaN(Number(id))) {
+    if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
     }
 
@@ -158,5 +160,30 @@ exports.upadateHistory = async (req, res) => {
     console.log(error);
     console.error(error);
     return returningError(res, 500, 'Failed to update history');
+  }
+};
+
+exports.getHistory = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+
+    // validate inputed id
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
+    }
+
+    const result = await historiesModel.getHistory(id);
+
+    // if history not exist
+    if (result.length < 1) {
+      return returningError(res, 404, 'History not found');
+    }
+
+    return returningSuccess(res, 200, 'Success getting history', result[0]);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get history');
   }
 };

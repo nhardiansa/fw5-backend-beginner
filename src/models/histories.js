@@ -3,10 +3,16 @@ const {
   historiesTable
 } = require('../helpers/constant');
 
-exports.getHistories = (keys, cb) => {
-  db.query(`SELECT ?? FROM ${historiesTable}`, [keys], (err, results) => {
-    if (err) throw err;
-    cb(results);
+exports.getHistories = (keys) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT ?? FROM ${historiesTable}`, [keys], (err, results) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
   });
 };
 
