@@ -1,10 +1,14 @@
 const {
+  baseURL
+} = require('../helpers/constant');
+const {
   dataValidator,
   validateId,
   requestReceiver
 } = require('../helpers/requestHandler');
 const {
-  returningError
+  returningError,
+  returningSuccess
 } = require('../helpers/responseHandler');
 const usersModel = require('../models/users');
 
@@ -46,6 +50,17 @@ exports.addUser = async (req, res) => {
       return returningError(res, 400, "Your data isn't validate!");
     }
 
+    const isEmailExist = await usersModel.findEmail(data.email);
+    const isPhoneExist = await usersModel.findPhone(data.phone);
+
+    if (isEmailExist[0].rows > 0) {
+      return returningError(res, 400, 'Email already registered');
+    }
+
+    if (isPhoneExist[0].rows > 0) {
+      return returningError(res, 400, 'Phone already registered');
+    }
+
     const results = await usersModel.insertUser(data);
     const user = await usersModel.getUser(results.insertId);
 
@@ -57,9 +72,9 @@ exports.addUser = async (req, res) => {
       });
     }
   } catch (error) {
-    const err = error.sqlMessage ? error.sqlMessage : 'Failed to insert data';
-    const code = error.sqlMessage ? 400 : 500;
-    return returningError(res, code, err);
+    console.error(error);
+    const err = 'Failed to insert data';
+    return returningError(res, 500, err);
   }
 };
 
@@ -141,5 +156,53 @@ exports.updateUser = async (req, res) => {
   } catch (error) {
     const err = error.sqlMessage ? error.sqlMessage : 'Failed to delete user';
     return returningError(res, 500, err);
+  }
+};
+
+exports.listUsers = async (req, res) => {
+  try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5;
+    const {
+      name,
+      email
+    } = req.query;
+    const offset = (page - 1) * limit;
+
+    const results = await usersModel.getUsers(limit, offset, {
+      name,
+      email
+    });
+
+    const countResults = await usersModel.countUsers();
+    const totalUsers = countResults[0].rows;
+    const totalPages = Math.ceil(totalUsers / limit);
+
+    const lastPage = name || email ? Math.ceil(results.length / limit) : Math.ceil(totalUsers / limit);
+    let nextPage, prevPage;
+
+    if (name) {
+      nextPage = page < totalPages ? `${baseURL}/users?page=${page + 1}&limit=${limit}&name=${name}` : null;
+      prevPage = page > 1 ? `${baseURL}/users?page=${page - 1}&limit=${limit}&name=${name}` : null;
+    } else if (email) {
+      nextPage = page < totalPages ? `${baseURL}/users?page=${page + 1}&limit=${limit}&email=${email}` : null;
+      prevPage = page > 1 ? `${baseURL}/users?page=${page - 1}&limit=${limit}&email=${email}` : null;
+    } else {
+      nextPage = page < totalPages ? `${baseURL}/users?page=${page + 1}&limit=${limit}` : null;
+      prevPage = page > 1 ? `${baseURL}/users?page=${page - 1}&limit=${limit}` : null;
+    }
+
+    const pageInfo = {
+      totalUsers: name || email ? results.length : totalUsers,
+      currentPage: page,
+      nextPage,
+      prevPage,
+      lastPage: name || email ? lastPage : totalPages
+    };
+
+    return returningSuccess(res, 200, 'Success getting all users', results, pageInfo);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get list of users');
   }
 };
