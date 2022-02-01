@@ -1,34 +1,30 @@
 const {
   dataValidator,
-  validateId
+  validateId,
+  requestReceiver
 } = require('../helpers/requestHandler');
 const {
   returningError
 } = require('../helpers/responseHandler');
 const usersModel = require('../models/users');
 
-// as receiver just for user controller
-const requestReceiver = (data) => {
-  const user = {
-    name: '',
-    email: '',
-    gender: '',
-    address: '',
-    birthdate: '',
-    phone: ''
-
-  };
-  for (const el in data) {
-    user[el] = data[el];
-  }
-
-  return user;
-};
+const userKeys = [
+  'name',
+  'email',
+  'gender',
+  'address',
+  'birthdate',
+  'phone'
+];
 
 exports.getUser = (req, res) => {
   const {
     id
   } = req.params;
+
+  if (!validateId(id)) {
+    return returningError(res, 400, 'Id must be a number');
+  }
 
   usersModel.getUser(id, (result) => {
     if (result.length < 1) {
@@ -44,7 +40,7 @@ exports.getUser = (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const data = requestReceiver(req.body);
+    const data = requestReceiver(req.body, userKeys);
 
     if (!dataValidator(data)) {
       return returningError(res, 400, "Your data isn't validate!");
@@ -108,7 +104,7 @@ exports.updateUser = async (req, res) => {
     const {
       id
     } = req.params;
-    const data = requestReceiver(req.body);
+    const data = requestReceiver(req.body, userKeys);
 
     if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
