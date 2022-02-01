@@ -1,25 +1,51 @@
 const {
+  baseURL
+} = require('../helpers/constant');
+const {
   dataValidator,
   requestReceiver,
   validateId
 } = require('../helpers/requestHandler');
 const {
   returningError,
-  returningSuccess
+  returningSuccess,
+  pageCreator
 } = require('../helpers/responseHandler');
 const historiesModel = require('../models/histories');
 const usersModel = require('../models/users');
 
 exports.listHistories = async (req, res) => {
   try {
+    const data = {
+      limit: Number(req.query.limit) || 5,
+      page: Number(req.query.page) || 1
+    };
     const keys = [
       'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
       'prepayment'
     ];
 
-    const results = await historiesModel.getHistories(keys);
+    const results = await historiesModel.getHistories(keys, data.page, data.limit);
 
-    return returningSuccess(res, 200, 'Success getting histories', results);
+    const countHistories = await historiesModel.countHistories();
+    const totalHistories = countHistories[0].total;
+
+    const totalPages = Math.ceil(totalHistories / data.limit);
+
+    const pages = pageCreator(`${baseURL}/histories?`, {
+      page: data.page,
+      limit: data.limit
+    });
+
+    const pageInfo = {
+      totalHistories,
+      currentPage: data.page,
+      nextPage: data.page < totalPages ? pages.next : null,
+      prevPage: data.page > 1 ? pages.prev : null,
+      lastPage: totalPages
+    };
+
+    return returningSuccess(res, 200, 'Success getting histories', results, pageInfo);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get list of history');

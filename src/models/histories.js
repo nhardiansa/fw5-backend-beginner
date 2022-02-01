@@ -1,11 +1,12 @@
 const db = require('../helpers/db');
-const {
-  historiesTable
-} = require('../helpers/constant');
+const table = require('../helpers/constant').historiesTable;
 
-exports.getHistories = (keys) => {
+exports.getHistories = (keys, page, limit) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT ?? FROM ${historiesTable}`, [keys], (err, results) => {
+    const ss = db.query(`
+      SELECT ?? FROM ${table}
+      LIMIT ? OFFSET ?
+    `, [keys, limit, page], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -13,12 +14,13 @@ exports.getHistories = (keys) => {
         resolve(results);
       }
     });
+    console.log(ss.sql);
   });
 };
 
 exports.addHistory = (data) => {
   return new Promise((resolve, reject) => {
-    db.query(`INSERT INTO ${historiesTable} SET ?`, data, (err, results) => {
+    db.query(`INSERT INTO ${table} SET ?`, data, (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -31,7 +33,7 @@ exports.addHistory = (data) => {
 
 exports.deleteHistory = (id) => {
   return new Promise((resolve, reject) => {
-    db.query(`DELETE FROM ${historiesTable} WHERE id = ?`, [id], (err, results) => {
+    db.query(`DELETE FROM ${table} WHERE id = ?`, [id], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -44,7 +46,7 @@ exports.deleteHistory = (id) => {
 
 exports.getHistory = (id) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT * FROM ${historiesTable} WHERE id = ?`, [id], (err, results) => {
+    db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -57,7 +59,20 @@ exports.getHistory = (id) => {
 
 exports.updateHistory = (id, data) => {
   return new Promise((resolve, reject) => {
-    db.query(`UPDATE ${historiesTable} SET ? WHERE id = ?`, [data, id], (err, results) => {
+    db.query(`UPDATE ${table} SET ? WHERE id = ?`, [data, id], (err, results) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.countHistories = () => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT COUNT(*) AS total FROM ${table}`, (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
