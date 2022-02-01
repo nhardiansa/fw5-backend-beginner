@@ -17,17 +17,18 @@ const usersModel = require('../models/users');
 exports.listHistories = async (req, res) => {
   try {
     const data = {
+      id: Number(req.query.user_id) || null,
       limit: Number(req.query.limit) || 5,
-      page: Number(req.query.page) || 1
+      page: Number(req.query.page) || 0
     };
     const keys = [
       'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
       'prepayment'
     ];
 
-    const results = await historiesModel.getHistories(keys, data.page, data.limit);
+    const results = await historiesModel.getHistories(keys, data);
 
-    const countHistories = await historiesModel.countHistories();
+    const countHistories = await historiesModel.countHistories(data.id);
     const totalHistories = countHistories[0].total;
 
     const totalPages = Math.ceil(totalHistories / data.limit);

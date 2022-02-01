@@ -1,10 +1,16 @@
 const db = require('../helpers/db');
 const table = require('../helpers/constant').historiesTable;
 
-exports.getHistories = (keys, page, limit) => {
+exports.getHistories = (keys, data) => {
+  const {
+    id,
+    limit,
+    page
+  } = data;
   return new Promise((resolve, reject) => {
     const ss = db.query(`
       SELECT ?? FROM ${table}
+      ${id ? `WHERE user_id = ${id}` : ''}
       LIMIT ? OFFSET ?
     `, [keys, limit, page], (err, results) => {
       if (err) {
@@ -70,9 +76,13 @@ exports.updateHistory = (id, data) => {
   });
 };
 
-exports.countHistories = () => {
+exports.countHistories = (id = null) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT COUNT(*) AS total FROM ${table}`, (err, results) => {
+    db.query(`
+        SELECT COUNT(*) AS total 
+        FROM ${table}
+        ${id ? `WHERE user_id = ${id}` : ''}
+      `, (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
