@@ -8,7 +8,8 @@ const {
 } = require('../helpers/requestHandler');
 const {
   returningError,
-  returningSuccess
+  returningSuccess,
+  pageCreator
 } = require('../helpers/responseHandler');
 const usersModel = require('../models/users');
 
@@ -21,25 +22,29 @@ const userKeys = [
   'phone'
 ];
 
-exports.getUser = (req, res) => {
-  const {
-    id
-  } = req.params;
+exports.getUser = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
 
-  if (!validateId(id)) {
-    return returningError(res, 400, 'Id must be a number');
-  }
-
-  usersModel.getUser(id, (result) => {
-    if (result.length < 1) {
-      return returningError(res, 404, `User with id ${id} not found`);
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
     }
-    return res.status(200).json({
-      success: true,
-      message: `Success getting user with id ${id}`,
-      result: result[0]
-    });
-  });
+
+    const user = await usersModel.getUser(id);
+
+    if (user.length < 1) {
+      return returningError(res, 404, 'User not found');
+    }
+
+    console.log(user);
+
+    return returningSuccess(res, 200, 'Success getting a user', user[0]);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get user');
+  }
 };
 
 exports.addUser = async (req, res) => {
@@ -163,10 +168,8 @@ exports.listUsers = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
     const limit = Number(req.query.limit) || 5;
-    const {
-      name,
-      email
-    } = req.query;
+    const name = req.query.name || '';
+    const email = req.query.email || '';
     const offset = (page - 1) * limit;
 
     const results = await usersModel.getUsers(limit, offset, {
@@ -179,24 +182,19 @@ exports.listUsers = async (req, res) => {
     const totalPages = Math.ceil(totalUsers / limit);
 
     const lastPage = name || email ? Math.ceil(results.length / limit) : Math.ceil(totalUsers / limit);
-    let nextPage, prevPage;
 
-    if (name) {
-      nextPage = page < totalPages ? `${baseURL}/users?page=${page + 1}&limit=${limit}&name=${name}` : null;
-      prevPage = page > 1 ? `${baseURL}/users?page=${page - 1}&limit=${limit}&name=${name}` : null;
-    } else if (email) {
-      nextPage = page < totalPages ? `${baseURL}/users?page=${page + 1}&limit=${limit}&email=${email}` : null;
-      prevPage = page > 1 ? `${baseURL}/users?page=${page - 1}&limit=${limit}&email=${email}` : null;
-    } else {
-      nextPage = page < totalPages ? `${baseURL}/users?page=${page + 1}&limit=${limit}` : null;
-      prevPage = page > 1 ? `${baseURL}/users?page=${page - 1}&limit=${limit}` : null;
-    }
+    const pages = pageCreator(`${baseURL}/users?`, {
+      page,
+      limit,
+      name,
+      email
+    });
 
     const pageInfo = {
       totalUsers: name || email ? results.length : totalUsers,
       currentPage: page,
-      nextPage,
-      prevPage,
+      nextPage: page < totalPages ? pages.next : null,
+      prevPage: page > 1 ? pages.prev : null,
       lastPage: name || email ? lastPage : totalPages
     };
 
