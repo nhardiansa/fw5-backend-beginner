@@ -4,6 +4,11 @@ const {
 const {
   dataValidator
 } = require('../helpers/requestHandler');
+const {
+  returningSuccess,
+  returningError,
+  pageCreator
+} = require('../helpers/responseHandler');
 const vehiclesModel = require('../models/vehicles');
 
 exports.getVehicles = async (req, res) => {
@@ -13,6 +18,11 @@ exports.getVehicles = async (req, res) => {
     const search = req.query.search || '';
     const offset = (page - 1) * limit;
 
+    const pageLink = pageCreator(`${baseURL}/vehicles?`, {
+      page,
+      limit,
+      search
+    });
     const results = await vehiclesModel.getVehicles(limit, offset, search);
 
     const countData = await vehiclesModel.countData();
@@ -26,8 +36,8 @@ exports.getVehicles = async (req, res) => {
       pageInfo: {
         totalData: search ? results.length : totalData,
         currentPage: page,
-        nextPage: page < lastPage ? `${baseURL}/vehicles?page=${page + 1}&limit=${limit}` : null,
-        prevPage: page > 1 ? `${baseURL}/vehicles?page=${page - 1}&limit=${limit}` : null,
+        nextPage: page < lastPage ? pageLink.next : null,
+        prevPage: page > 1 ? pageLink.prev : null,
         lastPage
       }
     });
@@ -184,4 +194,14 @@ exports.deleteVehicle = (req, res) => {
       message: `Success delete vehicle with id ${id}`
     });
   });
+};
+
+exports.getPopularVehicles = async (req, res) => {
+  try {
+    const results = await vehiclesModel.getPopularVehicles();
+    return returningSuccess(res, 200, 'List of popular vehicles', results);
+  } catch (error) {
+    console.log(error);
+    return returningError(res, error, 'Failed to get popular vehicles');
+  }
 };

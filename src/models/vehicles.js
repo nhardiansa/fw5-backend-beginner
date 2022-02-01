@@ -85,3 +85,17 @@ exports.countData = () => {
     });
   });
 };
+
+exports.getPopularVehicles = () => {
+  return new Promise((resolve, reject) => {
+    db.query(`
+      SELECT id, merk, price, capacity, isAvailable, location 
+      FROM ${table} ORDER BY 'rentCount'  DESC`, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
