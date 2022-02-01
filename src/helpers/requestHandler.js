@@ -20,3 +20,18 @@ exports.validateId = (id) => {
   }
   return true;
 };
+
+exports.requestReceiver = (data, keys) => {
+  const dump = {};
+  for (const key of keys) {
+    dump[key] = null;
+  }
+
+  for (const key in data) {
+    if (keys.includes(key)) {
+      dump[key] = data[key];
+    }
+  }
+
+  return dump;
+};
