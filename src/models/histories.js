@@ -48,3 +48,16 @@ exports.getHistory = (id) => {
     });
   });
 };
+
+exports.updateHistory = (id, data) => {
+  return new Promise((resolve, reject) => {
+    db.query(`UPDATE ${historiesTable} SET ? WHERE id = ?`, [data, id], (err, results) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
