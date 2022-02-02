@@ -36,7 +36,10 @@ exports.requestReceiver = (data, keys) => {
   return dump;
 };
 
-exports.newRequestReceiver = (data, keys) => {
+// memeriksa setiap data (obj) berdasarkan rules dari keys (obj)
+// apabila ada data yang tidak sesuai rules dari keys maka fungsi akan langsung mengembalikan false
+// apabila semua data sesuai rules dari keys maka fungsi akan langsung mengembalikan objek yang telah di-validasi
+exports.dataValidator2 = (data, keys) => {
   const dump = {};
   const keysCollection = [];
 
@@ -68,4 +71,12 @@ exports.newRequestReceiver = (data, keys) => {
       };
     }
   }
+
+  for (const key in dump) {
+    if (dump[key] === null) {
+      return false;
+    }
+  }
+
+  return dump;
 };

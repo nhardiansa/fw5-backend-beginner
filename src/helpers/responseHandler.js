@@ -10,7 +10,7 @@ exports.returningSuccess = (res, status, message, data, pageInfo = null) => {
     return res.status(status).json({
       success: true,
       message: message,
-      result: data,
+      results: data,
       pageInfo
     });
   }
@@ -18,7 +18,7 @@ exports.returningSuccess = (res, status, message, data, pageInfo = null) => {
   return res.status(status).json({
     success: true,
     message: message,
-    result: data
+    results: data
   });
 };
 
