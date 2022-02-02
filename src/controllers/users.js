@@ -174,7 +174,10 @@ exports.listUsers = async (req, res) => {
     };
 
     const results = await usersModel.getUsers(data);
-    const totalUsers = await usersModel.countUsers();
+    const totalUsers = await usersModel.countUsers({
+      name: data.name,
+      email: data.email
+    });
 
     const pageInfo = pageInfoCreator(totalUsers, `${baseURL}/users?`, data);
 

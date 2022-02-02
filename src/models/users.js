@@ -1,5 +1,8 @@
 const db = require('../helpers/db');
 const table = require('../helpers/constant').usersTable;
+const {
+  whereLikeCreator
+} = require('../helpers/queryCreator');
 
 exports.getUser = (id) => {
   return new Promise((resolve, reject) => {
@@ -85,6 +88,11 @@ exports.getUsers = (data) => {
 
   const offset = (page - 1) * limit;
 
+  // const str = whereLikeCreator({
+  //   name,
+  //   email
+  // });
+
   return new Promise((resolve, reject) => {
     db.query(`
       SELECT id, name, email FROM ${table}
@@ -99,9 +107,15 @@ exports.getUsers = (data) => {
   });
 };
 
-exports.countUsers = () => {
+exports.countUsers = (data = {}) => {
+  const str = whereLikeCreator(data);
+
   return new Promise((resolve, reject) => {
-    db.query(`SELECT COUNT(*) AS 'rows' FROM ${table}`, (err, results) => {
+    db.query(`
+      SELECT COUNT(*) AS 'rows' 
+      FROM ${table}
+      ${str}
+      `, (err, results) => {
       if (err) {
         reject(err);
       } else {
