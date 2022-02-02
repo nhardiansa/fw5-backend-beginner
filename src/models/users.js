@@ -75,15 +75,21 @@ exports.findPhone = (phone) => {
   });
 };
 
-exports.getUsers = (limit, offset, search) => {
-  const name = search.name || '';
-  const email = search.email || '';
+exports.getUsers = (data) => {
+  const {
+    limit,
+    page,
+    name,
+    email
+  } = data;
+
+  const offset = (page - 1) * limit;
 
   return new Promise((resolve, reject) => {
     db.query(`
       SELECT id, name, email FROM ${table}
       WHERE name LIKE '${name}%' AND email LIKE '${email}%'
-      LIMIT ? OFFSET ?`, [limit, offset], (err, results, f) => {
+      LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
         reject(err);
       } else {

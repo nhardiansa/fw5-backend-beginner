@@ -9,7 +9,7 @@ const {
 const {
   returningError,
   returningSuccess,
-  pageCreator
+  pageInfoCreator
 } = require('../helpers/responseHandler');
 const usersModel = require('../models/users');
 
@@ -166,37 +166,17 @@ exports.updateUser = async (req, res) => {
 
 exports.listUsers = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 5;
-    const name = req.query.name || '';
-    const email = req.query.email || '';
-    const offset = (page - 1) * limit;
-
-    const results = await usersModel.getUsers(limit, offset, {
-      name,
-      email
-    });
-
-    const countResults = await usersModel.countUsers();
-    const totalUsers = countResults[0].rows;
-    const totalPages = Math.ceil(totalUsers / limit);
-
-    const lastPage = name || email ? Math.ceil(results.length / limit) : Math.ceil(totalUsers / limit);
-
-    const pages = pageCreator(`${baseURL}/users?`, {
-      page,
-      limit,
-      name,
-      email
-    });
-
-    const pageInfo = {
-      totalUsers: name || email ? results.length : totalUsers,
-      currentPage: page,
-      nextPage: page < totalPages ? pages.next : null,
-      prevPage: page > 1 ? pages.prev : null,
-      lastPage: name || email ? lastPage : totalPages
+    const data = {
+      page: Number(req.query.page) || 1,
+      limit: Number(req.query.limit) || 5,
+      name: req.query.name || '',
+      email: req.query.email || ''
     };
+
+    const results = await usersModel.getUsers(data);
+    const totalUsers = await usersModel.countUsers();
+
+    const pageInfo = pageInfoCreator(totalUsers, `${baseURL}/users?`, data);
 
     return returningSuccess(res, 200, 'Success getting all users', results, pageInfo);
   } catch (error) {
