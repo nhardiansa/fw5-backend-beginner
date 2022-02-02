@@ -9,7 +9,7 @@ const {
 const {
   returningError,
   returningSuccess,
-  pageCreator
+  pageInfoCreator
 } = require('../helpers/responseHandler');
 
 const historiesModel = require('../models/histories');
@@ -18,35 +18,33 @@ const vehicleModel = require('../models/vehicles');
 
 exports.listHistories = async (req, res) => {
   try {
+    const id = Number(req.query.user_id) || null;
     const data = {
-      id: Number(req.query.user_id) || null,
       limit: Number(req.query.limit) || 5,
-      page: Number(req.query.page) || 0
+      page: Number(req.query.page) || 1
     };
     const keys = [
       'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
       'prepayment'
     ];
 
-    const results = await historiesModel.getHistories(keys, data);
+    if (!validateId(id) || id === null) {
+      return returningError(res, 400, 'user_id must be a number');
+    }
 
-    const countHistories = await historiesModel.countHistories(data.id);
-    const totalHistories = countHistories[0].total;
-
-    const totalPages = Math.ceil(totalHistories / data.limit);
-
-    const pages = pageCreator(`${baseURL}/histories?`, {
-      page: data.page,
-      limit: data.limit
+    const results = await historiesModel.getHistories(keys, {
+      ...data,
+      id
     });
 
-    const pageInfo = {
-      totalHistories,
-      currentPage: data.page,
-      nextPage: data.page < totalPages ? pages.next : null,
-      prevPage: data.page > 1 ? pages.prev : null,
-      lastPage: totalPages
-    };
+    const countHistories = await historiesModel.countHistories(id);
+
+    console.log(countHistories);
+
+    const pageInfo = pageInfoCreator(countHistories, `${baseURL}/histories?`, {
+      ...data,
+      user_id: id
+    });
 
     return returningSuccess(res, 200, 'Success getting histories', results, pageInfo);
   } catch (error) {

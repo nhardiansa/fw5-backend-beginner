@@ -7,12 +7,15 @@ exports.getHistories = (keys, data) => {
     limit,
     page
   } = data;
+
+  const offset = (page - 1) * limit;
+
   return new Promise((resolve, reject) => {
     const ss = db.query(`
       SELECT ?? FROM ${table}
       ${id ? `WHERE user_id = ${id}` : ''}
       LIMIT ? OFFSET ?
-    `, [keys, limit, page], (err, results) => {
+    `, [keys, limit, offset], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -79,7 +82,7 @@ exports.updateHistory = (id, data) => {
 exports.countHistories = (id = null) => {
   return new Promise((resolve, reject) => {
     db.query(`
-        SELECT COUNT(*) AS total 
+        SELECT COUNT(*) AS 'rows' 
         FROM ${table}
         ${id ? `WHERE user_id = ${id}` : ''}
       `, (err, results) => {
