@@ -20,14 +20,7 @@ exports.getVehicles = async (req, res) => {
       search: req.query.search || ''
     };
 
-    const {
-      page,
-      limit,
-      search
-    } = data;
-
-    const offset = (page - 1) * limit;
-    const results = await vehiclesModel.getVehicles(limit, offset, search);
+    const results = await vehiclesModel.getVehicles(data);
     const countData = await vehiclesModel.countData();
     const pageInfo = pageInfoCreator(countData, `${baseURL}/vehicles?`, data);
 

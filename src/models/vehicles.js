@@ -1,5 +1,6 @@
 const db = require('../helpers/db');
 const table = require('../helpers/constant').vehiclesTable;
+const categoryTable = require('../helpers/constant').categoriesTable;
 
 exports.getVehicles = (data) => {
   const {
@@ -11,8 +12,11 @@ exports.getVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-    SELECT id, name, price, prepayment, capacity, qty, location 
-    FROM ${table} WHERE name LIKE '${search}%' 
+    SELECT v.id, v.name as merk, v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location 
+    FROM ${table} v
+    LEFT JOIN ${categoryTable} c
+    ON v.category_id = c.id
+    WHERE v.name LIKE '${search}%' 
     LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
         reject(err);
