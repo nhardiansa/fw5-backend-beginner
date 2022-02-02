@@ -1,18 +1,31 @@
 const categoriesModel = require('../models/categories');
 const {
   returningError,
-  returningSuccess
+  returningSuccess,
+  pageInfoCreator
 } = require('../helpers/responseHandler');
 
 const {
   validateId,
   dataValidator2
 } = require('../helpers/requestHandler');
+const {
+  baseURL
+} = require('../helpers/constant');
 
 exports.listCategories = async (req, res) => {
   try {
-    const categories = await categoriesModel.getCategories();
-    return returningSuccess(res, 200, 'Success getting categories', categories);
+    const data = {
+      page: Number(req.query.page) || 1,
+      limit: Number(req.query.limit) || 5
+    };
+
+    const categories = await categoriesModel.getCategories(data);
+
+    const totalCategories = await categoriesModel.countCategories();
+    const pageInfo = pageInfoCreator(totalCategories, `${baseURL}/categories?`, data);
+
+    return returningSuccess(res, 200, 'Success getting categories', categories, pageInfo);
   } catch (err) {
     console.error(err);
     return returningError(res, 500, 'Internal server error');

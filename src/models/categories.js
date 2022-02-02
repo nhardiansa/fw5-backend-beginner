@@ -1,9 +1,16 @@
 const db = require('../helpers/db');
 const table = require('../helpers/constant').categoriesTable;
 
-exports.getCategories = () => {
+exports.getCategories = (data) => {
+  const {
+    limit,
+    page
+  } = data;
+
+  const offset = (page - 1) * limit;
+
   return new Promise((resolve, reject) => {
-    db.query(`SELECT id, name FROM ${table}`, (err, results) => {
+    db.query(`SELECT id, name FROM ${table} LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -69,6 +76,19 @@ exports.updateCategory = (id, data) => {
 exports.getCategoryByName = (name) => {
   return new Promise((resolve, reject) => {
     db.query(`SELECT name FROM ${table} WHERE name = ?`, [name], (err, results) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.countCategories = () => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT COUNT(*) AS 'rows' FROM ${table}`, (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
