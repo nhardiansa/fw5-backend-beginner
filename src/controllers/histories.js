@@ -11,8 +11,10 @@ const {
   returningSuccess,
   pageCreator
 } = require('../helpers/responseHandler');
+
 const historiesModel = require('../models/histories');
 const usersModel = require('../models/users');
+const vehicleModel = require('../models/vehicles');
 
 exports.listHistories = async (req, res) => {
   try {
@@ -76,29 +78,29 @@ exports.addHistory = async (req, res) => {
     }
 
     // check if user exist
-    const result = await usersModel.getUser(data.user_id);
+    const user = await usersModel.getUser(data.user_id);
 
-    if (result.length < 1) {
-      return res.status(404).json({
-        success: false,
-        message: 'User not found'
-      });
+    if (user.length < 1) {
+      return returningError(res, 404, 'User not found');
+    }
+
+    // check if vehicle exist
+    const vehicle = await vehicleModel.getVehicle(data.vehicle_id);
+
+    if (vehicle.length < 1) {
+      return returningError(res, 404, 'Vehicle not found');
     }
 
     // check if history has beed added
     const historyResult = await historiesModel.addHistory(data);
 
     if (historyResult.affectedRows < 1) {
-      return res.status(400).json({
-        success: false,
-        message: "Can't make transaction"
-      });
+      return returningError(res, 500, "Can't add history");
     }
 
-    return res.status(201).json({
-      success: true,
-      message: 'Transaction is created'
-    });
+    const history = await historiesModel.getHistory(historyResult.insertId);
+
+    return returningSuccess(res, 201, 'History has been added', history[0]);
   } catch (error) {
     console.log(error);
   }
@@ -125,11 +127,11 @@ exports.deleteHistory = async (req, res) => {
 
       // if history can't to delete
       if (result.affectedRows < 1) {
-        return returningError(res, 400, "Can't delete history");
+        return returningError(res, 500, "Can't delete history");
       }
 
       // if history deleted
-      return returningSuccess(res, 200, 'History has been deleted', history);
+      return returningSuccess(res, 200, 'History has been deleted', history[0]);
     }
 
     // if history not exist
