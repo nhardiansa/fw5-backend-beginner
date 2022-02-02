@@ -194,7 +194,11 @@ exports.getPopularVehicles = async (req, res) => {
     };
 
     const results = await vehiclesModel.getPopularVehicles(data);
-    return returningSuccess(res, 200, 'List of popular vehicles', results);
+    const resultCount = await vehiclesModel.countData();
+
+    const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/popular?`, data);
+
+    return returningSuccess(res, 200, 'List of popular vehicles', results, pageInfo);
   } catch (error) {
     console.log(error);
     return returningError(res, error, 'Failed to get popular vehicles');
