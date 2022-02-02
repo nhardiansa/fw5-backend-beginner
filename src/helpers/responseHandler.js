@@ -22,7 +22,12 @@ exports.returningSuccess = (res, status, message, data, pageInfo = null) => {
   });
 };
 
-exports.pageCreator = (url, values) => {
+exports.pageInfoCreator = (totalDataCount, url, values) => {
+  const {
+    page,
+    limit
+  } = values;
+
   const keys = [];
   let next = url;
   let prev = url;
@@ -46,8 +51,15 @@ exports.pageCreator = (url, values) => {
     }
   });
 
+  const totalData = totalDataCount;
+
+  const totalPages = Math.ceil(totalData[0].rows / limit);
+
   return ({
-    next,
-    prev
+    totalPages,
+    currentPage: page,
+    nextPage: page < totalPages ? next : null,
+    prevPage: page > 1 ? prev : null,
+    lastPages: totalPages
   });
 };
