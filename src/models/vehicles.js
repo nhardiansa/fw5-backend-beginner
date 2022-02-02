@@ -1,11 +1,18 @@
 const db = require('../helpers/db');
 const table = require('../helpers/constant').vehiclesTable;
 
-exports.getVehicles = (limit, offset, search) => {
+exports.getVehicles = (data) => {
+  const {
+    limit,
+    page,
+    search
+  } = data;
+  const offset = (page - 1) * limit;
+
   return new Promise((resolve, reject) => {
     db.query(`
-    SELECT id, merk, price, prepayment, capacity, type, isAvailable, location 
-    FROM ${table} WHERE merk LIKE '${search}%' 
+    SELECT id, name, price, prepayment, capacity, qty, location 
+    FROM ${table} WHERE name LIKE '${search}%' 
     LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
         reject(err);
@@ -81,7 +88,7 @@ exports.listLimitVehicle = (page, limit) => {
 
 exports.countData = () => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT COUNT(*) AS 'row' FROM ${table};`, (err, results) => {
+    db.query(`SELECT COUNT(*) AS 'rows' FROM ${table};`, (err, results) => {
       if (err) {
         reject(err);
       } else {

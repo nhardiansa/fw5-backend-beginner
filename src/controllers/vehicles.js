@@ -8,42 +8,33 @@ const {
 const {
   returningSuccess,
   returningError,
-  pageCreator
+  pageInfoCreator
 } = require('../helpers/responseHandler');
 const vehiclesModel = require('../models/vehicles');
 
 exports.getVehicles = async (req, res) => {
   try {
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 5;
-    const search = req.query.search || '';
-    const offset = (page - 1) * limit;
+    const data = {
+      page: Number(req.query.page) || 1,
+      limit: Number(req.query.limit) || 5,
+      search: req.query.search || ''
+    };
 
-    const pageLink = pageCreator(`${baseURL}/vehicles?`, {
+    const {
       page,
       limit,
       search
-    });
+    } = data;
+
+    const offset = (page - 1) * limit;
     const results = await vehiclesModel.getVehicles(limit, offset, search);
-
     const countData = await vehiclesModel.countData();
-    const totalData = countData[0].row;
+    const pageInfo = pageInfoCreator(countData, `${baseURL}/vehicles?`, data);
 
-    const lastPage = search ? Math.ceil(results.length / limit) : Math.ceil(totalData / limit);
-    return res.json({
-      success: false,
-      message: 'List of vehicles',
-      results,
-      pageInfo: {
-        totalData: search ? results.length : totalData,
-        currentPage: page,
-        nextPage: page < lastPage ? pageLink.next : null,
-        prevPage: page > 1 ? pageLink.prev : null,
-        lastPage
-      }
-    });
+    return returningSuccess(res, 200, 'List of vehicles', results, pageInfo);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return returningError(res, 500, 'Failed to get vehicles');
   }
 };
 
