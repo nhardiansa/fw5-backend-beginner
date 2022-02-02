@@ -2,7 +2,8 @@ const {
   baseURL
 } = require('../helpers/constant');
 const {
-  dataValidator
+  dataValidator,
+  validateId
 } = require('../helpers/requestHandler');
 const {
   returningSuccess,
@@ -46,23 +47,27 @@ exports.getVehicles = async (req, res) => {
   }
 };
 
-exports.getVehicle = (req, res) => {
-  const {
-    id
-  } = req.params;
-  vehiclesModel.getVehicle(id, (results) => {
-    if (results.length < 1) {
-      return res.status(404).json({
-        success: false,
-        message: `Vehicle with id ${id} not found`
-      });
+exports.getVehicle = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+
+    if (!validateId(id)) {
+      return returningError(res, 404, 'Id not a number');
     }
-    return res.status(200).json({
-      success: true,
-      message: `Success getting vehicle with id ${id}`,
-      result: results[0]
-    });
-  });
+
+    const vehicle = await vehiclesModel.getVehicle(id);
+
+    if (vehicle.length < 1) {
+      return returningError(res, 404, 'Vehicle not found');
+    }
+
+    return returningSuccess(res, 200, 'Success get vehicle', vehicle[0]);
+  } catch (error) {
+    console.log(error);
+    return returningError(res, 500, "Can't get vehicle");
+  }
 };
 
 exports.addNewVehicle = (req, res) => {

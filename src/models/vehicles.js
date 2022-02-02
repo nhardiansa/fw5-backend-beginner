@@ -16,10 +16,15 @@ exports.getVehicles = (limit, offset, search) => {
   });
 };
 
-exports.getVehicle = (id, cb) => {
-  db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
-    if (err) throw err;
-    cb(results);
+exports.getVehicle = (id) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
   });
 };
 
