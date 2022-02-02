@@ -102,11 +102,23 @@ exports.countData = () => {
   });
 };
 
-exports.getPopularVehicles = () => {
+exports.getPopularVehicles = (data) => {
+  const {
+    limit,
+    page,
+    search
+  } = data;
+  const offset = (page - 1) * limit;
+
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT id, merk, price, capacity, isAvailable, location 
-      FROM ${table} ORDER BY 'rentCount'  DESC`, (err, results) => {
+      SELECT v.id, v.name as merk, v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location 
+      FROM ${table} v
+      LEFT JOIN ${categoryTable} c
+      ON v.category_id = c.id
+      WHERE v.name LIKE '${search}%'
+      ORDER BY v.rentCount  DESC
+      LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
         reject(err);
       } else {

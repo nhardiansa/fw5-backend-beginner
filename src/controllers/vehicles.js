@@ -21,8 +21,8 @@ exports.getVehicles = async (req, res) => {
     };
 
     const results = await vehiclesModel.getVehicles(data);
-    const countData = await vehiclesModel.countData();
-    const pageInfo = pageInfoCreator(countData, `${baseURL}/vehicles?`, data);
+    const countResult = await vehiclesModel.countData();
+    const pageInfo = pageInfoCreator(countResult[0].rows, `${baseURL}/vehicles?`, data);
 
     return returningSuccess(res, 200, 'List of vehicles', results, pageInfo);
   } catch (error) {
@@ -187,7 +187,13 @@ exports.deleteVehicle = (req, res) => {
 
 exports.getPopularVehicles = async (req, res) => {
   try {
-    const results = await vehiclesModel.getPopularVehicles();
+    const data = {
+      page: Number(req.query.page) || 1,
+      limit: Number(req.query.limit) || 5,
+      search: req.query.search || ''
+    };
+
+    const results = await vehiclesModel.getPopularVehicles(data);
     return returningSuccess(res, 200, 'List of popular vehicles', results);
   } catch (error) {
     console.log(error);

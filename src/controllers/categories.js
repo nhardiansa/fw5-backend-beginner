@@ -22,7 +22,8 @@ exports.listCategories = async (req, res) => {
 
     const categories = await categoriesModel.getCategories(data);
 
-    const totalCategories = await categoriesModel.countCategories();
+    const resultCount = await categoriesModel.countCategories();
+    const totalCategories = resultCount[0].rows;
     const pageInfo = pageInfoCreator(totalCategories, `${baseURL}/categories?`, data);
 
     return returningSuccess(res, 200, 'Success getting categories', categories, pageInfo);

@@ -38,10 +38,9 @@ exports.listHistories = async (req, res) => {
     });
 
     const countHistories = await historiesModel.countHistories(id);
+    const countResult = countHistories[0].rows;
 
-    console.log(countHistories);
-
-    const pageInfo = pageInfoCreator(countHistories, `${baseURL}/histories?`, {
+    const pageInfo = pageInfoCreator(countResult, `${baseURL}/histories?`, {
       ...data,
       user_id: id
     });

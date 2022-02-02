@@ -53,7 +53,7 @@ exports.pageInfoCreator = (totalDataCount, url, values) => {
 
   const totalData = totalDataCount;
 
-  const totalPages = Math.ceil(totalData[0].rows / limit) || 1;
+  const totalPages = Math.ceil(totalData / limit) || 1;
 
   return ({
     totalPages,

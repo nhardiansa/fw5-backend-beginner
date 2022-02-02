@@ -179,7 +179,8 @@ exports.listUsers = async (req, res) => {
       email: data.email
     });
 
-    const pageInfo = pageInfoCreator(totalUsers, `${baseURL}/users?`, data);
+    const countResult = totalUsers[0].rows;
+    const pageInfo = pageInfoCreator(countResult, `${baseURL}/users?`, data);
 
     return returningSuccess(res, 200, 'Success getting all users', results, pageInfo);
   } catch (error) {
