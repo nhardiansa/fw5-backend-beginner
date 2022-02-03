@@ -8,7 +8,8 @@ const {
   updateVehicle,
   deleteVehicle,
   getPopularVehicles,
-  getFilterVehicles
+  getFilterVehicles,
+  updateVehiclePartial
 } = require('../controllers/vehicles');
 
 vehicles.get('/', getVehicles);
@@ -17,6 +18,7 @@ vehicles.get('/filter', getFilterVehicles);
 vehicles.get('/:id', getVehicle);
 vehicles.post('/', addNewVehicle);
 vehicles.put('/:id', updateVehicle);
+vehicles.patch('/:id', updateVehiclePartial);
 vehicles.delete('/:id', deleteVehicle);
 
 module.exports = vehicles;

@@ -218,8 +218,6 @@ exports.getFilterVehicles = (data) => {
     sortCapacity
   } = data;
 
-  console.log(qty);
-
   const offset = (page - 1) * limit;
 
   return new Promise((resolve, reject) => {

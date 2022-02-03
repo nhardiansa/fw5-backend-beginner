@@ -3,7 +3,8 @@ const {
 } = require('../helpers/constant');
 const {
   dataValidator,
-  validateId
+  validateId,
+  requestMapping
 } = require('../helpers/requestHandler');
 const {
   returningSuccess,
@@ -251,13 +252,65 @@ exports.getFilterVehicles = async (req, res) => {
     const results = await vehiclesModel.getFilterVehicles(data);
     const resultCount = await vehiclesModel.countFilterVehicles(data);
 
-    console.log(resultCount);
-
     const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/filter?`, data);
 
     return returningSuccess(res, 200, 'List of filter vehicles', results, pageInfo);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get filter vehicles');
+  }
+};
+
+exports.updateVehiclePartial = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+    const data = requestMapping(req.body, {
+      name: 'string',
+      price: 'number',
+      prepayment: 'boolean',
+      capacity: 'number',
+      qty: 'number',
+      location: 'string',
+      category_id: 'number'
+    });
+
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id not a number');
+    }
+
+    const vehicle = await vehiclesModel.getVehicle(id);
+
+    if (vehicle.length < 1) {
+      return returningError(res, 404, 'Vehicle not found');
+    }
+
+    const warn = [];
+    let strWarning = '';
+    for (const key in data) {
+      if (data[key] === null) {
+        warn.push(key);
+        delete data[key];
+      }
+    }
+
+    if (warn.length > 0) {
+      strWarning = `Some data updated but can't for ${warn.length > 0 ? warn.join(', ') : warn[0]} because data not valid`;
+    }
+
+    const results = await vehiclesModel.updateVehicle(id, data);
+
+    if (results.affectedRows < 1) {
+      return returningError(res, 500, 'Something wrong when updating vehicle');
+    }
+
+    const vehicleUpdated = await vehiclesModel.getVehicle(id);
+
+    return returningSuccess(res, 200, strWarning || 'Success update vehicle', vehicleUpdated[0]);
+    // return returningError(res, 500, 'Not yet implemented');
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to update vehicle');
   }
 };
