@@ -1,6 +1,7 @@
 const db = require('../helpers/db');
 const table = require('../helpers/constant').vehiclesTable;
 const categoryTable = require('../helpers/constant').categoriesTable;
+const historiesTable = require('../helpers/constant').historiesTable;
 
 exports.getVehicles = (data) => {
   const {
@@ -119,6 +120,59 @@ exports.getPopularVehicles = (data) => {
       WHERE v.name LIKE '${search}%'
       ORDER BY v.rentCount  DESC
       LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.getPopularVehicles = (data) => {
+  const {
+    limit,
+    page,
+    search
+  } = data;
+  const offset = (page - 1) * limit;
+
+  return new Promise((resolve, reject) => {
+    db.query(`
+      SELECT v.id, v.name AS merk, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rentCount 
+      FROM ${table} v
+      RIGHT JOIN ${historiesTable} h
+      ON h.vehicle_id = v.id
+      LEFT JOIN ${categoryTable} c
+      ON v.category_id = c.id
+      WHERE v.name LIKE '${search}%'
+      GROUP BY v.name
+      ORDER BY rentCount DESC
+      LIMIT ? OFFSET ?;
+      `, [limit, offset], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.countPopularVehicles = () => {
+  return new Promise((resolve, reject) => {
+    db.query(`
+      SELECT COUNT(*) AS 'rows'
+      FROM (
+        SELECT v.id, v.name AS merk, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rentCount 
+        FROM ${table} v
+        RIGHT JOIN ${historiesTable} h
+        ON h.vehicle_id = v.id
+        LEFT JOIN ${categoryTable} c
+        ON v.category_id = c.id
+        GROUP BY v.name
+      ) AS t;
+      `, (err, results) => {
       if (err) {
         reject(err);
       } else {

@@ -22,6 +22,7 @@ exports.getVehicles = async (req, res) => {
 
     const results = await vehiclesModel.getVehicles(data);
     const countResult = await vehiclesModel.countData();
+
     const pageInfo = pageInfoCreator(countResult[0].rows, `${baseURL}/vehicles?`, data);
 
     return returningSuccess(res, 200, 'List of vehicles', results, pageInfo);
@@ -194,7 +195,7 @@ exports.getPopularVehicles = async (req, res) => {
     };
 
     const results = await vehiclesModel.getPopularVehicles(data);
-    const resultCount = await vehiclesModel.countData();
+    const resultCount = await vehiclesModel.countPopularVehicles();
 
     const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/popular?`, data);
 
