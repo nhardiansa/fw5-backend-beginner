@@ -7,7 +7,7 @@ const {
 
 const {
   validateId,
-  dataValidator2
+  requestMapping
 } = require('../helpers/requestHandler');
 const {
   baseURL
@@ -59,9 +59,17 @@ exports.addCategory = async (req, res) => {
       name: 'string'
     };
 
-    if (!dataValidator2(name, rules)) {
-      return returningError(res, 400, 'Name not valid');
+    const data = requestMapping(name, rules);
+
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, 'Name not valid');
+      }
     }
+
+    // if (!requestMapping(name, rules)) {
+    //   return returningError(res, 400, 'Name not valid');
+    // }
 
     const existingCategory = await categoriesModel.getCategoryByName(name);
 
@@ -131,9 +139,17 @@ exports.updateCategory = async (req, res) => {
       name: 'string'
     };
 
-    if (!dataValidator2(name, rules)) {
-      return returningError(res, 400, 'Name not valid');
+    const data = requestMapping(name, rules);
+
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, 'Name not valid');
+      }
     }
+
+    // if (!requestMapping(name, rules)) {
+    //   return returningError(res, 400, 'Name not valid');
+    // }
 
     const existingCategory = await categoriesModel.getCategoryByName(name);
 

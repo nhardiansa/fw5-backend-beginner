@@ -36,10 +36,10 @@ exports.requestReceiver = (data, keys) => {
   return dump;
 };
 
-// memeriksa setiap data (obj) berdasarkan rules dari keys (obj)
+// memeriksa setiap data (obj) berdasarkan rules (obj)
 // apabila ada data yang tidak sesuai rules dari keys maka fungsi akan langsung mengembalikan false
 // apabila semua data sesuai rules dari keys maka fungsi akan langsung mengembalikan objek yang telah di-validasi
-exports.dataValidator2 = (data, keys) => {
+exports.requestMapping = (data, rules) => {
   const dump = {};
   const keysCollection = [];
 
@@ -49,22 +49,22 @@ exports.dataValidator2 = (data, keys) => {
 
   for (const k in data) {
     if (keysCollection.includes(k)) {
-      if (keys[k] === 'string') {
+      if (rules[k] === 'string') {
         dump[k] = data[k];
       }
-      if (keys[k] === 'number') {
+      if (rules[k] === 'number') {
         if (isNaN(Number(data[k]))) {
           dump[k] = null;
         } else {
           dump[k] = data[k];
         }
       }
-      if (keys[k] === 'boolean') {
+      if (rules[k] === 'boolean') {
         data[k] = String(data[k]);
         if (data[k] === 'true' || data[k] === '1') {
-          dump[k] = 1;
+          dump[k] = '1';
         } else if (data[k] === 'false' || data[k] === '0') {
-          dump[k] = 0;
+          dump[k] = '0';
         } else {
           dump[k] = null;
         }
@@ -72,11 +72,11 @@ exports.dataValidator2 = (data, keys) => {
     }
   }
 
-  for (const key in dump) {
-    if (dump[key] === null) {
-      return false;
-    }
-  }
+  // for (const key in dump) {
+  //   if (dump[key] === null) {
+  //     return false;
+  //   }
+  // }
 
   return dump;
 };
