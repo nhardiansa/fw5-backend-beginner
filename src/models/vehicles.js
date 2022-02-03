@@ -201,3 +201,80 @@ exports.countPopularVehicles = () => {
     });
   });
 };
+
+exports.getFilterVehicles = (data) => {
+  const {
+    name,
+    minPrice,
+    maxPrice,
+    category_id: categoryId,
+    qty,
+    prepayment,
+    location,
+    limit,
+    page
+  } = data;
+
+  console.log(qty);
+
+  const offset = (page - 1) * limit;
+
+  return new Promise((resolve, reject) => {
+    db.query(`
+      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, c.name AS type 
+      FROM ${table} v
+      LEFT JOIN ${categoryTable} c
+      ON v.category_id = c.id
+      WHERE
+      v.name LIKE '%${name}%' AND
+      ${minPrice ? `v.price >= ${minPrice} AND` : ''}
+      ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
+      ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
+      ${qty ? 'v.qty > 0 AND' : ''}
+      ${prepayment ? 'v.prepayment = 1 AND' : ''}
+      v.location LIKE '%${location}%'
+      LIMIT ? OFFSET ?;
+    `, [limit, offset], (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.countFilterVehicles = (data) => {
+  const {
+    name,
+    minPrice,
+    maxPrice,
+    category_id: categoryId,
+    qty,
+    prepayment,
+    location
+  } = data;
+
+  return new Promise((resolve, reject) => {
+    db.query(`
+      SELECT COUNT(*) AS 'rows'
+      FROM ${table} v
+      LEFT JOIN ${categoryTable} c
+      ON v.category_id = c.id
+      WHERE
+      v.name LIKE '%${name}%' AND
+      ${minPrice ? `v.price >= ${minPrice} AND` : ''}
+      ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
+      ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
+      ${qty ? 'v.qty > 0 AND' : ''}
+      ${prepayment ? 'v.prepayment = 1 AND' : ''}
+      v.location LIKE '%${location}%';
+    `, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};

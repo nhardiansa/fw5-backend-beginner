@@ -223,3 +223,38 @@ exports.getPopularVehicles = async (req, res) => {
     return returningError(res, error, 'Failed to get popular vehicles');
   }
 };
+
+exports.getFilterVehicles = async (req, res) => {
+  try {
+    // return returningError(res, 500, 'Not yet implemented');
+    const data = {
+      page: Number(req.query.page) || 1,
+      limit: Number(req.query.limit) || 5,
+      name: req.query.name || '',
+      minPrice: Number(req.query.minPrice) || null,
+      maxPrice: Number(req.query.maxPrice) || null,
+      category_id: req.query.category_id || null,
+      qty: Number(req.query.available) || null,
+      prepayment: Number(req.query.prepayment) || null,
+      location: req.query.location || ''
+    };
+
+    const existingCategory = await categoriesModel.getCategory(data.category_id);
+
+    if (existingCategory.length < 1 && data.category_id) {
+      return returningError(res, 404, 'Category not found');
+    }
+
+    const results = await vehiclesModel.getFilterVehicles(data);
+    const resultCount = await vehiclesModel.countFilterVehicles(data);
+
+    console.log(resultCount);
+
+    const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/filter?`, data);
+
+    return returningSuccess(res, 200, 'List of filter vehicles', results, pageInfo);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get filter vehicles');
+  }
+};

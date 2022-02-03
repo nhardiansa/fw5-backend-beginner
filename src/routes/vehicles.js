@@ -7,11 +7,13 @@ const {
   addNewVehicle,
   updateVehicle,
   deleteVehicle,
-  getPopularVehicles
+  getPopularVehicles,
+  getFilterVehicles
 } = require('../controllers/vehicles');
 
 vehicles.get('/', getVehicles);
 vehicles.get('/popular', getPopularVehicles);
+vehicles.get('/filter', getFilterVehicles);
 vehicles.get('/:id', getVehicle);
 vehicles.post('/', addNewVehicle);
 vehicles.put('/:id', updateVehicle);
