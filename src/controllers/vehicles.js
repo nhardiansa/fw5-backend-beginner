@@ -11,6 +11,7 @@ const {
   pageInfoCreator
 } = require('../helpers/responseHandler');
 const vehiclesModel = require('../models/vehicles');
+const categoriesModel = require('../models/categories');
 
 exports.getVehicles = async (req, res) => {
   try {
@@ -55,135 +56,152 @@ exports.getVehicle = async (req, res) => {
   }
 };
 
-exports.addNewVehicle = (req, res) => {
-  const clientData = {
-    merk: req.body.merk,
-    price: Number(req.body.price),
-    prepayment: req.body.prepayment,
-    capacity: Number(req.body.capacity),
-    type: req.body.type,
-    isAvailable: Number(req.body.isAvailable),
-    location: req.body.location
-  };
+exports.addNewVehicle = async (req, res) => {
+  try {
+    const data = {
+      name: req.body.name,
+      price: Number(req.body.price),
+      prepayment: req.body.prepayment,
+      capacity: Number(req.body.capacity),
+      qty: Number(req.body.qty),
+      location: req.body.location,
+      category_id: req.body.category_id
+    };
 
-  console.log(clientData);
+    const {
+      prepayment
+    } = data;
 
-  const prepayment = clientData.prepayment;
+    if ((Number(prepayment) > 1 || Number(prepayment) < 0)) {
+      return returningError(res, 400, 'Your data not validate');
+    }
 
-  if (Number(prepayment) > 1 || Number(prepayment) < 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'Your data not validate'
-    });
-  }
-
-  if (!dataValidator(clientData)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Your data not validate'
-    });
-  }
-
-  vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
-    if (checkResults.length > 0) {
+    if (!dataValidator(data)) {
       return res.status(400).json({
         success: false,
-        message: 'Vehicle already exist'
+        message: 'Your data not validate'
       });
     }
 
-    vehiclesModel.insertVehicle(clientData, (results) => {
-      console.log(results);
-      return res.status(201).json({
-        success: true,
-        message: 'Success add new vehicle',
-        results: {
-          ...clientData,
-          prepayment: Number(clientData.prepayment)
-        }
-      });
-    });
-  });
-};
+    const existingCategory = await categoriesModel.getCategory(data.category_id);
 
-exports.updateVehicle = (req, res) => {
-  const {
-    id
-  } = req.params;
-
-  const clientData = {
-    merk: req.body.merk,
-    price: Number(req.body.price),
-    prepayment: req.body.prepayment,
-    capacity: Number(req.body.capacity),
-    type: req.body.type,
-    isAvailable: Number(req.body.isAvailable),
-    location: req.body.location
-  };
-
-  const prepayment = clientData.prepayment;
-
-  if (Number(prepayment) > 1 || Number(prepayment) < 0) {
-    return res.status(400).json({
-      success: false,
-      message: 'Your data not validate'
-    });
-  }
-
-  // validator data
-  if (!dataValidator(clientData)) {
-    return res.status(400).json({
-      success: false,
-      message: 'Your data not validate'
-    });
-  }
-
-  vehiclesModel.checkExistVehicle(clientData, (checkResults) => {
-    // check if the data is changed or not
-    if (checkResults.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'Vehicle with inputed data already exist'
-      });
+    if (existingCategory.length < 1) {
+      return returningError(res, 404, 'Category not found');
     }
 
-    vehiclesModel.updateVehicle(id, clientData, (results) => {
-      if (results.affectedRows < 1) {
-        return res.status(404).json({
-          success: false,
-          message: `Vehicle with id ${id} not found`
-        });
-      }
-      return res.status(200).json({
-        success: true,
-        message: `Success update vehicle with id ${id}`,
-        results: {
-          id: Number(id),
-          ...clientData,
-          prepayment: Number(clientData.prepayment)
-        }
-      });
-    });
-  });
-};
+    const existingVehicle = await vehiclesModel.checkExistVehicle(data);
 
-exports.deleteVehicle = (req, res) => {
-  const {
-    id
-  } = req.params;
-
-  vehiclesModel.deleteVehicle(id, (results) => {
-    if (results.affectedRows < 1) {
-      return res.status(404).json({
-        success: false,
-        message: `Vehicle with id ${id} not found`
-      });
+    if (existingVehicle.length > 0) {
+      return returningError(res, 400, 'Vehicle with inputed data already exist');
     }
-    return res.status(200).json({
+
+    const results = await vehiclesModel.addNewVehicle(data);
+    const vehicle = await vehiclesModel.getVehicle(results.insertId);
+
+    return res.status(201).json({
       success: true,
-      message: `Success delete vehicle with id ${id}`
+      message: 'Success add new vehicle',
+      results: vehicle[0]
     });
-  });
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to add new vehicle');
+  }
+};
+
+exports.updateVehicle = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+
+    const data = {
+      name: req.body.name,
+      price: Number(req.body.price),
+      prepayment: req.body.prepayment,
+      capacity: Number(req.body.capacity),
+      qty: Number(req.body.qty),
+      location: req.body.location,
+      category_id: req.body.category_id
+    };
+
+    if (!validateId(id)) {
+      return returningError(res, 404, 'Id not a number');
+    }
+
+    const {
+      prepayment
+    } = data;
+
+    if (Number(prepayment) > 1 || Number(prepayment) < 0) {
+      return returningError(res, 400, 'Your data not validate');
+    }
+
+    // validator data
+    if (!dataValidator(data)) {
+      return returningError(res, 400, 'Your data not validate');
+    }
+
+    const existingCategory = await categoriesModel.getCategory(data.category_id);
+
+    if (existingCategory.length < 1) {
+      return returningError(res, 404, 'Category not found');
+    }
+
+    const sameVehicle = await vehiclesModel.checkExistVehicle(data);
+
+    if (sameVehicle.length > 0) {
+      return returningError(res, 400, 'Vehicle with inputed data already exist');
+    }
+
+    const existingVehicle = await vehiclesModel.getVehicle(id);
+
+    if (existingVehicle.length < 1) {
+      return returningError(res, 404, 'Vehicle not found');
+    }
+
+    const results = await vehiclesModel.updateVehicle(id, data);
+
+    if (results.affectedRows < 1) {
+      return returningError(res, 500, 'Fail to update vehicle');
+    }
+
+    const vehicle = await vehiclesModel.getVehicle(id);
+
+    return returningSuccess(res, 200, 'Success update vehicle', vehicle[0]);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to update vehicle');
+  }
+};
+
+exports.deleteVehicle = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+
+    if (!validateId(id)) {
+      return returningError(res, 404, 'Id not a number');
+    }
+
+    const existingVehicle = await vehiclesModel.getVehicle(id);
+
+    if (existingVehicle.length < 1) {
+      return returningError(res, 404, 'Vehicle not found');
+    }
+
+    const results = await vehiclesModel.deleteVehicle(id);
+
+    if (results.affectedRows < 1) {
+      return returningError(res, 500, 'Failed to delete vehicle');
+    }
+
+    return returningSuccess(res, 200, 'Success delete vehicle', existingVehicle[0]);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to delete vehicle');
+  }
 };
 
 exports.getPopularVehicles = async (req, res) => {
