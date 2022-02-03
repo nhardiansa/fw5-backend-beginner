@@ -236,7 +236,10 @@ exports.getFilterVehicles = async (req, res) => {
       category_id: req.query.category_id || null,
       qty: Number(req.query.available) || null,
       prepayment: Number(req.query.prepayment) || null,
-      location: req.query.location || ''
+      location: req.query.location || '',
+      sortPrice: req.query.sort_price || '',
+      sortQty: req.query.sort_qty || '',
+      sortCapacity: req.query.sort_capacity || ''
     };
 
     const existingCategory = await categoriesModel.getCategory(data.category_id);

@@ -212,7 +212,10 @@ exports.getFilterVehicles = (data) => {
     prepayment,
     location,
     limit,
-    page
+    page,
+    sortPrice,
+    sortQty,
+    sortCapacity
   } = data;
 
   console.log(qty);
@@ -233,6 +236,11 @@ exports.getFilterVehicles = (data) => {
       ${qty ? 'v.qty > 0 AND' : ''}
       ${prepayment ? 'v.prepayment = 1 AND' : ''}
       v.location LIKE '%${location}%'
+      ORDER BY
+      ${sortPrice ? `v.price ${sortPrice},` : ''}
+      ${sortQty ? `v.qty ${sortQty},` : ''}
+      ${sortCapacity ? `v.capacity ${sortCapacity},` : ''}
+      v.id ASC
       LIMIT ? OFFSET ?;
     `, [limit, offset], (err, results) => {
       if (err) {
