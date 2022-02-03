@@ -44,7 +44,7 @@ exports.getCategory = async (req, res) => {
     }
 
     const category = await categoriesModel.getCategory(id);
-    return returningSuccess(res, 200, 'Success getting category', category);
+    return returningSuccess(res, 200, 'Success getting category', category[0]);
   } catch (err) {
     console.error(err);
     return returningError(res, 500, 'Internal server error');
