@@ -2,9 +2,8 @@ const {
   baseURL
 } = require('../helpers/constant');
 const {
-  dataValidator,
   validateId,
-  requestReceiver
+  requestMapping
 } = require('../helpers/requestHandler');
 const {
   returningError,
@@ -12,15 +11,6 @@ const {
   pageInfoCreator
 } = require('../helpers/responseHandler');
 const usersModel = require('../models/users');
-
-const userKeys = [
-  'name',
-  'email',
-  'gender',
-  'address',
-  'birthdate',
-  'phone'
-];
 
 exports.getUser = async (req, res) => {
   try {
@@ -49,10 +39,28 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    const data = requestReceiver(req.body, userKeys);
+    // const data = requestReceiver(req.body, userKeys);
+    const data = requestMapping(req.body, {
+      name: 'string',
+      email: 'email',
+      phone: 'phone',
+      gender: 'string',
+      birthdate: 'date',
+      address: 'string'
+    });
 
-    if (!dataValidator(data)) {
-      return returningError(res, 400, "Your data isn't validate!");
+    console.log(data);
+
+    const gender = ['female', 'male'];
+
+    if (!gender.includes(data.gender)) {
+      return returningError(res, 400, "Your gender isn't validate!");
+    }
+
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, `Your ${key} isn't validate!`);
+      }
     }
 
     const isEmailExist = await usersModel.findEmail(data.email);
@@ -70,16 +78,11 @@ exports.addUser = async (req, res) => {
     const user = await usersModel.getUser(results.insertId);
 
     if (results.affectedRows > 0) {
-      return res.status(201).json({
-        success: true,
-        message: 'Success insert new user',
-        results: user[0]
-      });
+      return returningSuccess(res, 201, 'Success adding a user', user[0]);
     }
   } catch (error) {
     console.error(error);
-    const err = 'Failed to insert data';
-    return returningError(res, 500, err);
+    return returningError(res, 500, 'Failed to add an user');
   }
 };
 
@@ -124,37 +127,47 @@ exports.updateUser = async (req, res) => {
     const {
       id
     } = req.params;
-    const data = requestReceiver(req.body, userKeys);
+    const data = requestMapping(req.body, {
+      name: 'string',
+      email: 'email',
+      phone: 'phone',
+      gender: 'string',
+      birthdate: 'date',
+      address: 'string'
+    });
 
-    if (!validateId(id)) {
-      return returningError(res, 400, 'Id must be a number');
+    if (data.gender) {
+      const gender = ['female', 'male'];
+      if (!gender.includes(data.gender)) {
+        return returningError(res, 400, "Your gender isn't validate!");
+      }
     }
 
-    if (!dataValidator(data)) {
-      return returningError(res, 400, 'Data is not validate!');
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, `Your ${key} isn't validate!`);
+      }
     }
 
-    const isEmailExist = await usersModel.findEmail(data.email);
-    const isPhoneExist = await usersModel.findPhone(data.phone);
-
-    if (isEmailExist[0].rows > 0) {
-      return returningError(res, 400, 'Email already registered');
+    if (data.email) {
+      const isEmailExist = await usersModel.findEmail(data.email);
+      if (isEmailExist[0].rows > 0) {
+        return returningError(res, 400, 'Email already registered');
+      }
     }
 
-    if (isPhoneExist[0].rows > 0) {
-      return returningError(res, 400, 'Phone already registered');
+    if (data.phone) {
+      const isPhoneExist = await usersModel.findPhone(data.phone);
+      if (isPhoneExist[0].rows > 0) {
+        return returningError(res, 400, 'Phone already registered');
+      }
     }
 
     const results = await usersModel.updateUser(id, data);
 
     if (results.affectedRows > 0) {
       const user = await usersModel.getUser(id);
-
-      return res.status(200).json({
-        success: true,
-        message: 'Success update a user',
-        results: user[0]
-      });
+      return returningSuccess(res, 200, 'Success updating a user', user[0]);
     }
 
     return returningError(res, 500, 'Failed to delete an user');

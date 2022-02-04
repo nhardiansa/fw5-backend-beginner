@@ -13,7 +13,7 @@ users.get('/', listUsers);
 users.get('/profile/:id', getUser);
 users.get('/:id', getUser);
 users.delete('/:id', deleteUser);
-users.put('/:id', updateUser);
+users.patch('/:id', updateUser);
 users.post('/', addUser);
 
 module.exports = users;
