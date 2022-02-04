@@ -68,7 +68,10 @@ exports.requestMapping = (data, rules) => {
         } else {
           dump[k] = null;
         }
-      };
+      }
+      if (rules[k] === 'date') {
+        dump[k] = data[k];
+      }
     }
   }
 
