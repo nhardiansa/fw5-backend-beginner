@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 04, 2022 at 04:33 AM
+-- Generation Time: Feb 04, 2022 at 01:47 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.11
 
@@ -104,9 +104,9 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `gender`, `birthdate`, `address`, `created_at`, `updated_at`) VALUES
 (1, 'nabil', 'nabil@mail.com', '081290912312', 'male', '2002-01-01', 'Jl. Cendana 2', '2022-01-28 17:08:12', '2022-02-03 15:34:43'),
-(7, 'Samantha', 'samanthadoe17@gmail.com', '081348287878', 'female', '2002-01-12', 'Iskandar Street Block A Number 102', '2022-01-31 19:35:33', '2022-01-31 21:32:04'),
+(7, 'Samantha', 'samanthadoe22@gmail.com', '081348287878', 'female', '2002-01-12', 'Iskandar Street 102', '2022-01-31 19:35:33', '2022-02-04 15:29:57'),
 (14, 'Samantha Doe', 'samanthadoe1@gmail.com', '081328287878', 'female', '2002-01-12', 'Iskandar Street Block A Number 102', '2022-01-31 21:32:11', '2022-01-31 21:51:31'),
-(18, 'aris', 'aris@gmail.com', '081348287878', 'male', '2002-01-12', 'Iskandar Street Block A Number 1123', '2022-02-01 13:30:37', '2022-02-03 15:21:01'),
+(18, 'aris', 'aris@gmail.com', '081348287878', 'male', '2002-01-12', 'Iskandar Street Block A Number 1123', '2022-02-01 13:30:37', '2022-02-04 15:05:17'),
 (23, 'yudi', 'yudi@mail.com', '0891233243345', 'male', '2002-01-02', 'Sudiang', '2022-02-03 15:30:50', '2022-02-03 15:31:50'),
 (24, 'dimas', 'dimas@mail.com', '0872343424344', 'male', '2002-01-03', 'BTP', '2022-02-03 15:33:30', '2022-02-03 15:34:31'),
 (25, 'haisah', 'haisah@gmail.com', '081348287324', 'female', '2002-01-31', 'BTP', '2022-02-03 15:35:40', NULL);
@@ -146,7 +146,10 @@ INSERT INTO `vehicles` (`id`, `name`, `price`, `prepayment`, `capacity`, `qty`, 
 (34, 'honda beat', 80000, '1', 2, 6, 'surabaya', 3, '2022-02-03 16:43:54', '2022-02-03 23:05:13'),
 (35, 'yamaha mio', 90000, '0', 2, 6, 'solo', 3, '2022-02-03 16:45:31', '2022-02-03 23:04:47'),
 (36, 'honda br-v', 250000, '1', 6, 0, 'solo', 2, '2022-02-03 21:15:03', '2022-02-03 23:12:23'),
-(37, 'honda cr-v', 150000, '0', 6, 2, 'bekasi', 2, '2022-02-03 22:34:40', '2022-02-03 23:04:47');
+(37, 'honda cr-v', 150000, '0', 6, 2, 'bekasi', 2, '2022-02-03 22:34:40', '2022-02-03 23:04:47'),
+(38, 'yamaha fazzio', 100000, '1', 2, 3, 'malang', 3, '2022-02-04 18:10:28', '2022-02-04 18:19:39'),
+(39, 'yamaha nmax', 100000, '1', 2, 3, 'medan', 3, '2022-02-04 18:11:42', '2022-02-04 18:17:56'),
+(41, 'daihatsu ayla', 500000, '1', 4, 2, 'semarang', 2, '2022-02-04 18:22:42', NULL);
 
 --
 -- Indexes for dumped tables
@@ -206,7 +209,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT for table `vehicles`
 --
 ALTER TABLE `vehicles`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- Constraints for dumped tables
