@@ -6,12 +6,14 @@ const {
   deleteHistory,
   upadateHistory,
   listHistories,
-  getHistory
+  getHistory,
+  getFilteredHistories
 } = require('../controllers/histories');
 
 histories.get('/', listHistories);
-histories.post('/', addHistory);
+histories.get('/filter', getFilteredHistories);
 histories.get('/:id', getHistory);
+histories.post('/', addHistory);
 histories.patch('/:id', upadateHistory);
 histories.delete('/:id', deleteHistory);
 

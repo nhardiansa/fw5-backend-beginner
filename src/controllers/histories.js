@@ -4,7 +4,8 @@ const {
 const {
   dataValidator,
   requestReceiver,
-  validateId
+  validateId,
+  requestMapping
 } = require('../helpers/requestHandler');
 const {
   returningError,
@@ -15,6 +16,19 @@ const {
 const historiesModel = require('../models/histories');
 const usersModel = require('../models/users');
 const vehicleModel = require('../models/vehicles');
+const categoryModel = require('../models/categories');
+
+const codeGenerator = (vehicleName) => {
+  const vokal = ['a', 'i', 'u', 'e', 'o'];
+  const num = Date.now().toString();
+
+  const result = vehicleName.split(' ')[0]
+    .split('')
+    .filter(el => !vokal.includes(el))
+    .join('');
+
+  return result + num;
+};
 
 exports.listHistories = async (req, res) => {
   try {
@@ -54,25 +68,22 @@ exports.listHistories = async (req, res) => {
 
 exports.addHistory = async (req, res) => {
   try {
-    const keys = [
-      'user_id',
-      'vehicle_id',
-      'payment_code',
-      'payment',
-      'returned',
-      'prepayment'
-    ];
-    const data = requestReceiver(req.body, keys);
+    const rules = {
+      user_id: 'number',
+      vehicle_id: 'number',
+      payment: 'boolean',
+      returned: 'boolean',
+      prepayment: 'number',
+      qty: 'number',
+      start_rent: 'date',
+      end_rent: 'date'
+    };
 
-    // validate inputed data
-    const isValidate = dataValidator(data);
+    const data = requestMapping(req.body, rules);
 
-    if (!isValidate) {
-      return res.status(400).json({
-        success: true,
-        message: 'Data not validate'
-      });
-    }
+    // console.log(data);
+
+    // return returningError(res, 500, 'Not yet implemented');
 
     // check if user exist
     const user = await usersModel.getUser(data.user_id);
@@ -88,6 +99,9 @@ exports.addHistory = async (req, res) => {
       return returningError(res, 404, 'Vehicle not found');
     }
 
+    const paymentCode = codeGenerator(vehicle[0].name);
+    data.payment_code = paymentCode;
+
     // check if history has beed added
     const historyResult = await historiesModel.addHistory(data);
 
@@ -99,7 +113,8 @@ exports.addHistory = async (req, res) => {
 
     return returningSuccess(res, 201, 'History has been added', history[0]);
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    return returningError(res, 500, 'Failed to add history');
   }
 };
 
@@ -211,5 +226,50 @@ exports.getHistory = async (req, res) => {
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get history');
+  }
+};
+
+exports.getFilteredHistories = async (req, res) => {
+  try {
+    const data = {
+      limit: Number(req.query.limit) || 5,
+      page: Number(req.query.page) || 1,
+      user_id: Number(req.query.user_id) || null,
+      category_id: Number(req.query.category_id) || null,
+      vehicle_name: req.query.vehicle_name || '',
+      start_rent: req.query.start_rent || null,
+      sort_date: req.query.sort_date || null,
+      sort_name: req.query.sort_name || null,
+      sort_returned: req.query.sort_returned || null,
+      sort_payment: req.query.sort_payment || null
+    };
+
+    const user = await usersModel.getUser(data.user_id);
+
+    if (user.length < 1) {
+      return returningError(res, 404, 'User not found');
+    }
+
+    if (data.category_id !== null) {
+      if (!validateId(data.category_id)) {
+        return returningError(res, 400, 'Category id must be a number');
+      }
+
+      const category = await categoryModel.getCategory(data.category_id);
+
+      if (category.length < 1) {
+        return returningError(res, 404, 'Category not found');
+      }
+    }
+
+    const histories = await historiesModel.getFilteredHistories(data);
+    const historiesCount = await historiesModel.getFilteredHistoriesCount(data);
+
+    const pageInfo = pageInfoCreator(historiesCount[0].rows, `${baseURL}/histories`, data);
+
+    return returningSuccess(res, 200, 'Success getting histories', histories, pageInfo);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get filtered histories');
   }
 };
