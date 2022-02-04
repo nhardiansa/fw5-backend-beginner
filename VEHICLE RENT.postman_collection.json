@@ -1,0 +1,1070 @@
+{
+	"info": {
+		"_postman_id": "974860c0-0bcf-4ac0-9440-7d7b9d942c4e",
+		"name": "VEHICLE RENT",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "vehicles",
+			"item": [
+				{
+					"name": "LIST VEHICLES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/vehicles",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "a",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET VEHICLE BY ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/vehicles/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "INSERT A VEHICLE",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "honda cr-v",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "150000",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "prepayment",
+									"value": "0",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "6",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "qty",
+									"value": "2",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "location",
+									"value": "bekasi",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "category_id",
+									"value": "2",
+									"description": "required",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/vehicles",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE A VEHICLE",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "honda br-v",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "100000",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "prepayment",
+									"value": "0",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "capacity",
+									"value": "1",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "qty",
+									"value": "3",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "location",
+									"value": "makassar",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "category_id",
+									"value": "4",
+									"description": "required",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/vehicles/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "36"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE PARTIAL OF VEHICLE",
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "honda br-v",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "price",
+									"value": "250000",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "prepayment",
+									"value": "123",
+									"description": "boolean",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "capacity",
+									"value": "3asd",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "qty",
+									"value": "1",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "location",
+									"value": "solo",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "category_id",
+									"value": "2",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "test",
+									"value": "asd",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/vehicles/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "36"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE A VEHICLE",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "merk",
+									"value": "BR-V",
+									"type": "text"
+								},
+								{
+									"key": "brand",
+									"value": "honda",
+									"type": "text"
+								},
+								{
+									"key": "type",
+									"value": "car",
+									"type": "text"
+								},
+								{
+									"key": "price",
+									"value": "350000",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/vehicles/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET POPULAR VEHICLES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/vehicles/popular?search=c",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles",
+								"popular"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "search",
+									"value": "c"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER VEHICLES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/vehicles/filter",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"vehicles",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "10",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "bro",
+									"disabled": true
+								},
+								{
+									"key": "minPrice",
+									"value": "100000",
+									"disabled": true
+								},
+								{
+									"key": "maxPrice",
+									"value": "200000",
+									"disabled": true
+								},
+								{
+									"key": "category_id",
+									"value": "1",
+									"disabled": true
+								},
+								{
+									"key": "available",
+									"value": "1",
+									"description": "qty (boolean)",
+									"disabled": true
+								},
+								{
+									"key": "prepayment",
+									"value": "0",
+									"description": "(boolean)",
+									"disabled": true
+								},
+								{
+									"key": "location",
+									"value": "makassar",
+									"disabled": true
+								},
+								{
+									"key": "sort_price",
+									"value": "asc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_qty",
+									"value": "asc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_capacity",
+									"value": "asc",
+									"description": "asc or desc",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "users",
+			"item": [
+				{
+					"name": "GET AN USER",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/users/profile/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								"profile",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "LIST OF USERS",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/users",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "n",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "a",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD AN USER",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "haisah",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "haisah@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "birthdate",
+									"value": "2002-01-31",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "081348287324",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "female",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "BTP",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/users",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "UPDATE AN USER",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "Samantha",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "samanthadoe12@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "gender",
+									"value": "female",
+									"type": "text"
+								},
+								{
+									"key": "address",
+									"value": "Iskandar Street Block A Number 102",
+									"type": "text"
+								},
+								{
+									"key": "birthdate",
+									"value": "2002-01-12",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "081348287878",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE USER",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": []
+						},
+						"url": {
+							"raw": "{{baseURL}}/users/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"users",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "histories",
+			"item": [
+				{
+					"name": "LIST HISTORIES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/histories?user_id=7",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"histories"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "user_id",
+									"value": "7",
+									"description": "required"
+								},
+								{
+									"key": "limit",
+									"value": "2",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET A HISTORIES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/histories/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"histories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CREATE A HISTORY",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var date = Date.now().toString();\r",
+									"pm.variables.set('currentTime', date);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "user_id",
+									"value": "14",
+									"description": "number",
+									"type": "text"
+								},
+								{
+									"key": "vehicle_id",
+									"value": "19",
+									"description": "number",
+									"type": "text"
+								},
+								{
+									"key": "payment",
+									"value": "1",
+									"description": "boolean",
+									"type": "text"
+								},
+								{
+									"key": "returned",
+									"value": "0",
+									"description": "boolean",
+									"type": "text"
+								},
+								{
+									"key": "prepayment",
+									"value": "0",
+									"description": "number",
+									"type": "text"
+								},
+								{
+									"key": "qty",
+									"value": "2",
+									"description": "number",
+									"type": "text"
+								},
+								{
+									"key": "start_rent",
+									"value": "2022-2-2",
+									"description": "date (YYYY/MM/DD)",
+									"type": "text"
+								},
+								{
+									"key": "end_rent",
+									"value": "2022-2-4",
+									"description": "date (YYYY/MM/DD)",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/histories",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"histories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EDIT A HISTORY",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"var date = Date.now().toString();\r",
+									"pm.variables.set('currentTime', date);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "PATCH",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "payment",
+									"value": "0",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "returned",
+									"value": "1",
+									"description": "required",
+									"type": "text"
+								},
+								{
+									"key": "prepayment",
+									"value": "25000",
+									"description": "required",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/histories/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"histories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "11"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE A HISTORY",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/histories/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"histories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "24"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "categories",
+			"item": [
+				{
+					"name": "LIST OF CATEGORIES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/categories",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"categories"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET A CATEGORY",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/categories/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"categories",
+								":id"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "ADD AN CATEGORY",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "SUV",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/categories",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "EDIT AN CATEGORY",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "MUV",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/categories/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "DELETE AN CATEGORY",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/categories/:id",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"categories",
+								":id"
+							],
+							"variable": [
+								{
+									"key": "id",
+									"value": "7"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BaseUrl",
+			"value": "http://localhost:5000"
+		}
+	]
+}
