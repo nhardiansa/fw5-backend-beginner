@@ -50,7 +50,7 @@ exports.requestMapping = (data, rules) => {
   for (const k in data) {
     if (keysCollection.includes(k)) {
       if (rules[k] === 'string') {
-        dump[k] = data[k];
+        dump[k] = data[k].trim();
       }
       if (rules[k] === 'number') {
         if (isNaN(Number(data[k]))) {
@@ -70,7 +70,29 @@ exports.requestMapping = (data, rules) => {
         }
       }
       if (rules[k] === 'date') {
-        dump[k] = data[k];
+        const regexPattern = /^\d{4}-\d{2}-\d{2}$/;
+        if (regexPattern.test(data[k])) {
+          dump[k] = data[k];
+        } else {
+          dump[k] = null;
+        }
+      }
+      if (rules[k] === 'phone') {
+        const regexPattern = /\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/g;
+        if (regexPattern.test(data[k])) {
+          dump[k] = data[k];
+        } else {
+          dump[k] = null;
+        }
+      }
+      if (rules[k] === 'email') {
+        // eslint-disable-next-line no-useless-escape
+        const regexPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+        if (regexPattern.test(data[k])) {
+          dump[k] = data[k];
+        } else {
+          dump[k] = null;
+        }
       }
     }
   }
