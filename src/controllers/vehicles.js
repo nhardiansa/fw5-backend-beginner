@@ -280,6 +280,21 @@ exports.updateVehiclePartial = async (req, res) => {
       return returningError(res, 400, 'Id not a number');
     }
 
+    // checking duplicate vehicle name
+    if (data.name) {
+      const {
+        name
+      } = data;
+
+      const duplicateName = await vehiclesModel.checkExistVehicle({
+        name
+      });
+
+      if (duplicateName.length > 0) {
+        return returningError(res, 400, 'Vehicle name already exist');
+      }
+    }
+
     const vehicle = await vehiclesModel.getVehicle(id);
 
     if (vehicle.length < 1) {
