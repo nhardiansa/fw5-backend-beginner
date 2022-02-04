@@ -213,9 +213,9 @@ exports.getFilterVehicles = (data) => {
     location,
     limit,
     page,
-    sortPrice,
-    sortQty,
-    sortCapacity
+    sort_price: sortPrice,
+    sort_qty: sortQty,
+    sort_capacity: sortCapacity
   } = data;
 
   const offset = (page - 1) * limit;
@@ -227,13 +227,13 @@ exports.getFilterVehicles = (data) => {
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
       WHERE
-      v.name LIKE '%${name}%' AND
+      v.name LIKE '%${name || ''}%' AND
       ${minPrice ? `v.price >= ${minPrice} AND` : ''}
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
       ${qty ? 'v.qty > 0 AND' : ''}
       ${prepayment ? 'v.prepayment = 1 AND' : ''}
-      v.location LIKE '%${location}%'
+      v.location LIKE '%${location || ''}%'
       ORDER BY
       ${sortPrice ? `v.price ${sortPrice},` : ''}
       ${sortQty ? `v.qty ${sortQty},` : ''}
@@ -268,13 +268,13 @@ exports.countFilterVehicles = (data) => {
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
       WHERE
-      v.name LIKE '%${name}%' AND
+      v.name LIKE '%${name || ''}%' AND
       ${minPrice ? `v.price >= ${minPrice} AND` : ''}
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
       ${qty ? 'v.qty > 0 AND' : ''}
       ${prepayment ? 'v.prepayment = 1 AND' : ''}
-      v.location LIKE '%${location}%';
+      v.location LIKE '%${location || ''}%';
     `, (err, results) => {
       if (err) {
         reject(err);

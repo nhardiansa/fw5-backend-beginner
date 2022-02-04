@@ -59,15 +59,15 @@ exports.getVehicle = async (req, res) => {
 
 exports.addNewVehicle = async (req, res) => {
   try {
-    const data = {
-      name: req.body.name,
-      price: Number(req.body.price),
-      prepayment: req.body.prepayment,
-      capacity: Number(req.body.capacity),
-      qty: Number(req.body.qty),
-      location: req.body.location,
-      category_id: req.body.category_id
-    };
+    const data = requestMapping(req.body, {
+      name: 'string',
+      price: 'number',
+      prepayment: 'boolean',
+      capacity: 'number',
+      qty: 'number',
+      location: 'string',
+      category_id: 'number'
+    });
 
     const {
       prepayment
@@ -227,26 +227,30 @@ exports.getPopularVehicles = async (req, res) => {
 
 exports.getFilterVehicles = async (req, res) => {
   try {
-    // return returningError(res, 500, 'Not yet implemented');
-    const data = {
-      page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 5,
-      name: req.query.name || '',
-      minPrice: Number(req.query.minPrice) || null,
-      maxPrice: Number(req.query.maxPrice) || null,
-      category_id: req.query.category_id || null,
-      qty: Number(req.query.available) || null,
-      prepayment: Number(req.query.prepayment) || null,
-      location: req.query.location || '',
-      sortPrice: req.query.sort_price || '',
-      sortQty: req.query.sort_qty || '',
-      sortCapacity: req.query.sort_capacity || ''
-    };
+    const data = requestMapping(req.query, {
+      name: 'string',
+      minPrice: 'number',
+      maxPrice: 'number',
+      category_id: 'number',
+      qty: 'boolean',
+      prepayment: 'boolean',
+      location: 'string',
+      sort_price: 'sorter',
+      sort_qty: 'sorter',
+      sort_capacity: 'sorter'
+    });
 
-    const existingCategory = await categoriesModel.getCategory(data.category_id);
+    data.page = Number(req.query.page) || 1;
+    data.limit = Number(req.query.limit) || 5;
 
-    if (existingCategory.length < 1 && data.category_id) {
-      return returningError(res, 404, 'Category not found');
+    console.log(data);
+
+    if (data.category_id) {
+      const existingCategory = await categoriesModel.getCategory(data.category_id);
+
+      if (existingCategory.length < 1) {
+        return returningError(res, 404, 'Category not found');
+      }
     }
 
     const results = await vehiclesModel.getFilterVehicles(data);
