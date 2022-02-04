@@ -50,7 +50,7 @@ exports.requestMapping = (data, rules) => {
   for (const k in data) {
     if (keysCollection.includes(k)) {
       if (rules[k] === 'string') {
-        dump[k] = data[k].trim();
+        dump[k] = data[k].trim().toLowerCase();
       }
       if (rules[k] === 'number') {
         if (isNaN(Number(data[k]))) {
@@ -60,7 +60,7 @@ exports.requestMapping = (data, rules) => {
         }
       }
       if (rules[k] === 'boolean') {
-        data[k] = String(data[k]);
+        data[k] = String(data[k]).trim().toLowerCase();
         if (data[k] === 'true' || data[k] === '1') {
           dump[k] = '1';
         } else if (data[k] === 'false' || data[k] === '0') {
@@ -90,6 +90,15 @@ exports.requestMapping = (data, rules) => {
         const regexPattern = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
         if (regexPattern.test(data[k])) {
           dump[k] = data[k];
+        } else {
+          dump[k] = null;
+        }
+      }
+      if (rules[k] === 'sorter') {
+        const sortValue = ['asc', 'desc'];
+        const sortData = data[k].trim().toLowerCase();
+        if (sortValue.includes(sortData)) {
+          dump[k] = sortData;
         } else {
           dump[k] = null;
         }
