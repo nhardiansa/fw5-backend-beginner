@@ -50,7 +50,11 @@ exports.requestMapping = (data, rules) => {
   for (const k in data) {
     if (keysCollection.includes(k)) {
       if (rules[k] === 'string') {
-        dump[k] = data[k].trim().toLowerCase();
+        if (data[k].trim()) {
+          dump[k] = data[k].trim().toLowerCase();
+        } else {
+          dump[k] = null;
+        }
       }
       if (rules[k] === 'number') {
         if (isNaN(Number(data[k]))) {
