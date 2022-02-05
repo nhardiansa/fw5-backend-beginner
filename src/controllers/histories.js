@@ -81,7 +81,14 @@ exports.addHistory = async (req, res) => {
 
     const data = requestMapping(req.body, rules);
 
-    // console.log(data);
+    const reValidate = requestReceiver(data, [
+      'user_id', 'vehicle_id', 'payment', 'returned', 'prepayment', 'qty', 'start_rent', 'end_rent'
+    ]);
+
+    // validate inputed data
+    if (!dataValidator(reValidate)) {
+      return returningError(res, 400, 'Data not validated');
+    }
 
     // return returningError(res, 500, 'Not yet implemented');
 
@@ -160,21 +167,33 @@ exports.upadateHistory = async (req, res) => {
     const {
       id
     } = req.params;
-    const keys = [
-      'payment', 'returned', 'prepayment'
-    ];
-    const data = requestReceiver(req.body, keys);
+
+    const data = requestMapping(req.body, {
+      payment: 'boolean',
+      returned: 'boolean',
+      prepayment: 'number'
+    });
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data not validated');
+    }
 
     // validate inputed id
     if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
     }
 
-    // validate inputed data
-    const isValidate = dataValidator(data);
+    const warn = [];
+    let strWarning = '';
+    for (const key in data) {
+      if (data[key] === null) {
+        warn.push(key);
+        delete data[key];
+      }
+    }
 
-    if (!isValidate) {
-      return returningError(res, 400, 'Data not validate');
+    if (warn.length > 0) {
+      strWarning = `Some data updated but can't for ${warn.length > 0 ? warn.join(', ') : warn[0]} because data not valid`;
     }
 
     // check if history exist
@@ -196,7 +215,7 @@ exports.upadateHistory = async (req, res) => {
     // get updated history
     const updatedHistory = await historiesModel.getHistory(id);
 
-    return returningSuccess(res, 200, 'History has been updated', updatedHistory[0]);
+    return returningSuccess(res, 200, strWarning || 'History has been updated', updatedHistory[0]);
   } catch (error) {
     console.log(error);
     console.error(error);
@@ -231,18 +250,19 @@ exports.getHistory = async (req, res) => {
 
 exports.getFilteredHistories = async (req, res) => {
   try {
-    const data = {
-      limit: Number(req.query.limit) || 5,
-      page: Number(req.query.page) || 1,
-      user_id: Number(req.query.user_id) || null,
-      category_id: Number(req.query.category_id) || null,
-      vehicle_name: req.query.vehicle_name || '',
-      start_rent: req.query.start_rent || null,
-      sort_date: req.query.sort_date || null,
-      sort_name: req.query.sort_name || null,
-      sort_returned: req.query.sort_returned || null,
-      sort_payment: req.query.sort_payment || null
-    };
+    const data = requestMapping(req.query, {
+      user_id: 'number',
+      category_id: 'number',
+      vehicle_name: 'string',
+      start_rent: 'sorter',
+      sort_date: 'sorter',
+      sort_name: 'sorter',
+      sort_returned: 'sorter',
+      sort_payment: 'sorter'
+    });
+
+    data.limit = Number(req.query.limit) || 5;
+    data.page = Number(req.query.limit) || 1;
 
     const user = await usersModel.getUser(data.user_id);
 
@@ -250,7 +270,7 @@ exports.getFilteredHistories = async (req, res) => {
       return returningError(res, 404, 'User not found');
     }
 
-    if (data.category_id !== null) {
+    if (data.category_id !== null && data.category_id) {
       if (!validateId(data.category_id)) {
         return returningError(res, 400, 'Category id must be a number');
       }
