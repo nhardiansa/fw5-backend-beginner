@@ -53,13 +53,15 @@ exports.getCategory = async (req, res) => {
 
 exports.addCategory = async (req, res) => {
   try {
-    const name = req.body.name;
-
-    const rules = {
+    const data = requestMapping(req.body, {
       name: 'string'
-    };
+    });
 
-    const data = requestMapping(name, rules);
+    console.log(data);
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Name not validated');
+    }
 
     for (const key in data) {
       if (data[key] === null) {
@@ -67,9 +69,9 @@ exports.addCategory = async (req, res) => {
       }
     }
 
-    // if (!requestMapping(name, rules)) {
-    //   return returningError(res, 400, 'Name not valid');
-    // }
+    const {
+      name
+    } = req.body;
 
     const existingCategory = await categoriesModel.getCategoryByName(name);
 
@@ -133,13 +135,17 @@ exports.updateCategory = async (req, res) => {
       return returningError(res, 404, 'Category not found');
     }
 
-    const name = req.body.name;
-
-    const rules = {
+    const data = requestMapping(req.body, {
       name: 'string'
-    };
+    });
 
-    const data = requestMapping(name, rules);
+    const {
+      name
+    } = data;
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Name not validated');
+    }
 
     for (const key in data) {
       if (data[key] === null) {
