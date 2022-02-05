@@ -49,7 +49,9 @@ exports.addUser = async (req, res) => {
       address: 'string'
     });
 
-    console.log(data);
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data not validated');
+    }
 
     const gender = ['female', 'male'];
 
@@ -135,6 +137,10 @@ exports.updateUser = async (req, res) => {
       birthdate: 'date',
       address: 'string'
     });
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data not validated');
+    }
 
     if (data.gender) {
       const gender = ['female', 'male'];
