@@ -69,6 +69,10 @@ exports.addNewVehicle = async (req, res) => {
       category_id: 'number'
     });
 
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data not validated');
+    }
+
     const {
       prepayment
     } = data;
@@ -128,6 +132,10 @@ exports.updateVehicle = async (req, res) => {
 
     if (!validateId(id)) {
       return returningError(res, 404, 'Id not a number');
+    }
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data not validated');
     }
 
     const {
@@ -243,8 +251,6 @@ exports.getFilterVehicles = async (req, res) => {
     data.page = Number(req.query.page) || 1;
     data.limit = Number(req.query.limit) || 5;
 
-    console.log(data);
-
     if (data.category_id) {
       const existingCategory = await categoriesModel.getCategory(data.category_id);
 
@@ -282,6 +288,10 @@ exports.updateVehiclePartial = async (req, res) => {
 
     if (!validateId(id)) {
       return returningError(res, 400, 'Id not a number');
+    }
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data not validated');
     }
 
     // checking duplicate vehicle name
