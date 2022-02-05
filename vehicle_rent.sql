@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 04, 2022 at 01:47 PM
+-- Generation Time: Feb 05, 2022 at 11:23 AM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.11
 
@@ -71,9 +71,9 @@ CREATE TABLE `histories` (
 INSERT INTO `histories` (`id`, `payment_code`, `payment`, `returned`, `prepayment`, `qty`, `start_rent`, `end_rent`, `user_id`, `vehicle_id`, `created_at`, `updated_at`) VALUES
 (27, 'hnd1643938054913', '1', '0', 0, 2, '2022-02-02', '2022-02-04', 14, 19, '2022-02-04 09:27:34', NULL),
 (28, 'tyt1643938196795', '1', '0', 0, 2, '2022-02-01', '2022-02-02', 1, 20, '2022-02-04 09:29:56', NULL),
-(29, 'plygn1643938229752', '1', '0', 0, 2, '2022-02-01', '2022-02-02', 18, 31, '2022-02-04 09:30:29', NULL),
+(29, 'plygn1643938229752', '0', '0', 0, 2, '2022-02-01', '2022-02-02', 18, 31, '2022-02-04 09:30:29', '2022-02-05 17:31:56'),
 (30, 'plygn1643938363311', '1', '1', 0, 2, '2022-02-01', '2022-02-02', 18, 31, '2022-02-04 09:32:43', NULL),
-(31, 'plygn1643938380377', '1', '1', 0, 2, '2022-02-05', '2022-02-06', 18, 31, '2022-02-04 09:33:00', '2022-02-04 10:46:31'),
+(31, 'plygn1643938380377', '1', '1', 0, 2, '2022-02-05', '2022-02-06', 18, 31, '2022-02-04 09:33:00', '2022-02-05 17:53:21'),
 (32, 'plygn1643940393748', '1', '1', 0, 2, '2022-02-04', '2022-02-06', 18, 32, '2022-02-04 10:06:33', NULL),
 (33, 'hnd1643940401489', '1', '1', 0, 2, '2022-02-04', '2022-02-06', 18, 33, '2022-02-04 10:06:41', NULL),
 (34, 'hnd1643940404799', '1', '1', 0, 2, '2022-02-04', '2022-02-06', 18, 34, '2022-02-04 10:06:44', NULL),
@@ -104,12 +104,13 @@ CREATE TABLE `users` (
 
 INSERT INTO `users` (`id`, `name`, `email`, `phone`, `gender`, `birthdate`, `address`, `created_at`, `updated_at`) VALUES
 (1, 'nabil', 'nabil@mail.com', '081290912312', 'male', '2002-01-01', 'Jl. Cendana 2', '2022-01-28 17:08:12', '2022-02-03 15:34:43'),
-(7, 'Samantha', 'samanthadoe22@gmail.com', '081348287878', 'female', '2002-01-12', 'Iskandar Street 102', '2022-01-31 19:35:33', '2022-02-04 15:29:57'),
+(7, 'Samantha', 'samanthadoe22@gmail.com', '081348287878', 'female', '2002-01-12', 'Iskandar Street 102', '2022-01-31 19:35:33', '2022-02-05 17:06:11'),
 (14, 'Samantha Doe', 'samanthadoe1@gmail.com', '081328287878', 'female', '2002-01-12', 'Iskandar Street Block A Number 102', '2022-01-31 21:32:11', '2022-01-31 21:51:31'),
 (18, 'aris', 'aris@gmail.com', '081348287878', 'male', '2002-01-12', 'Iskandar Street Block A Number 1123', '2022-02-01 13:30:37', '2022-02-04 15:05:17'),
 (23, 'yudi', 'yudi@mail.com', '0891233243345', 'male', '2002-01-02', 'Sudiang', '2022-02-03 15:30:50', '2022-02-03 15:31:50'),
 (24, 'dimas', 'dimas@mail.com', '0872343424344', 'male', '2002-01-03', 'BTP', '2022-02-03 15:33:30', '2022-02-03 15:34:31'),
-(25, 'haisah', 'haisah@gmail.com', '081348287324', 'female', '2002-01-31', 'BTP', '2022-02-03 15:35:40', NULL);
+(25, 'haisah', 'haisah@gmail.com', '081348287324', 'female', '2002-01-31', 'BTP', '2022-02-03 15:35:40', NULL),
+(27, 'fadhil', 'fadhil@gmail.com', '081234287324', 'male', '2003-05-21', 'btp', '2022-02-05 17:11:20', NULL);
 
 -- --------------------------------------------------------
 
@@ -191,19 +192,19 @@ ALTER TABLE `vehicles`
 -- AUTO_INCREMENT for table `categories`
 --
 ALTER TABLE `categories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `histories`
 --
 ALTER TABLE `histories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `vehicles`

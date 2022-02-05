@@ -77,43 +77,50 @@
 									"key": "name",
 									"value": "daihatsu ayla",
 									"description": "string required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "price",
 									"value": "500000",
 									"description": "number required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "prepayment",
 									"value": "1",
 									"description": "boolean required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "capacity",
 									"value": "4",
 									"description": "number required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "qty",
 									"value": "2",
 									"description": "number required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "location",
 									"value": "semarang",
 									"description": "string required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "category_id",
 									"value": "2",
 									"description": "number required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -141,43 +148,50 @@
 									"key": "name",
 									"value": "yamaha nmax",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "price",
 									"value": "100000",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "prepayment",
 									"value": "1",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "capacity",
 									"value": "2",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "qty",
 									"value": "3",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "location",
 									"value": "medan",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "category_id",
 									"value": "3",
 									"description": "required",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -230,17 +244,20 @@
 								{
 									"key": "capacity",
 									"value": "2",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "qty",
 									"value": "3",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "location",
 									"value": "malang",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "category_id",
@@ -477,7 +494,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "1",
+									"description": "number"
 								}
 							]
 						}
@@ -500,22 +518,26 @@
 							"query": [
 								{
 									"key": "limit",
-									"value": "2",
+									"value": "5",
+									"description": "number",
 									"disabled": true
 								},
 								{
 									"key": "page",
-									"value": "2",
+									"value": "1",
+									"description": "number",
 									"disabled": true
 								},
 								{
 									"key": "name",
-									"value": "n",
+									"value": "s",
+									"description": "string",
 									"disabled": true
 								},
 								{
 									"key": "email",
-									"value": "a",
+									"value": "s",
+									"description": "string",
 									"disabled": true
 								}
 							]
@@ -533,33 +555,39 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "haisah",
-									"type": "text"
+									"value": "fadhil",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "email",
-									"value": "haisah@gmail.com",
-									"type": "text"
+									"value": "fadhil@gmail.com",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "birthdate",
-									"value": "2002-05-31",
-									"type": "text"
+									"value": "2003-05-21",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "phone",
-									"value": "081348287324",
-									"type": "text"
+									"value": "081234287324",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "gender",
-									"value": "female",
-									"type": "text"
+									"value": "male",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "address",
 									"value": "BTP",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -586,32 +614,44 @@
 								{
 									"key": "name",
 									"value": "Samantha",
-									"type": "text"
+									"description": "string",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "email",
 									"value": "samanthadoe22@gmail.com",
-									"type": "text"
+									"description": "string",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "gender",
 									"value": "female",
-									"type": "text"
+									"description": "string",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "address",
 									"value": "Iskandar Street 102",
-									"type": "text"
+									"description": "string",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "birthdate",
 									"value": "2002-01-22",
-									"type": "text"
+									"description": "date",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "phone",
 									"value": "081348287878",
-									"type": "text"
+									"description": "string",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -627,7 +667,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "7"
+									"value": "26"
 								}
 							]
 						}
@@ -655,7 +695,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": ""
+									"value": "26"
 								}
 							]
 						}
@@ -673,7 +713,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/histories?user_id=7",
+							"raw": "{{baseURL}}/histories",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -684,16 +724,97 @@
 								{
 									"key": "page",
 									"value": "2",
+									"description": "number",
 									"disabled": true
 								},
 								{
 									"key": "user_id",
 									"value": "7",
-									"description": "required"
+									"description": "required number",
+									"disabled": true
 								},
 								{
 									"key": "limit",
 									"value": "2",
+									"description": "number",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "FILTER HISTORIES",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/histories/filter?user_id=18&vehicle_name=pol",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"histories",
+								"filter"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "2",
+									"description": "number",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "4",
+									"description": "number",
+									"disabled": true
+								},
+								{
+									"key": "user_id",
+									"value": "18",
+									"description": "required number"
+								},
+								{
+									"key": "category_id",
+									"value": "4",
+									"description": "number",
+									"disabled": true
+								},
+								{
+									"key": "vehicle_name",
+									"value": "pol",
+									"description": "string"
+								},
+								{
+									"key": "start_rent",
+									"value": "2022-02-04",
+									"description": "date YYYY-MM-DD",
+									"disabled": true
+								},
+								{
+									"key": "sort_date",
+									"value": "desc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_name",
+									"value": "asc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_returned",
+									"value": "desc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_payment",
+									"value": "desc",
+									"description": "asc or desc",
 									"disabled": true
 								}
 							]
@@ -747,51 +868,59 @@
 							"urlencoded": [
 								{
 									"key": "user_id",
-									"value": "23",
-									"description": "number",
-									"type": "text"
+									"value": "1",
+									"description": "number required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "vehicle_id",
-									"value": "34",
-									"description": "number",
-									"type": "text"
+									"value": "1",
+									"description": "number required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "payment",
-									"value": "0",
-									"description": "boolean",
-									"type": "text"
+									"value": "1",
+									"description": "boolean required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "returned",
-									"value": "1",
-									"description": "boolean",
-									"type": "text"
+									"value": "0",
+									"description": "boolean required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "prepayment",
 									"value": "0",
-									"description": "number",
-									"type": "text"
+									"description": "number required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "qty",
-									"value": "2",
-									"description": "number",
-									"type": "text"
+									"value": "1",
+									"description": "number required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "start_rent",
-									"value": "2022-2-4",
-									"description": "date (YYYY/MM/DD)",
-									"type": "text"
+									"value": "2022-02-04",
+									"description": "date (YYYY/MM/DD) required",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "end_rent",
-									"value": "2022-2-6",
-									"description": "date (YYYY/MM/DD)",
-									"type": "text"
+									"value": "2022-02-06",
+									"description": "date (YYYY/MM/DD) required",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -829,21 +958,30 @@
 							"urlencoded": [
 								{
 									"key": "payment",
-									"value": "0",
-									"description": "required",
-									"type": "text"
+									"value": "1",
+									"description": "boolean",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "returned",
 									"value": "1",
-									"description": "required",
-									"type": "text"
+									"description": "boolean",
+									"type": "text",
+									"disabled": true
 								},
 								{
 									"key": "prepayment",
 									"value": "25000",
-									"description": "required",
-									"type": "text"
+									"description": "number",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "qty",
+									"value": "123",
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -859,7 +997,8 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "11"
+									"value": "31",
+									"description": "number"
 								}
 							]
 						}
@@ -883,86 +1022,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "24"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "FILTER HISTORIES",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/histories/filter?user_id=18",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"histories",
-								"filter"
-							],
-							"query": [
-								{
-									"key": "limit",
-									"value": "2",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "page",
-									"value": "2",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "user_id",
-									"value": "18",
-									"description": "required string"
-								},
-								{
-									"key": "category_id",
-									"value": "4",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "vehicle_name",
-									"value": "",
-									"description": "string",
-									"disabled": true
-								},
-								{
-									"key": "start_rent",
-									"value": "2022-02-04",
-									"description": "date YYYY-MM-DD",
-									"disabled": true
-								},
-								{
-									"key": "sort_date",
-									"value": "asdasd",
-									"description": "asc or desc",
-									"disabled": true
-								},
-								{
-									"key": "sort_name",
-									"value": null,
-									"description": "asc or desc",
-									"disabled": true
-								},
-								{
-									"key": "sort_returned",
-									"value": null,
-									"description": "asc or desc",
-									"disabled": true
-								},
-								{
-									"key": "sort_payment",
-									"value": null,
-									"description": "asc or desc",
-									"disabled": true
+									"value": "37"
 								}
 							]
 						}
@@ -1049,7 +1109,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "SUV",
+									"value": "SUV    ",
 									"type": "text"
 								}
 							]
@@ -1076,7 +1136,7 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "MUV",
+									"value": "",
 									"type": "text"
 								}
 							]
@@ -1093,7 +1153,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "7"
+									"value": "8"
 								}
 							]
 						}
@@ -1117,7 +1177,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "7"
+									"value": "8"
 								}
 							]
 						}
