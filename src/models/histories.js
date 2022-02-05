@@ -15,7 +15,7 @@ exports.getHistories = (keys, data) => {
   const offset = (page - 1) * limit;
 
   return new Promise((resolve, reject) => {
-    const ss = db.query(`
+    db.query(`
       SELECT ?? FROM ${table}
       ${id ? `WHERE user_id = ${id}` : ''}
       LIMIT ? OFFSET ?
@@ -27,7 +27,6 @@ exports.getHistories = (keys, data) => {
         resolve(results);
       }
     });
-    console.log(ss.sql);
   });
 };
 
@@ -117,7 +116,7 @@ exports.getFilteredHistories = (data) => {
   const offset = (page - 1) * limit;
 
   return new Promise((resolve, reject) => {
-    const ss = db.query(`
+    db.query(`
       SELECT h.id, h.payment, h.returned, h.prepayment, h.start_rent, h.end_rent, v.name, c.name as type
       FROM ${table} h
       LEFT JOIN ${vehiclesTable} v
@@ -133,7 +132,7 @@ exports.getFilteredHistories = (data) => {
       ${sortDate ? `h.start_rent ${sortDate},` : ''}
       ${sortName ? `v.name ${sortName},` : ''}
       ${sortReturned ? `h.returned ${sortReturned},` : ''}
-      ${sortPayment ? `h.payment ${sortPayment}` : ''}
+      ${sortPayment ? `h.payment ${sortPayment},` : ''}
       h.id ASC
       LIMIT ? OFFSET ?
     `, [limit, offset], (err, results) => {
@@ -143,8 +142,6 @@ exports.getFilteredHistories = (data) => {
         resolve(results);
       }
     });
-
-    console.log(ss.sql);
   });
 };
 
