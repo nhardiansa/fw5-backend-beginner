@@ -1,9 +1,11 @@
 # BE Vehicle Rent
 
 ## About
+
 This is the repository of Fazztrack Backend Project that I learn while in this bootcamp
 
 ### Vehicle Endpoint
+
 | METHOD | API | REMARKS|
 | :------: | --- | ------ |
 | **GET** | /vehicles | List data of vehicles |
@@ -15,6 +17,7 @@ This is the repository of Fazztrack Backend Project that I learn while in this b
 | **DELETE** | /vehicles/:id | Delete a vehicle by vehicle id |
 
 ### User Endpoint
+
 | METHOD | API | REMARKS|
 | :------: | --- | ------ |
 | **GET** | /users | List data of users |
@@ -24,6 +27,7 @@ This is the repository of Fazztrack Backend Project that I learn while in this b
 | **DELETE** | /users/:id | Delete an user by user id |
 
 ### History Endpoint
+
 | METHOD | API | REMARKS|
 | :------: | --- | ------ |
 | **GET** | /histories | List data of histories |
@@ -34,6 +38,7 @@ This is the repository of Fazztrack Backend Project that I learn while in this b
 | **DELETE** | /histories/:id | Delete an history by history id |
 
 ### Categories Endpoint
+
 | METHOD | API | REMARKS|
 | :------: | --- | ------ |
 | **GET** | /categories | List data of categories |
@@ -42,14 +47,14 @@ This is the repository of Fazztrack Backend Project that I learn while in this b
 | **PUT** | /categories/:id | Update all data of a history by history id |
 | **DELETE** | /categories/:id | Delete an history by history id |
 
-
 ## Request that has query params
 
 ### Vehicles Endpoints
+
 - Filter vehicles data ```GET```
 
 | KEYS | REMARKS | DESCRIPTION |
-| :------: | ------ |------ |
+| :------: | :------: |------ |
 | limit | ```number``` |use number to limit results of vehicles|
 | page |```number```|use number to get another results vehicles|
 | name |```string```| find vehicle name |
