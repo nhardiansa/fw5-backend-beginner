@@ -63,3 +63,10 @@ exports.pageInfoCreator = (totalDataCount, url, values) => {
     lastPages: totalPages
   });
 };
+
+exports.validatorResult = (status, message) => {
+  return {
+    status,
+    message
+  };
+};
