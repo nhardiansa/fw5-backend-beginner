@@ -10,6 +10,10 @@ const {
   returningSuccess,
   pageInfoCreator
 } = require('../helpers/responseHandler');
+
+const {
+  dateValidator
+} = require('../helpers/validator');
 const usersModel = require('../models/users');
 
 exports.getUser = async (req, res) => {
@@ -58,6 +62,16 @@ exports.addUser = async (req, res) => {
     if (!gender.includes(data.gender)) {
       return returningError(res, 400, "Your gender isn't validate!");
     }
+
+    console.log(data.birthdate);
+
+    const dateValidation = dateValidator(data.birthdate);
+
+    if (!dateValidation.status) {
+      return returningError(res, 400, dateValidation.message);
+    }
+
+    // return returningError(res, 500, 'Not implented yet!');
 
     for (const key in data) {
       if (data[key] === null) {
