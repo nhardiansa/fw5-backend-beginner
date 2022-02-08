@@ -17,6 +17,9 @@ const historiesModel = require('../models/histories');
 const usersModel = require('../models/users');
 const vehicleModel = require('../models/vehicles');
 const categoryModel = require('../models/categories');
+const {
+  dateValidator
+} = require('../helpers/validator');
 
 const codeGenerator = (vehicleName) => {
   const vokal = ['a', 'i', 'u', 'e', 'o'];
@@ -88,6 +91,30 @@ exports.addHistory = async (req, res) => {
     // validate inputed data
     if (!dataValidator(reValidate)) {
       return returningError(res, 400, 'Data not validated');
+    }
+
+    // Booking date validation
+    const date1 = dateValidator(data.start_rent);
+    const date2 = dateValidator(data.end_rent);
+
+    if (!date1.status || !date2.status) {
+      return returningError(res, 400, 'Booking date not valid');
+    }
+
+    const startRent = new Date(data.start_rent);
+    const endRent = new Date(data.end_rent);
+    const today = new Date();
+
+    const checkNow = Math.ceil((startRent - today) / (1000 * 60 * 60 * 24));
+
+    if (checkNow < 0) {
+      return returningError(res, 400, 'Booking date must be greater than today');
+    }
+
+    const diffDays = Math.ceil((endRent - startRent) / (1000 * 60 * 60 * 24));
+
+    if (diffDays < 1 || diffDays > 30) {
+      return returningError(res, 400, 'Booking date must be between 1 - 30 days');
     }
 
     // return returningError(res, 500, 'Not yet implemented');
