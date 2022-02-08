@@ -83,8 +83,12 @@ exports.requestMapping = (data, rules) => {
       }
       if (rules[k] === 'phone') {
         const regexPattern = /\+?([ -]?\d+)+|\(\d+\)([ -]\d+)/g;
-        if (regexPattern.test(data[k])) {
-          dump[k] = data[k];
+        if (data[k].length >= 10) {
+          if (regexPattern.test(data[k])) {
+            dump[k] = data[k];
+          } else {
+            dump[k] = null;
+          }
         } else {
           dump[k] = null;
         }
