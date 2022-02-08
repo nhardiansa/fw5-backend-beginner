@@ -1,7 +1,11 @@
+const {
+  APP_URL
+} = process.env;
+
 module.exports = {
   usersTable: 'users',
   historiesTable: 'histories',
   vehiclesTable: 'vehicles',
   categoriesTable: 'categories',
-  baseURL: 'http://localhost:5000'
+  baseURL: APP_URL
 };
