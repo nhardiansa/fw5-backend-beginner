@@ -9,6 +9,7 @@ app.use(express.urlencoded({
 }));
 
 app.use(require('./src/routes'));
+app.use('/uploads', express.static('uploads'));
 
 // handling unregistered routes
 [
