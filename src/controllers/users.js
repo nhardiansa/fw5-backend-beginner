@@ -43,7 +43,6 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
-    // const data = requestReceiver(req.body, userKeys);
     const data = requestMapping(req.body, {
       name: 'string',
       email: 'email',
@@ -53,18 +52,24 @@ exports.addUser = async (req, res) => {
       address: 'string'
     });
 
-    if (Object.keys(data).length < 1) {
-      return returningError(res, 400, 'Data not validated');
+    if (req.file) {
+      data.image = req.file.path;
     }
 
+    // return returningError(res, 500, 'Not implemented yet!');
+
+    if (Object.keys(data).length < 1) {
+      return returningError(res, 400, 'Data incomplete');
+    }
+
+    // gender validation
     const gender = ['female', 'male'];
 
     if (!gender.includes(data.gender)) {
       return returningError(res, 400, "Your gender isn't validate!");
     }
 
-    console.log(data.birthdate);
-
+    // birthdate validation
     const dateValidation = dateValidator(data.birthdate);
 
     if (!dateValidation.status) {
@@ -91,9 +96,10 @@ exports.addUser = async (req, res) => {
     }
 
     const results = await usersModel.insertUser(data);
-    const user = await usersModel.getUser(results.insertId);
 
     if (results.affectedRows > 0) {
+      const user = await usersModel.getUser(results.insertId);
+      user[0].image = `${baseURL}/${user[0].image}`;
       return returningSuccess(res, 201, 'Success adding a user', user[0]);
     }
   } catch (error) {
