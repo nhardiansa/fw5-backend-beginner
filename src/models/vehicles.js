@@ -13,10 +13,8 @@ exports.getVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-    SELECT v.id, v.name as merk, v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location 
+    SELECT v.id, v.name , v.price, v.prepayment, v.capacity, v.qty, v.location, v.image
     FROM ${table} v
-    LEFT JOIN ${categoryTable} c
-    ON v.category_id = c.id
     WHERE v.name LIKE '${search}%' 
     LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
       if (err) {
@@ -30,7 +28,17 @@ exports.getVehicles = (data) => {
 
 exports.getVehicle = (id) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
+    db.query(`
+        SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty,
+          SUM(( SELECT h.qty WHERE h.vehicle_id=${id} AND h.returned='0' )) AS booked,
+        v.location, c.id as category_id, c.name as category_name, v.image, v.created_at, v.updated_at
+        FROM ${table} v
+        RIGHT JOIN ${historiesTable} h
+        ON v.id=h.vehicle_id
+        RIGHT JOIN ${categoryTable} c
+        ON v.category_id = c.id
+        WHERE v.id = ?
+      `, [id], (err, results) => {
       if (err) {
         reject(err);
       } else {
@@ -101,7 +109,7 @@ exports.deleteVehicle = (id) => {
 
 exports.listLimitVehicle = (page, limit) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT id, merk, price, prepayment, capacity, type, isAvailable, location FROM ${table} LIMIT = ? OFFSET = ?`, [page, limit], (err, results) => {
+    db.query(`SELECT id, name, price, prepayment, capacity, type, isAvailable, location FROM ${table} LIMIT = ? OFFSET = ?`, [page, limit], (err, results) => {
       if (err) {
         reject(err);
       } else {
@@ -133,7 +141,7 @@ exports.getPopularVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT v.id, v.name as merk, v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location 
+      SELECT v.id, v.name , v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location 
       FROM ${table} v
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
@@ -159,7 +167,7 @@ exports.getPopularVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT v.id, v.name AS merk, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rentCount 
+      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, v.image, COUNT(*) AS rentCount 
       FROM ${table} v
       RIGHT JOIN ${historiesTable} h
       ON h.vehicle_id = v.id
@@ -184,7 +192,7 @@ exports.countPopularVehicles = () => {
     db.query(`
       SELECT COUNT(*) AS 'rows'
       FROM (
-        SELECT v.id, v.name AS merk, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rentCount 
+        SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rentCount 
         FROM ${table} v
         RIGHT JOIN ${historiesTable} h
         ON h.vehicle_id = v.id
@@ -222,7 +230,7 @@ exports.getFilterVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, c.name AS type 
+      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, v.image 
       FROM ${table} v
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
