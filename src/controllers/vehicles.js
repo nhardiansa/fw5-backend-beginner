@@ -2,14 +2,14 @@ const {
   baseURL
 } = require('../helpers/constant');
 const {
-  dataValidator,
   validateId,
   requestMapping
 } = require('../helpers/requestHandler');
 const {
   returningSuccess,
   returningError,
-  pageInfoCreator
+  pageInfoCreator,
+  dataMapping
 } = require('../helpers/responseHandler');
 const vehiclesModel = require('../models/vehicles');
 const categoriesModel = require('../models/categories');
@@ -59,33 +59,29 @@ exports.getVehicle = async (req, res) => {
 
 exports.addNewVehicle = async (req, res) => {
   try {
-    const data = requestMapping(req.body, {
-      name: 'string',
-      price: 'number',
-      prepayment: 'boolean',
-      capacity: 'number',
-      qty: 'number',
-      location: 'string',
-      category_id: 'number'
-    });
+    const rules = {
+      name: 'string|required',
+      price: 'number|required',
+      prepayment: 'boolean|required',
+      capacity: 'number|required',
+      qty: 'number|required',
+      location: 'string|required',
+      category_id: 'number|required'
+    };
+    const data = requestMapping(req.body, rules);
+
+    // console.log(data);
+
+    // return returningError(res, 500, 'Not implemented yet');
 
     if (Object.keys(data).length < 1) {
       return returningError(res, 400, 'Data not validated');
     }
 
-    const {
-      prepayment
-    } = data;
-
-    if ((Number(prepayment) > 1 || Number(prepayment) < 0)) {
-      return returningError(res, 400, 'Your data not validate');
-    }
-
-    if (!dataValidator(data)) {
-      return res.status(400).json({
-        success: false,
-        message: 'Your data not validate'
-      });
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      }
     }
 
     const existingCategory = await categoriesModel.getCategory(data.category_id);
@@ -100,14 +96,16 @@ exports.addNewVehicle = async (req, res) => {
       return returningError(res, 400, 'Vehicle with inputed data already exist');
     }
 
+    if (!req.file) {
+      return returningError(res, 400, 'Vehicle picture must be uploaded');
+    }
+
+    data.image = req.file.path;
+
     const results = await vehiclesModel.addNewVehicle(data);
     const vehicle = await vehiclesModel.getVehicle(results.insertId);
 
-    return res.status(201).json({
-      success: true,
-      message: 'Success add new vehicle',
-      results: vehicle[0]
-    });
+    return returningSuccess(res, 201, 'Success add new vehicle', dataMapping(vehicle)[0]);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to add new vehicle');
@@ -120,15 +118,21 @@ exports.updateVehicle = async (req, res) => {
       id
     } = req.params;
 
-    const data = {
-      name: req.body.name,
-      price: Number(req.body.price),
-      prepayment: req.body.prepayment,
-      capacity: Number(req.body.capacity),
-      qty: Number(req.body.qty),
-      location: req.body.location,
-      category_id: req.body.category_id
+    const rules = {
+      name: 'string|required',
+      price: 'number|required',
+      prepayment: 'boolean|required',
+      capacity: 'number|required',
+      qty: 'number|required',
+      location: 'string|required',
+      category_id: 'number|required'
     };
+
+    const data = requestMapping(req.body, rules);
+
+    console.log(data);
+
+    // return returningError(res, 500, 'Not implemented yet');
 
     if (!validateId(id)) {
       return returningError(res, 404, 'Id not a number');
@@ -143,12 +147,14 @@ exports.updateVehicle = async (req, res) => {
     } = data;
 
     if (Number(prepayment) > 1 || Number(prepayment) < 0) {
-      return returningError(res, 400, 'Your data not validate');
+      return returningError(res, 400, 'Your prepayment not validate');
     }
 
     // validator data
-    if (!dataValidator(data)) {
-      return returningError(res, 400, 'Your data not validate');
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      }
     }
 
     const existingCategory = await categoriesModel.getCategory(data.category_id);
@@ -169,6 +175,12 @@ exports.updateVehicle = async (req, res) => {
       return returningError(res, 404, 'Vehicle not found');
     }
 
+    if (!req.file) {
+      return returningError(res, 400, 'Vehicle picture must be uploaded');
+    }
+
+    data.image = req.file.path;
+
     const results = await vehiclesModel.updateVehicle(id, data);
 
     if (results.affectedRows < 1) {
@@ -177,7 +189,7 @@ exports.updateVehicle = async (req, res) => {
 
     const vehicle = await vehiclesModel.getVehicle(id);
 
-    return returningSuccess(res, 200, 'Success update vehicle', vehicle[0]);
+    return returningSuccess(res, 200, 'Success update vehicle', dataMapping(vehicle)[0]);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to update vehicle');
@@ -206,7 +218,7 @@ exports.deleteVehicle = async (req, res) => {
       return returningError(res, 500, 'Failed to delete vehicle');
     }
 
-    return returningSuccess(res, 200, 'Success delete vehicle', existingVehicle[0]);
+    return returningSuccess(res, 200, 'Success delete vehicle', dataMapping(existingVehicle)[0]);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to delete vehicle');
