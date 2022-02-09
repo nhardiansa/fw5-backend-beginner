@@ -8,7 +8,8 @@ const {
 const {
   returningError,
   returningSuccess,
-  pageInfoCreator
+  pageInfoCreator,
+  dataMapping
 } = require('../helpers/responseHandler');
 
 const {
@@ -99,8 +100,7 @@ exports.addUser = async (req, res) => {
 
     if (results.affectedRows > 0) {
       const user = await usersModel.getUser(results.insertId);
-      user[0].image = `${baseURL}/${user[0].image}`;
-      return returningSuccess(res, 201, 'Success adding a user', user[0]);
+      return returningSuccess(res, 201, 'Success adding a user', dataMapping(user));
     }
   } catch (error) {
     console.error(error);
@@ -158,6 +158,18 @@ exports.updateUser = async (req, res) => {
       address: 'string'
     });
 
+    if (req.file) {
+      data.image = req.file.path;
+    }
+
+    // return returningError(res, 500, 'Not implemented yet!');
+
+    const findUser = await usersModel.getUser(id);
+
+    if (findUser.length < 1) {
+      return returningError(res, 404, 'User not found');
+    }
+
     if (Object.keys(data).length < 1) {
       return returningError(res, 400, 'Data not validated');
     }
@@ -193,12 +205,12 @@ exports.updateUser = async (req, res) => {
 
     if (results.affectedRows > 0) {
       const user = await usersModel.getUser(id);
-      return returningSuccess(res, 200, 'Success updating a user', user[0]);
+      return returningSuccess(res, 200, 'Success updating a user', dataMapping(user));
     }
 
-    return returningError(res, 500, 'Failed to delete an user');
+    return returningError(res, 500, 'Failed to update an user');
   } catch (error) {
-    const err = error.sqlMessage ? error.sqlMessage : 'Failed to delete user';
+    const err = error.sqlMessage ? error.sqlMessage : 'Failed to update an user';
     return returningError(res, 500, err);
   }
 };
