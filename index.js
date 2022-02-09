@@ -2,7 +2,10 @@ const express = require('express');
 require('dotenv').config();
 
 const app = express();
-const PORT = process.env.APP_PORT || 5000;
+const {
+  APP_PORT,
+  PORT
+} = process.env;
 
 app.use(express.urlencoded({
   extended: true
@@ -28,6 +31,6 @@ app.use('/uploads', express.static('uploads'));
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`App is running in port ${PORT}`);
+app.listen(PORT || APP_PORT, () => {
+  console.log(`App is running in port ${PORT || APP_PORT}`);
 });
