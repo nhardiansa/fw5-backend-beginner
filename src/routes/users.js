@@ -16,7 +16,7 @@ users.get('/', listUsers);
 users.get('/profile/:id', getUser);
 users.get('/:id', getUser);
 users.post('/', uploadMiddleware('image'), addUser);
-users.patch('/:id', updateUser);
+users.patch('/:id', uploadMiddleware('image'), updateUser);
 users.delete('/:id', deleteUser);
 
 module.exports = users;
