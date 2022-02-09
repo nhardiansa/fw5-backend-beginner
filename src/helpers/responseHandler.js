@@ -79,6 +79,8 @@ exports.dataMapping = (data) => {
   data.map(el => {
     if (el.image !== null) {
       el.image = `${APP_URL}/${el.image}`;
+    } else {
+      el.image = null;
     }
     return el;
   });
