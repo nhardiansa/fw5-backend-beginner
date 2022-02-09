@@ -1,3 +1,7 @@
+const {
+  APP_URL
+} = process.env;
+
 exports.returningError = (res, status, message) => {
   return res.status(status).json({
     success: false,
@@ -10,8 +14,8 @@ exports.returningSuccess = (res, status, message, data, pageInfo = null) => {
     return res.status(status).json({
       success: true,
       message: message,
-      results: data,
-      pageInfo
+      pageInfo,
+      results: data
     });
   }
 
@@ -69,4 +73,15 @@ exports.validatorResult = (status, message) => {
     status,
     message
   };
+};
+
+exports.dataMapping = (data) => {
+  data.map(el => {
+    if (el.image !== null) {
+      el.image = `${APP_URL}/${el.image}`;
+    }
+    return el;
+  });
+
+  return data;
 };
