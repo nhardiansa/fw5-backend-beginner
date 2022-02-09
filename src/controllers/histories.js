@@ -2,8 +2,6 @@ const {
   baseURL
 } = require('../helpers/constant');
 const {
-  dataValidator,
-  requestReceiver,
   validateId,
   requestMapping
 } = require('../helpers/requestHandler');
@@ -72,25 +70,23 @@ exports.listHistories = async (req, res) => {
 exports.addHistory = async (req, res) => {
   try {
     const rules = {
-      user_id: 'number',
-      vehicle_id: 'number',
-      payment: 'boolean',
-      returned: 'boolean',
-      prepayment: 'number',
-      qty: 'number',
-      start_rent: 'date',
-      end_rent: 'date'
+      user_id: 'number|required',
+      vehicle_id: 'number|required',
+      payment: 'boolean|required',
+      returned: 'boolean|required',
+      prepayment: 'number|required',
+      qty: 'number|required',
+      start_rent: 'date|required',
+      end_rent: 'date|required'
     };
 
     const data = requestMapping(req.body, rules);
 
-    const reValidate = requestReceiver(data, [
-      'user_id', 'vehicle_id', 'payment', 'returned', 'prepayment', 'qty', 'start_rent', 'end_rent'
-    ]);
-
     // validate inputed data
-    if (!dataValidator(reValidate)) {
-      return returningError(res, 400, 'Data not validated');
+    for (const key in data) {
+      if (!data[key]) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|')[0]}`);
+      }
     }
 
     // Booking date validation
@@ -108,7 +104,7 @@ exports.addHistory = async (req, res) => {
     const checkNow = Math.ceil((startRent - today) / (1000 * 60 * 60 * 24));
 
     if (checkNow < 0) {
-      return returningError(res, 400, 'Booking date must be greater than today');
+      return returningError(res, 400, 'Booking date must be today or greater than today');
     }
 
     const diffDays = Math.ceil((endRent - startRent) / (1000 * 60 * 60 * 24));
@@ -116,8 +112,6 @@ exports.addHistory = async (req, res) => {
     if (diffDays < 1 || diffDays > 30) {
       return returningError(res, 400, 'Booking date must be between 1 - 30 days');
     }
-
-    // return returningError(res, 500, 'Not yet implemented');
 
     // check if user exist
     const user = await usersModel.getUser(data.user_id);
@@ -132,6 +126,53 @@ exports.addHistory = async (req, res) => {
     if (vehicle.length < 1) {
       return returningError(res, 404, 'Vehicle not found');
     }
+
+    // check qty of order
+    if (Number(data.qty) < 1) {
+      return returningError(res, 400, 'Qty must be greater than 0');
+    }
+
+    // check if vehicle is available to order
+    const booked = vehicle[0].booked;
+    const stocks = vehicle[0].qty;
+    const available = stocks - booked;
+
+    if (available < 1) {
+      return returningError(res, 400, 'This vehicle is fully booked');
+    }
+
+    if (available < Number(data.qty)) {
+      return returningError(res, 400, `Now, you can only book up to a maximum of ${available} vehicles`);
+    }
+
+    // console.log(data);
+
+    // check if vehicle is available to pre-payment
+    if (Number(data.prepayment) > 0) {
+      // check if user already pay
+      if (Number(data.payment)) {
+        return returningError(res, 400, 'You can not pay and prepay too');
+      }
+
+      if (Number(vehicle[0].prepayment) < 1) {
+        return returningError(res, 400, 'This vehicle is not available for pre-payment');
+      }
+
+      if (Number(vehicle[0].prepayment) && Number(data.prepayment)) {
+        const minPrice = Math.round(vehicle[0].price * (50 / 100));
+
+        if (Number(data.prepayment) < minPrice) {
+          return returningError(res, 400, `Pre-payment must be at least ${minPrice}`);
+        }
+      }
+    }
+
+    // check if user not pay
+    if (!Number(data.payment) && !Number(data.prepayment)) {
+      return returningError(res, 400, 'You must pay or prepay');
+    }
+
+    // return returningError(res, 500, 'Not yet implemented');
 
     const paymentCode = codeGenerator(vehicle[0].name);
     data.payment_code = paymentCode;
