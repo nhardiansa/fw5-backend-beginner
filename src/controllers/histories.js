@@ -154,6 +154,10 @@ exports.addHistory = async (req, res) => {
         return returningError(res, 400, 'You can not pay and prepay too');
       }
 
+      if (Number(data.prepayment) >= vehicle[0].price) {
+        return returningError(res, 400, 'Prepayment must be less than vehicle price');
+      }
+
       if (Number(vehicle[0].prepayment) < 1) {
         return returningError(res, 400, 'This vehicle is not available for pre-payment');
       }
@@ -236,32 +240,27 @@ exports.upadateHistory = async (req, res) => {
       id
     } = req.params;
 
-    const data = requestMapping(req.body, {
+    const rules = {
       payment: 'boolean',
       returned: 'boolean',
       prepayment: 'number'
-    });
+    };
+
+    const data = requestMapping(req.body, rules);
 
     if (Object.keys(data).length < 1) {
       return returningError(res, 400, 'Data not validated');
     }
 
-    // validate inputed id
-    if (!validateId(id)) {
-      return returningError(res, 400, 'Id must be a number');
-    }
-
-    const warn = [];
-    let strWarning = '';
     for (const key in data) {
-      if (data[key] === null) {
-        warn.push(key);
-        delete data[key];
+      if (!data[key]) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|')[0]}`);
       }
     }
 
-    if (warn.length > 0) {
-      strWarning = `Some data updated but can't for ${warn.length > 0 ? warn.join(', ') : warn[0]} because data not valid`;
+    // validate inputed id
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
     }
 
     // check if history exist
@@ -283,7 +282,7 @@ exports.upadateHistory = async (req, res) => {
     // get updated history
     const updatedHistory = await historiesModel.getHistory(id);
 
-    return returningSuccess(res, 200, strWarning || 'History has been updated', updatedHistory[0]);
+    return returningSuccess(res, 200, 'History has been updated', updatedHistory[0]);
   } catch (error) {
     console.log(error);
     console.error(error);
