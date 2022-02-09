@@ -27,7 +27,7 @@ exports.getVehicles = async (req, res) => {
 
     const pageInfo = pageInfoCreator(countResult[0].rows, `${baseURL}/vehicles?`, data);
 
-    return returningSuccess(res, 200, 'List of vehicles', results, pageInfo);
+    return returningSuccess(res, 200, 'List of vehicles', dataMapping(results), pageInfo);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get vehicles');
@@ -50,7 +50,15 @@ exports.getVehicle = async (req, res) => {
       return returningError(res, 404, 'Vehicle not found');
     }
 
-    return returningSuccess(res, 200, 'Success get vehicle', vehicle[0]);
+    // change to avaliable
+    vehicle.map(el => {
+      if (el.booked === null) {
+        el.booked = 0;
+      }
+      return el;
+    });
+
+    return returningSuccess(res, 200, 'Success get vehicle', dataMapping(vehicle)[0]);
   } catch (error) {
     console.log(error);
     return returningError(res, 500, "Can't get vehicle");
@@ -247,7 +255,7 @@ exports.getPopularVehicles = async (req, res) => {
 
 exports.getFilterVehicles = async (req, res) => {
   try {
-    const data = requestMapping(req.query, {
+    const rules = {
       name: 'string',
       minPrice: 'number',
       maxPrice: 'number',
@@ -257,11 +265,30 @@ exports.getFilterVehicles = async (req, res) => {
       location: 'string',
       sort_price: 'sorter',
       sort_qty: 'sorter',
-      sort_capacity: 'sorter'
-    });
+      sort_capacity: 'sorter',
+      page: 'number',
+      limit: 'number'
+    };
 
-    data.page = Number(req.query.page) || 1;
-    data.limit = Number(req.query.limit) || 5;
+    const data = requestMapping(req.query, rules);
+
+    for (const key in data) {
+      if (!data[key]) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      }
+    }
+
+    const {
+      page,
+      limit
+    } = req.query;
+
+    if (!page) {
+      data.page = 1;
+    }
+    if (!limit) {
+      data.limit = 5;
+    }
 
     if (data.category_id) {
       const existingCategory = await categoriesModel.getCategory(data.category_id);
@@ -288,7 +315,7 @@ exports.updateVehiclePartial = async (req, res) => {
     const {
       id
     } = req.params;
-    const data = requestMapping(req.body, {
+    const rules = {
       name: 'string',
       price: 'number',
       prepayment: 'boolean',
@@ -296,7 +323,13 @@ exports.updateVehiclePartial = async (req, res) => {
       qty: 'number',
       location: 'string',
       category_id: 'number'
-    });
+    };
+
+    const data = requestMapping(req.body, rules);
+
+    // console.log(data);
+
+    // return returningError(res, 500, 'Not implemented yet');
 
     if (!validateId(id)) {
       return returningError(res, 400, 'Id not a number');
@@ -304,6 +337,12 @@ exports.updateVehiclePartial = async (req, res) => {
 
     if (Object.keys(data).length < 1) {
       return returningError(res, 400, 'Data not validated');
+    }
+
+    for (const key in data) {
+      if (data[key] === null) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      }
     }
 
     // checking duplicate vehicle name
