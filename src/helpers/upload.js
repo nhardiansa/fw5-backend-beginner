@@ -24,19 +24,22 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-exports.uploadMiddleware = (key) => (req, res, next) => {
+exports.uploadMiddleware = (key, maxSize = null) => {
   const upload = multer({
     storage: storage,
     fileFilter: fileFilter,
     limits: {
-      fileSize: 2097152 // max 2MB
+      fileSize: maxSize || 2097152 // max 2MB
     }
   }).single(key);
 
-  return upload(req, res, (err) => {
-    if (err) {
-      return returningError(res, 400, err.message);
-    }
-    next();
-  });
+  // returning middleware
+  return (req, res, next) => {
+    upload(req, res, (err) => {
+      if (err) {
+        return returningError(res, 400, err.message);
+      }
+      next();
+    });
+  };
 };
