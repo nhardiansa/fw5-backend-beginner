@@ -1,3 +1,5 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
 const {
   baseURL
 } = require('../helpers/constant');
@@ -16,9 +18,14 @@ const {
 } = require('../helpers/responseHandler');
 
 const {
-  dateValidator
+  dateValidator,
+  noNullData
 } = require('../helpers/validator');
 const usersModel = require('../models/users');
+
+const {
+  SECRET_KEY
+} = process.env;
 
 exports.getUser = async (req, res) => {
   try {
@@ -253,5 +260,99 @@ exports.listUsers = async (req, res) => {
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get list of users');
+  }
+};
+
+exports.registerUser = async (req, res) => {
+  try {
+    const rules = {
+      name: 'string|required',
+      email: 'email|required',
+      phone: 'phone number|required',
+      password: 'string|required'
+    };
+
+    const data = requestMapping(req.body, rules);
+
+    const checkResult = noNullData(res, data, rules);
+    if (checkResult) {
+      return returningError(res, 400, checkResult);
+    }
+
+    // check if password must has at least 6 characters
+    if (data.password.length < 6) {
+      return returningError(res, 400, 'Password must be at least 6 characters');
+    }
+
+    // check if email is new
+    const isEmailExist = await usersModel.findEmail(data.email);
+
+    if (isEmailExist[0].rows > 0) {
+      return returningError(res, 400, 'Email already registered');
+    }
+
+    // check if phone is new
+    const isPhoneExist = await usersModel.findPhone(data.phone);
+
+    if (isPhoneExist[0].rows > 0) {
+      return returningError(res, 400, 'Phone number already registered');
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashePassword = bcrypt.hashSync(data.password, salt);
+
+    data.password = hashePassword;
+
+    const results = await usersModel.insertUser(data);
+
+    if (results.affectedRows > 0) {
+      const user = await usersModel.getUser(results.insertId);
+      return returningSuccess(res, 201, 'Success registering a user', dataMapping(user)[0]);
+    }
+
+    return returningError(res, 500, 'Failed to register an user');
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to register an user');
+  }
+};
+
+exports.loginUser = async (req, res) => {
+  try {
+    const {
+      email,
+      password
+    } = req.body;
+
+    // check if email is registered
+    const user = await usersModel.findEmail(email, true);
+
+    if (user.length < 1) {
+      return returningError(res, 403, 'Password or email is incorrect');
+    }
+
+    // check if password is correct
+    const isPasswordCorrect = bcrypt.compareSync(password, user[0].password);
+
+    if (!isPasswordCorrect) {
+      return returningError(res, 403, 'Password or email is incorrect');
+    }
+
+    const data = {
+      id: user[0].id
+    };
+
+    if (user[0].email.includes('@vehicle.rent.mail.com')) {
+      data.role = 'admin';
+    }
+
+    const token = jwt.sign(data, SECRET_KEY);
+
+    return returningSuccess(res, 200, 'Success login', {
+      token
+    });
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to login an user');
   }
 };
