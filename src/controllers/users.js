@@ -274,7 +274,7 @@ exports.registerUser = async (req, res) => {
 
     const data = requestMapping(req.body, rules);
 
-    const checkResult = noNullData(res, data, rules);
+    const checkResult = noNullData(data, rules);
     if (checkResult) {
       return returningError(res, 400, checkResult);
     }
