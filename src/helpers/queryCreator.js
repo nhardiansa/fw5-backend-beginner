@@ -34,3 +34,11 @@ exports.whereLikeCreator = (data) => {
 
   return str;
 };
+
+exports.whereLikeCreator = (data) => {
+  let dataInArr = Object.keys(data);
+  dataInArr = dataInArr.map((el) => {
+    return `${el} = ?`;
+  });
+  return dataInArr.join(' && ');
+};
