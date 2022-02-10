@@ -17,7 +17,8 @@ const vehicleModel = require('../models/vehicles');
 const categoryModel = require('../models/categories');
 const {
   dateValidator,
-  noNullData
+  noNullData,
+  nullDataResponse
 } = require('../helpers/validator');
 
 const codeGenerator = (vehicleName) => {
@@ -322,36 +323,48 @@ exports.getHistory = async (req, res) => {
 
 exports.getFilteredHistories = async (req, res) => {
   try {
-    const data = requestMapping(req.query, {
-      user_id: 'number',
+    const rules = {
       category_id: 'number',
       vehicle_name: 'string',
       start_rent: 'sorter',
       sort_date: 'sorter',
       sort_name: 'sorter',
       sort_returned: 'sorter',
-      sort_payment: 'sorter'
-    });
+      sort_payment: 'sorter',
+      page: 'number',
+      limit: 'number'
+    };
 
-    data.limit = Number(req.query.limit) || 5;
-    data.page = Number(req.query.limit) || 1;
+    const {
+      userId
+    } = req.params;
 
-    const user = await usersModel.getUser(data.user_id);
+    const data = requestMapping(req.query, rules);
 
-    if (user.length < 1) {
-      return returningError(res, 404, 'User not found');
-    }
-
-    if (data.category_id !== null && data.category_id) {
-      if (!validateId(data.category_id)) {
-        return returningError(res, 400, 'Category id must be a number');
+    if (userId) {
+      if (!validateId(userId)) {
+        return returningError(res, 400, 'Id must be a number');
       }
 
+      data.user_id = userId;
+    }
+
+    nullDataResponse(res, data, rules);
+
+    if (data.category_id) {
       const category = await categoryModel.getCategory(data.category_id);
 
       if (category.length < 1) {
         return returningError(res, 404, 'Category not found');
       }
+    }
+
+    if (!data.page) {
+      data.page = 1;
+    }
+
+    if (!data.limit) {
+      data.limit = 5;
     }
 
     const histories = await historiesModel.getFilteredHistories(data);
