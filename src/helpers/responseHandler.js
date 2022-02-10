@@ -1,8 +1,15 @@
 const {
+  deleteFile
+} = require('./fileHandler');
+
+const {
   APP_URL
 } = process.env;
 
-exports.returningError = (res, status, message) => {
+exports.returningError = (res, status, message, deletePath = false) => {
+  if (deletePath) {
+    deleteFile(deletePath);
+  }
   return res.status(status).json({
     success: false,
     message
