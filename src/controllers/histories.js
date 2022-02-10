@@ -16,7 +16,8 @@ const usersModel = require('../models/users');
 const vehicleModel = require('../models/vehicles');
 const categoryModel = require('../models/categories');
 const {
-  dateValidator
+  dateValidator,
+  noNullData
 } = require('../helpers/validator');
 
 const codeGenerator = (vehicleName) => {
@@ -211,18 +212,25 @@ exports.deleteHistory = async (req, res) => {
     // check if history exist
     const history = await historiesModel.getHistory(id);
 
+    // check if vehicle is returned
+    if (!Number(history[0].returned)) {
+      return returningError(res, 400, 'This vehicle is not returned yet');
+    }
+
     // if history exist
     if (history.length > 0) {
       // delete history
-      const result = await historiesModel.deleteHistory(id);
+      const result = await historiesModel.deleteHistoryUser(id);
 
       // if history can't to delete
       if (result.affectedRows < 1) {
         return returningError(res, 500, "Can't delete history");
       }
 
+      const historyDeleted = await historiesModel.getHistory(id);
+
       // if history deleted
-      return returningSuccess(res, 200, 'History has been deleted', history[0]);
+      return returningSuccess(res, 200, 'History has been deleted', historyDeleted[0]);
     }
 
     // if history not exist
@@ -248,14 +256,11 @@ exports.upadateHistory = async (req, res) => {
 
     const data = requestMapping(req.body, rules);
 
-    if (Object.keys(data).length < 1) {
-      return returningError(res, 400, 'Data not validated');
-    }
+    // check type of inputed data
+    const checkData = noNullData(data, rules);
 
-    for (const key in data) {
-      if (!data[key]) {
-        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|')[0]}`);
-      }
+    if (checkData) {
+      return returningError(res, 400, checkData);
     }
 
     // validate inputed id
