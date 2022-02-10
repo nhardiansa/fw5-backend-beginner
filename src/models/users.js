@@ -7,7 +7,7 @@ const {
 exports.getUser = (id) => {
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
+      SELECT id, name, email, phone, gender, birthdate, address, image, created_at, updated_at FROM ${table} WHERE id = ?`, [id], (err, results) => {
       if (err) {
         reject(err);
       }
@@ -54,9 +54,9 @@ exports.updateUser = (id, data) => {
   });
 };
 
-exports.findEmail = (email) => {
+exports.findEmail = (email, data = false) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT COUNT(*) AS 'rows' FROM ${table} WHERE email = ?`, [email], (err, res) => {
+    db.query(`SELECT ${data ? '*' : "COUNT(*) AS 'rows'"} FROM ${table} WHERE email = ?`, [email], (err, res) => {
       if (err) {
         reject(err);
       } else {
