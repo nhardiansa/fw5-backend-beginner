@@ -35,7 +35,7 @@ exports.whereLikeCreator = (data) => {
   return str;
 };
 
-exports.whereLikeCreator = (data) => {
+exports.whereCreator = (data) => {
   let dataInArr = Object.keys(data);
   dataInArr = dataInArr.map((el) => {
     return `${el} = ?`;
