@@ -1,6 +1,5 @@
 const {
-  validatorResult,
-  returningError
+  validatorResult
 } = require('./responseHandler');
 
 exports.dateValidator = (date) => {
@@ -37,7 +36,9 @@ exports.dateValidator = (date) => {
 exports.noNullData = (res, data, rules) => {
   for (const key in data) {
     if (data[key] === null) {
-      return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      return `Your ${key} must be ${rules[key].split('|').shift()}`;
     }
   }
+
+  return '';
 };
