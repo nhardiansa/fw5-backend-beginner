@@ -89,24 +89,10 @@ exports.addNewVehicle = async (req, res) => {
     }
 
     // check if all data is valid
-    const checkData = noNullData(res, data, rules);
+    const checkData = noNullData(data, rules);
 
     if (checkData) {
       return returningError(res, 400, checkData);
-    }
-
-    const existingCategory = await categoriesModel.getCategory(data.category_id);
-
-    if (existingCategory.length < 1) {
-      return returningError(res, 404, 'Category not found');
-    }
-
-    const existingVehicle = await vehiclesModel.checkExistVehicle({
-      name: data.name
-    });
-
-    if (existingVehicle.length > 0) {
-      return returningError(res, 400, 'Vehicle name already exist');
     }
 
     if (!req.file) {
@@ -114,6 +100,22 @@ exports.addNewVehicle = async (req, res) => {
     }
 
     data.image = req.file.path;
+
+    // check if vehicle category exist
+    const existingCategory = await categoriesModel.getCategory(data.category_id);
+
+    if (existingCategory.length < 1) {
+      return returningError(res, 404, 'Category not found', data.image);
+    }
+
+    // check if vehicle name already exist
+    const existingVehicle = await vehiclesModel.checkExistVehicle({
+      name: data.name
+    });
+
+    if (existingVehicle.length > 0) {
+      return returningError(res, 400, 'Vehicle name already exist', data.image);
+    }
 
     const results = await vehiclesModel.addNewVehicle(data);
     const vehicle = await vehiclesModel.getVehicle(results.insertId);
