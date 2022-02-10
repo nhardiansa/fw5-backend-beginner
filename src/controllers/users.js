@@ -2,6 +2,9 @@ const {
   baseURL
 } = require('../helpers/constant');
 const {
+  deleteFile
+} = require('../helpers/fileHandler');
+const {
   validateId,
   requestMapping
 } = require('../helpers/requestHandler');
@@ -121,13 +124,19 @@ exports.deleteUser = async (req, res) => {
     const user = await usersModel.getUser(id);
 
     if (user.length > 0) {
+      const imagePath = user[0].image;
+
+      if (imagePath) {
+        deleteFile(imagePath);
+      }
+
       const results = await usersModel.deleteUser(id);
 
       if (results.affectedRows > 0) {
         return res.status(200).json({
           success: true,
           message: 'Success delete a user',
-          results: user[0]
+          results: dataMapping(user)[0]
         });
       } else {
         throw new Error('Failed to delete data');
@@ -199,6 +208,13 @@ exports.updateUser = async (req, res) => {
       if (isPhoneExist[0].rows > 0) {
         return returningError(res, 400, 'Phone already registered');
       }
+    }
+
+    const oldData = await usersModel.getUser(id);
+
+    if (data.image) {
+      const oldImage = oldData[0].image;
+      deleteFile(oldImage);
     }
 
     const results = await usersModel.updateUser(id, data);
