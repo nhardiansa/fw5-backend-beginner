@@ -13,6 +13,12 @@ const {
 } = require('../helpers/responseHandler');
 const vehiclesModel = require('../models/vehicles');
 const categoriesModel = require('../models/categories');
+const {
+  deleteFile
+} = require('../helpers/fileHandler');
+const {
+  noNullData
+} = require('../helpers/validator');
 
 exports.getVehicles = async (req, res) => {
   try {
@@ -78,19 +84,12 @@ exports.addNewVehicle = async (req, res) => {
     };
     const data = requestMapping(req.body, rules);
 
-    // console.log(data);
-
-    // return returningError(res, 500, 'Not implemented yet');
-
     if (Object.keys(data).length < 1) {
       return returningError(res, 400, 'Data not validated');
     }
 
-    for (const key in data) {
-      if (data[key] === null) {
-        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
-      }
-    }
+    // check if all data is valid
+    noNullData(res, data, rules);
 
     const existingCategory = await categoriesModel.getCategory(data.category_id);
 
@@ -98,10 +97,12 @@ exports.addNewVehicle = async (req, res) => {
       return returningError(res, 404, 'Category not found');
     }
 
-    const existingVehicle = await vehiclesModel.checkExistVehicle(data);
+    const existingVehicle = await vehiclesModel.checkExistVehicle({
+      name: data.name
+    });
 
     if (existingVehicle.length > 0) {
-      return returningError(res, 400, 'Vehicle with inputed data already exist');
+      return returningError(res, 400, 'Vehicle name already exist');
     }
 
     if (!req.file) {
@@ -138,9 +139,19 @@ exports.updateVehicle = async (req, res) => {
 
     const data = requestMapping(req.body, rules);
 
-    console.log(data);
+    const sameVehicle = await vehiclesModel.checkExistVehicle(data);
 
-    // return returningError(res, 500, 'Not implemented yet');
+    if (sameVehicle.length > 0) {
+      return returningError(res, 400, 'Vehicle with inputed already exist');
+    }
+
+    if (req.file) {
+      data.image = req.file.path;
+    }
+
+    if (!data.image) {
+      return returningError(res, 400, 'Vehicle picture must be uploaded');
+    }
 
     if (!validateId(id)) {
       return returningError(res, 404, 'Id not a number');
@@ -171,28 +182,20 @@ exports.updateVehicle = async (req, res) => {
       return returningError(res, 404, 'Category not found');
     }
 
-    const sameVehicle = await vehiclesModel.checkExistVehicle(data);
-
-    if (sameVehicle.length > 0) {
-      return returningError(res, 400, 'Vehicle with inputed data already exist');
-    }
-
     const existingVehicle = await vehiclesModel.getVehicle(id);
 
     if (existingVehicle.length < 1) {
       return returningError(res, 404, 'Vehicle not found');
     }
 
-    if (!req.file) {
-      return returningError(res, 400, 'Vehicle picture must be uploaded');
+    if (existingVehicle[0].image) {
+      deleteFile(existingVehicle[0].image);
     }
-
-    data.image = req.file.path;
 
     const results = await vehiclesModel.updateVehicle(id, data);
 
     if (results.affectedRows < 1) {
-      return returningError(res, 500, 'Fail to update vehicle');
+      return returningError(res, 500, 'No data has changed');
     }
 
     const vehicle = await vehiclesModel.getVehicle(id);
@@ -220,10 +223,15 @@ exports.deleteVehicle = async (req, res) => {
       return returningError(res, 404, 'Vehicle not found');
     }
 
+    // delete old image
+    if (existingVehicle[0].image) {
+      deleteFile(existingVehicle[0].image);
+    }
+
     const results = await vehiclesModel.deleteVehicle(id);
 
     if (results.affectedRows < 1) {
-      return returningError(res, 500, 'Failed to delete vehicle');
+      return returningError(res, 500, 'No data has changed');
     }
 
     return returningSuccess(res, 200, 'Success delete vehicle', dataMapping(existingVehicle)[0]);
@@ -327,7 +335,9 @@ exports.updateVehiclePartial = async (req, res) => {
 
     const data = requestMapping(req.body, rules);
 
-    // console.log(data);
+    if (req.file) {
+      data.image = req.file.path;
+    }
 
     // return returningError(res, 500, 'Not implemented yet');
 
@@ -340,7 +350,7 @@ exports.updateVehiclePartial = async (req, res) => {
     }
 
     for (const key in data) {
-      if (data[key] === null) {
+      if (!data[key]) {
         return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
       }
     }
@@ -366,28 +376,20 @@ exports.updateVehiclePartial = async (req, res) => {
       return returningError(res, 404, 'Vehicle not found');
     }
 
-    const warn = [];
-    let strWarning = '';
-    for (const key in data) {
-      if (data[key] === null) {
-        warn.push(key);
-        delete data[key];
-      }
-    }
-
-    if (warn.length > 0) {
-      strWarning = `Some data updated but can't for ${warn.length > 0 ? warn.join(', ') : warn[0]} because data not valid`;
+    // delete old image if image is updated
+    if (data.image) {
+      deleteFile(vehicle[0].image);
     }
 
     const results = await vehiclesModel.updateVehicle(id, data);
 
     if (results.affectedRows < 1) {
-      return returningError(res, 500, 'Something wrong when updating vehicle');
+      return returningError(res, 500, 'No data has changed');
     }
 
     const vehicleUpdated = await vehiclesModel.getVehicle(id);
 
-    return returningSuccess(res, 200, strWarning || 'Success update vehicle', vehicleUpdated[0]);
+    return returningSuccess(res, 200, 'Success update vehicle', dataMapping(vehicleUpdated)[0]);
     // return returningError(res, 500, 'Not yet implemented');
   } catch (error) {
     console.error(error);
