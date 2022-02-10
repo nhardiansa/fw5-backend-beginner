@@ -688,12 +688,12 @@
 							"urlencoded": [
 								{
 									"key": "name",
-									"value": "ihsanul",
+									"value": "ahsan",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "ihsanul@nmail.com",
+									"value": "ahsan@nmail.com",
 									"type": "text"
 								},
 								{
@@ -703,7 +703,7 @@
 								},
 								{
 									"key": "phone",
-									"value": "08213455231",
+									"value": "082134552453",
 									"type": "text"
 								}
 							]
@@ -769,6 +769,16 @@
 				{
 					"name": "LIST HISTORIES",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
@@ -781,21 +791,51 @@
 							],
 							"query": [
 								{
-									"key": "page",
-									"value": "2",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "user_id",
-									"value": "7",
-									"description": "required | number",
-									"disabled": true
-								},
-								{
 									"key": "limit",
 									"value": "2",
 									"description": "number",
+									"disabled": true
+								},
+								{
+									"key": "page",
+									"value": "4",
+									"description": "number",
+									"disabled": true
+								},
+								{
+									"key": "category_id",
+									"value": "4",
+									"description": "number",
+									"disabled": true
+								},
+								{
+									"key": "start_rent",
+									"value": "2022-02-04",
+									"description": "date YYYY-MM-DD",
+									"disabled": true
+								},
+								{
+									"key": "sort_date",
+									"value": "desc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_name",
+									"value": "asc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_returned",
+									"value": "desc",
+									"description": "asc or desc",
+									"disabled": true
+								},
+								{
+									"key": "sort_payment",
+									"value": "desc",
+									"description": "asc or desc",
 									"disabled": true
 								}
 							]
@@ -806,57 +846,82 @@
 				{
 					"name": "FILTER HISTORIES",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/histories/filter?limit=2&page=4&category_id=4&start_rent=2022-02-04&sort_date=desc&sort_name=asc&sort_returned=desc&sort_payment=desc",
+							"raw": "{{baseURL}}/histories/filter/:userId",
 							"host": [
 								"{{baseURL}}"
 							],
 							"path": [
 								"histories",
-								"filter"
+								"filter",
+								":userId"
 							],
 							"query": [
 								{
 									"key": "limit",
 									"value": "2",
-									"description": "number"
+									"description": "number",
+									"disabled": true
 								},
 								{
 									"key": "page",
 									"value": "4",
-									"description": "number"
+									"description": "number",
+									"disabled": true
 								},
 								{
 									"key": "category_id",
 									"value": "4",
-									"description": "number"
+									"description": "number",
+									"disabled": true
 								},
 								{
 									"key": "start_rent",
 									"value": "2022-02-04",
-									"description": "date YYYY-MM-DD"
+									"description": "date YYYY-MM-DD",
+									"disabled": true
 								},
 								{
 									"key": "sort_date",
 									"value": "desc",
-									"description": "asc or desc"
+									"description": "asc or desc",
+									"disabled": true
 								},
 								{
 									"key": "sort_name",
 									"value": "asc",
-									"description": "asc or desc"
+									"description": "asc or desc",
+									"disabled": true
 								},
 								{
 									"key": "sort_returned",
 									"value": "desc",
-									"description": "asc or desc"
+									"description": "asc or desc",
+									"disabled": true
 								},
 								{
 									"key": "sort_payment",
 									"value": "desc",
-									"description": "asc or desc"
+									"description": "asc or desc",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "userId",
+									"value": "28"
 								}
 							]
 						}
@@ -894,14 +959,33 @@
 							"listen": "prerequest",
 							"script": {
 								"exec": [
-									"var date = Date.now().toString();\r",
-									"pm.variables.set('currentTime', date);"
+									"const dateTime = new Date()\r",
+									"\r",
+									"const year = dateTime.getFullYear();\r",
+									"const month = dateTime.getMonth() + 1;\r",
+									"const day = dateTime.getDate();\r",
+									"\r",
+									"const startRent = `${year}-${month}-${day}`\r",
+									"const endRent = `${year}-${month}-${day+7}`\r",
+									"\r",
+									"pm.globals.set('startRent', startRent);\r",
+									"pm.globals.set('endRent', endRent);"
 								],
 								"type": "text/javascript"
 							}
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [],
 						"body": {
@@ -909,7 +993,7 @@
 							"urlencoded": [
 								{
 									"key": "user_id",
-									"value": "1",
+									"value": "28",
 									"type": "text"
 								},
 								{
@@ -919,7 +1003,7 @@
 								},
 								{
 									"key": "payment",
-									"value": "0",
+									"value": "1",
 									"type": "text"
 								},
 								{
@@ -929,22 +1013,22 @@
 								},
 								{
 									"key": "prepayment",
-									"value": "80000",
+									"value": "0",
 									"type": "text"
 								},
 								{
 									"key": "qty",
-									"value": "1",
+									"value": "2",
 									"type": "text"
 								},
 								{
 									"key": "start_rent",
-									"value": "2022-02-09",
+									"value": "2022-02-10",
 									"type": "text"
 								},
 								{
 									"key": "end_rent",
-									"value": "2022-02-10",
+									"value": "2022-02-11",
 									"type": "text"
 								}
 							]

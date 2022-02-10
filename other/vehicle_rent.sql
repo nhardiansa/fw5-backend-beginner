@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Feb 10, 2022 at 02:47 PM
+-- Generation Time: Feb 10, 2022 at 04:14 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.11
 
@@ -80,7 +80,10 @@ INSERT INTO `histories` (`id`, `payment_code`, `payment`, `returned`, `prepaymen
 (34, 'hnd1643940404799', '0', '1', 0, 2, '2022-02-04', '2022-02-06', 18, 34, '2022-02-04 10:06:44', '2022-02-09 22:14:15', NULL),
 (35, 'hnd1643940410475', '0', '1', 0, 2, '2022-02-04', '2022-02-06', 18, 34, '2022-02-04 10:06:50', '2022-02-09 18:03:33', NULL),
 (36, 'hnd1643940429772', '0', '0', 0, 2, '2022-02-04', '2022-02-06', 23, 34, '2022-02-04 10:07:09', '2022-02-09 17:36:40', NULL),
-(38, 'hnd1644414425944', '1', '1', 40000, 4, '2022-02-09', '2022-02-10', 28, 34, '2022-02-09 21:47:05', '2022-02-10 21:35:41', '2022-02-10 21:21:39');
+(38, 'hnd1644414425944', '1', '1', 40000, 4, '2022-02-09', '2022-02-10', 28, 34, '2022-02-09 21:47:05', '2022-02-10 21:35:41', '2022-02-10 21:21:39'),
+(39, 'hnd1644505447641', '1', '0', 0, 1, '2022-02-10', '2022-02-11', 28, 34, '2022-02-10 23:04:07', NULL, NULL),
+(40, 'hnd1644505574397', '1', '0', 0, 1, '2022-02-10', '2022-02-11', 28, 34, '2022-02-10 23:06:14', NULL, NULL),
+(41, 'hnd1644505667608', '1', '0', 0, 1, '2022-02-10', '2022-02-11', 28, 34, '2022-02-10 23:07:47', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -121,7 +124,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `phone`, `gender`, `birthdate`, `add
 (33, 'nabil', 'nabil@nmail.com', '08213455653', NULL, NULL, NULL, '$2a$10$WA10/jSRpAI54QSNUfdlMefAl/B0k9bVau4QV6qUbp6yOZNtkN1GW', NULL, '2022-02-10 14:54:55', NULL),
 (34, 'aris', 'aris@nmail.com', '08213455321', NULL, NULL, NULL, '$2a$10$hTVBWBouGb76Aahxc3VaPu1OIGkQXKtWa4uEXOHU7m2K/LX1yIUJS', NULL, '2022-02-10 14:57:33', NULL),
 (35, 'aris', 'aris@vehicle.rent.mail.com', '08213455342', NULL, NULL, NULL, '$2a$10$7TBZcxOeYGrxIoFmZrlR2OeIi021a1oEGOdZwW/UwsUWEDDpevnCS', NULL, '2022-02-10 15:30:47', NULL),
-(39, 'ihsanul', 'ihsanul@nmail.com', '08213455231', NULL, NULL, NULL, '$2a$10$Ivq5a6goV2t/wRLsSGn1t.ZHEVbF.LBlwbDoD.ApsW6GM4Lp3u2NW', NULL, '2022-02-10 18:23:28', NULL);
+(39, 'ihsanul', 'ihsanul@nmail.com', '08213455231', NULL, NULL, NULL, '$2a$10$Ivq5a6goV2t/wRLsSGn1t.ZHEVbF.LBlwbDoD.ApsW6GM4Lp3u2NW', NULL, '2022-02-10 18:23:28', NULL),
+(41, 'ahsan', 'ahsan@nmail.com', '082134552453', NULL, NULL, NULL, '$2a$10$m1RjHZr3doc0hRD84DoYL.zX/VlkDXLJjptZrg.v8GQ6F0ClejPCy', NULL, '2022-02-10 21:54:54', NULL);
 
 -- --------------------------------------------------------
 
@@ -215,13 +219,13 @@ ALTER TABLE `categories`
 -- AUTO_INCREMENT for table `histories`
 --
 ALTER TABLE `histories`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 
 --
 -- AUTO_INCREMENT for table `vehicles`
