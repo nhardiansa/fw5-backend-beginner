@@ -89,7 +89,11 @@ exports.addNewVehicle = async (req, res) => {
     }
 
     // check if all data is valid
-    noNullData(res, data, rules);
+    const checkData = noNullData(res, data, rules);
+
+    if (checkData) {
+      return returningError(res, 400, checkData);
+    }
 
     const existingCategory = await categoriesModel.getCategory(data.category_id);
 
