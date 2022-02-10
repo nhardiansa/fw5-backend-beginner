@@ -56,6 +56,31 @@ exports.deleteHistory = (id) => {
   });
 };
 
+exports.deleteHistoryUser = (id) => {
+  return new Promise((resolve, reject) => {
+    const dateTime = new Date();
+
+    const year = String(dateTime.getFullYear());
+    const month = String(dateTime.getMonth() + 1);
+    const day = String(dateTime.getDate());
+    const hour = String(dateTime.getHours());
+    const minute = String(dateTime.getMinutes());
+    const seconds = String(dateTime.getSeconds());
+
+    const time = `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
+
+    const ss = db.query(`UPDATE ${table} SET deleted_at = ? WHERE id = ?`, [time, id], (err, results) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+    console.log(ss.sql);
+  });
+};
+
 exports.getHistory = (id) => {
   return new Promise((resolve, reject) => {
     db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
