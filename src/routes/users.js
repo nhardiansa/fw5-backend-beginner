@@ -9,14 +9,23 @@ const {
   addUser,
   deleteUser,
   updateUser,
-  listUsers
+  listUsers,
+  registerUser,
+  loginUser
 } = require('../controllers/users');
 
-users.get('/', listUsers);
+const auth = require('../middlewares/auth');
+
+users.get('/', auth.verifyAdmin, listUsers);
 users.get('/profile/:id', getUser);
 users.get('/:id', getUser);
-users.post('/', uploadMiddleware('image'), addUser);
-users.patch('/:id', uploadMiddleware('image'), updateUser);
-users.delete('/:id', deleteUser);
+
+users.post('/', auth.verifyAdmin, uploadMiddleware('image'), addUser);
+users.post('/register', registerUser);
+users.post('/auth/login', loginUser);
+
+users.patch('/:id', auth.verifyUser, uploadMiddleware('image'), updateUser);
+
+users.delete('/:id', auth.verifyAdmin, deleteUser);
 
 module.exports = users;
