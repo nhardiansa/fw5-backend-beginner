@@ -19,7 +19,7 @@ const {
 
 const {
   dateValidator,
-  noNullData
+  nullDataResponse
 } = require('../helpers/validator');
 const usersModel = require('../models/users');
 
@@ -274,10 +274,8 @@ exports.registerUser = async (req, res) => {
 
     const data = requestMapping(req.body, rules);
 
-    const checkResult = noNullData(data, rules);
-    if (checkResult) {
-      return returningError(res, 400, checkResult);
-    }
+    // validate data
+    nullDataResponse(res, data, rules);
 
     // check if password must has at least 6 characters
     if (data.password.length < 6) {
