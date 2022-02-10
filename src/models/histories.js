@@ -60,16 +60,16 @@ exports.deleteHistoryUser = (id) => {
   return new Promise((resolve, reject) => {
     const dateTime = new Date();
 
-    const year = String(dateTime.getFullYear());
-    const month = String(dateTime.getMonth() + 1);
-    const day = String(dateTime.getDate());
-    const hour = String(dateTime.getHours());
-    const minute = String(dateTime.getMinutes());
-    const seconds = String(dateTime.getSeconds());
+    const year = dateTime.getFullYear();
+    const month = dateTime.getMonth() + 1;
+    const day = dateTime.getDate();
+    const hour = dateTime.getHours();
+    const minute = dateTime.getMinutes();
+    const seconds = dateTime.getSeconds();
 
     const time = `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
 
-    const ss = db.query(`UPDATE ${table} SET deleted_at = ? WHERE id = ?`, [time, id], (err, results) => {
+    db.query(`UPDATE ${table} SET deleted_at = ? WHERE id = ?`, [time, id], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -77,7 +77,6 @@ exports.deleteHistoryUser = (id) => {
         resolve(results);
       }
     });
-    console.log(ss.sql);
   });
 };
 
@@ -149,10 +148,10 @@ exports.getFilteredHistories = (data) => {
       LEFT JOIN ${categoriesTable} c
       ON v.category_id = c.id
       WHERE 
-      h.user_id = ${userId}
+      v.name LIKE '%${vehicleName || ''}%'
       ${startRent ? `AND h.start_rent >= '${startRent}'` : ''}
       ${categoryId ? `AND v.category_id = ${categoryId}` : ''}
-      AND v.name LIKE '%${vehicleName}%'
+      ${userId ? `AND h.user_id = ${userId}` : ''}
       ORDER BY
       ${sortDate ? `h.start_rent ${sortDate},` : ''}
       ${sortName ? `v.name ${sortName},` : ''}
@@ -167,6 +166,8 @@ exports.getFilteredHistories = (data) => {
         resolve(results);
       }
     });
+
+    // console.log(ss.sql);
   });
 };
 
@@ -187,10 +188,10 @@ exports.getFilteredHistoriesCount = (data) => {
       LEFT JOIN ${categoriesTable} c
       ON v.category_id = c.id
       WHERE 
-      h.user_id = ${userId}
+      v.name LIKE '%${vehicleName || ''}%'
       ${startRent ? `AND h.start_rent = '${startRent}'` : ''}
       ${categoryId ? `AND v.category_id = ${categoryId}` : ''}
-      AND v.name LIKE '%${vehicleName}%'
+      ${userId ? `AND h.user_id = ${userId}` : ''}
     `, (err, results) => {
       if (err) {
         reject(err);
