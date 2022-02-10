@@ -11,6 +11,10 @@ const verify = (req, res) => {
   try {
     const authHead = req.headers.authorization;
 
+    if (!authHead) {
+      return false;
+    }
+
     if (!authHead.startsWith('Bearer')) {
       return false;
     }
