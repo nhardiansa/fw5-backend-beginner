@@ -84,22 +84,18 @@ exports.addNewVehicle = async (req, res) => {
     };
     const data = requestMapping(req.body, rules);
 
-    if (Object.keys(data).length < 1) {
-      return returningError(res, 400, 'Data not validated');
-    }
-
-    // check if all data is valid
-    const checkData = noNullData(data, rules);
-
-    if (checkData) {
-      return returningError(res, 400, checkData);
-    }
-
     if (!req.file) {
       return returningError(res, 400, 'Vehicle picture must be uploaded');
     }
 
     data.image = req.file.path;
+
+    // check if all data is valid
+    const checkData = noNullData(data, rules);
+
+    if (checkData) {
+      return returningError(res, 400, checkData, data.image);
+    }
 
     // check if vehicle category exist
     const existingCategory = await categoriesModel.getCategory(data.category_id);
@@ -133,6 +129,10 @@ exports.updateVehicle = async (req, res) => {
       id
     } = req.params;
 
+    if (!req.file) {
+      return returningError(res, 400, 'Vehicle picture must be uploaded');
+    }
+
     const rules = {
       name: 'string|required',
       price: 'number|required',
@@ -147,61 +147,48 @@ exports.updateVehicle = async (req, res) => {
 
     const sameVehicle = await vehiclesModel.checkExistVehicle(data);
 
+    const imagePath = !data.image ? req.file.path : '';
+
     if (sameVehicle.length > 0) {
-      return returningError(res, 400, 'Vehicle with inputed already exist');
+      return returningError(res, 400, 'Vehicle with inputed already exist', imagePath);
     }
 
     if (req.file) {
       data.image = req.file.path;
     }
 
-    if (!data.image) {
-      return returningError(res, 400, 'Vehicle picture must be uploaded');
-    }
-
+    // validate id
     if (!validateId(id)) {
-      return returningError(res, 404, 'Id not a number');
+      return returningError(res, 404, 'Id is not validate', imagePath);
     }
 
-    if (Object.keys(data).length < 1) {
-      return returningError(res, 400, 'Data not validated');
+    // check if inputed vehicle data is valid
+    const nullData = noNullData(data, rules);
+
+    if (nullData) {
+      return returningError(res, 400, nullData, imagePath);
     }
 
-    const {
-      prepayment
-    } = data;
-
-    if (Number(prepayment) > 1 || Number(prepayment) < 0) {
-      return returningError(res, 400, 'Your prepayment not validate');
-    }
-
-    // validator data
-    for (const key in data) {
-      if (data[key] === null) {
-        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
-      }
-    }
-
+    // check if vehicle category exist
     const existingCategory = await categoriesModel.getCategory(data.category_id);
 
     if (existingCategory.length < 1) {
-      return returningError(res, 404, 'Category not found');
+      return returningError(res, 404, 'Category not found', imagePath);
     }
 
-    const existingVehicle = await vehiclesModel.getVehicle(id);
+    // check if vehicle exist
+    const existingVehicle = await vehiclesModel.checkExistVehicle({
+      id
+    });
 
     if (existingVehicle.length < 1) {
-      return returningError(res, 404, 'Vehicle not found');
-    }
-
-    if (existingVehicle[0].image) {
-      deleteFile(existingVehicle[0].image);
+      return returningError(res, 404, 'Vehicle not found', imagePath);
     }
 
     const results = await vehiclesModel.updateVehicle(id, data);
 
     if (results.affectedRows < 1) {
-      return returningError(res, 500, 'No data has changed');
+      return returningError(res, 500, 'No data has changed', imagePath);
     }
 
     const vehicle = await vehiclesModel.getVehicle(id);
@@ -209,7 +196,7 @@ exports.updateVehicle = async (req, res) => {
     return returningSuccess(res, 200, 'Success update vehicle', dataMapping(vehicle)[0]);
   } catch (error) {
     console.error(error);
-    return returningError(res, 500, 'Failed to update vehicle');
+    return returningError(res, 500, 'Failed to update vehicle', (req.file ? req.file.path : ''));
   }
 };
 
@@ -345,6 +332,8 @@ exports.updateVehiclePartial = async (req, res) => {
       data.image = req.file.path;
     }
 
+    const imagePath = data.image ? data.image : '';
+
     // return returningError(res, 500, 'Not implemented yet');
 
     if (!validateId(id)) {
@@ -352,13 +341,14 @@ exports.updateVehiclePartial = async (req, res) => {
     }
 
     if (Object.keys(data).length < 1) {
-      return returningError(res, 400, 'Data not validated');
+      return returningError(res, 400, 'Data empty');
     }
 
-    for (const key in data) {
-      if (!data[key]) {
-        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
-      }
+    // check if inputed vehicle data is valid
+    const nullData = noNullData(data, rules);
+
+    if (nullData) {
+      return returningError(res, 400, nullData, imagePath);
     }
 
     // checking duplicate vehicle name
@@ -367,30 +357,29 @@ exports.updateVehiclePartial = async (req, res) => {
         name
       } = data;
 
+      // check duplicate vehicle name
       const duplicateName = await vehiclesModel.checkExistVehicle({
         name
       });
 
       if (duplicateName.length > 0) {
-        return returningError(res, 400, 'Vehicle name already exist');
+        return returningError(res, 400, 'Vehicle name already exist', imagePath);
       }
     }
 
-    const vehicle = await vehiclesModel.getVehicle(id);
+    // check if vehicle exist
+    const vehicle = await vehiclesModel.checkExistVehicle({
+      id
+    });
 
     if (vehicle.length < 1) {
-      return returningError(res, 404, 'Vehicle not found');
-    }
-
-    // delete old image if image is updated
-    if (data.image) {
-      deleteFile(vehicle[0].image);
+      return returningError(res, 404, 'Vehicle not found', imagePath);
     }
 
     const results = await vehiclesModel.updateVehicle(id, data);
 
     if (results.affectedRows < 1) {
-      return returningError(res, 500, 'No data has changed');
+      return returningError(res, 500, 'No data has changed', imagePath);
     }
 
     const vehicleUpdated = await vehiclesModel.getVehicle(id);
@@ -399,6 +388,7 @@ exports.updateVehiclePartial = async (req, res) => {
     // return returningError(res, 500, 'Not yet implemented');
   } catch (error) {
     console.error(error);
-    return returningError(res, 500, 'Failed to update vehicle');
+    const imagePath = req.file ? req.file.path : '';
+    return returningError(res, 500, 'Failed to update vehicle', imagePath);
   }
 };
