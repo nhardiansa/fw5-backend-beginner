@@ -1,4 +1,7 @@
 const db = require('../helpers/db');
+const {
+  customSpesificQuery
+} = require('../helpers/queryCreator');
 const table = require('../helpers/constant').vehiclesTable;
 const categoryTable = require('../helpers/constant').categoriesTable;
 const historiesTable = require('../helpers/constant').historiesTable;
@@ -51,11 +54,7 @@ exports.getVehicle = (id) => {
 exports.checkExistVehicle = (data) => {
   return new Promise((resolve, reject) => {
     // make custom query depends keys of object
-    let dataInArr = Object.keys(data);
-    dataInArr = dataInArr.map((el) => {
-      return `${el} = ?`;
-    });
-    const customQuery = dataInArr.join(' && ');
+    const customQuery = customSpesificQuery(data);
 
     // get values of data
     const dataValues = Object.values(data);
