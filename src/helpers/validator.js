@@ -44,10 +44,10 @@ exports.noNullData = (data, rules) => {
   return '';
 };
 
-exports.nullDataResponse = (res, data, rules) => {
+exports.nullDataResponse = (res, data, rules, deletePath) => {
   for (const key in data) {
     if (data[key] === null) {
-      return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`, deletePath);
     }
   }
 };
