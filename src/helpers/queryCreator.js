@@ -35,10 +35,12 @@ exports.whereLikeCreator = (data) => {
   return str;
 };
 
-exports.whereCreator = (data) => {
-  let dataInArr = Object.keys(data);
-  dataInArr = dataInArr.map((el) => {
+exports.customSpesificQuery = (data) => {
+  let keys = Object.keys(data);
+  keys = keys.map((el) => {
     return `${el} = ?`;
   });
-  return dataInArr.join(' && ');
+  keys = keys.join(' AND ');
+
+  return keys;
 };
