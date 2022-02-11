@@ -19,7 +19,8 @@ const {
 
 const {
   dateValidator,
-  nullDataResponse
+  nullDataResponse,
+  noNullData
 } = require('../helpers/validator');
 const usersModel = require('../models/users');
 
@@ -165,58 +166,64 @@ exports.updateUser = async (req, res) => {
     const {
       id
     } = req.params;
-    const data = requestMapping(req.body, {
+
+    const rules = {
       name: 'string',
       email: 'email',
       phone: 'phone',
       gender: 'string',
       birthdate: 'date',
       address: 'string'
-    });
+    };
+
+    const data = requestMapping(req.body, rules);
 
     if (req.file) {
       data.image = req.file.path;
     }
 
-    // return returningError(res, 500, 'Not implemented yet!');
+    // return returningError(res, 500, 'Not implemented yet!', data.image);
 
     const findUser = await usersModel.getUser(id);
 
     if (findUser.length < 1) {
-      return returningError(res, 404, 'User not found');
+      return returningError(res, 404, 'User not found', data.image);
     }
 
     if (Object.keys(data).length < 1) {
-      return returningError(res, 400, 'Data not validated');
+      return returningError(res, 400, 'Data not validated', data.image);
     }
 
     if (data.gender) {
       const gender = ['female', 'male'];
       if (!gender.includes(data.gender)) {
-        return returningError(res, 400, "Your gender isn't validate!");
+        return returningError(res, 400, "Your gender isn't validate!", data.image);
       }
     }
 
-    for (const key in data) {
-      if (data[key] === null) {
-        return returningError(res, 400, `Your ${key} isn't validate!`);
-      }
+    const nullDataMsg = noNullData(data, rules);
+
+    if (nullDataMsg) {
+      return returningError(res, 400, nullDataMsg, data.image);
     }
 
+    // find duplicate email
     if (data.email) {
       const isEmailExist = await usersModel.findEmail(data.email);
       if (isEmailExist[0].rows > 0) {
-        return returningError(res, 400, 'Email already registered');
+        return returningError(res, 400, 'Email already registered', data.image);
       }
     }
 
+    // find duplicate phone number
     if (data.phone) {
       const isPhoneExist = await usersModel.findPhone(data.phone);
       if (isPhoneExist[0].rows > 0) {
-        return returningError(res, 400, 'Phone already registered');
+        return returningError(res, 400, 'Phone already registered', data.image);
       }
     }
 
+    // if updated is image
     const oldData = await usersModel.getUser(id);
 
     if (data.image) {
@@ -231,10 +238,11 @@ exports.updateUser = async (req, res) => {
       return returningSuccess(res, 200, 'Success updating a user', dataMapping(user));
     }
 
-    return returningError(res, 500, 'Failed to update an user');
+    return returningError(res, 500, 'Failed to update an user', data.image);
   } catch (error) {
     const err = error.sqlMessage ? error.sqlMessage : 'Failed to update an user';
-    return returningError(res, 500, err);
+    const imagePath = req.file ? req.file.path : null;
+    return returningError(res, 500, err, imagePath);
   }
 };
 
