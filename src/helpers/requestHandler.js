@@ -58,8 +58,17 @@ exports.requestMapping = (data, rules) => {
           dump[k] = null;
         }
       }
+      if (rules[k].includes('password')) {
+        if (data[k]) {
+          dump[k] = data[k];
+        } else {
+          dump[k] = null;
+        }
+      }
       if (rules[k].includes('number')) {
         if (isNaN(Number(data[k]))) {
+          dump[k] = null;
+        } else if (data[k] === '') {
           dump[k] = null;
         } else {
           dump[k] = data[k];
