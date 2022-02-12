@@ -7,5 +7,6 @@ module.exports = {
   historiesTable: 'histories',
   vehiclesTable: 'vehicles',
   categoriesTable: 'categories',
+  confirmationsTable: 'forgot_passwords',
   baseURL: APP_URL
 };
