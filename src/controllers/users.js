@@ -1,6 +1,9 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const {
+  mail
+} = require('../config/mail');
+const {
   baseURL
 } = require('../helpers/constant');
 const {
@@ -22,10 +25,14 @@ const {
   nullDataResponse,
   noNullData
 } = require('../helpers/validator');
+
 const usersModel = require('../models/users');
+const forgotPasswordModel = require('../models/forgotPasswords');
 
 const {
-  SECRET_KEY
+  APP_EMAIL,
+  SECRET_KEY,
+  ENVIRONMENT
 } = process.env;
 
 exports.getUser = async (req, res) => {
@@ -360,5 +367,138 @@ exports.loginUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to login an user');
+  }
+};
+
+exports.forgotPassword = async (req, res) => {
+  try {
+    const rules = {
+      email: 'email|required'
+    };
+
+    const data = requestMapping(req.body, rules);
+
+    // validate data
+    const nullData = noNullData(data, rules);
+
+    if (nullData) {
+      return returningError(res, 400, nullData);
+    }
+
+    // check if email is registered
+    const user = await usersModel.findEmail(data.email, true);
+
+    if (user.length < 1) {
+      return returningError(res, 400, 'Email is not registered');
+    }
+
+    // check if user has already requested a password reset
+    const isResetRequested = await forgotPasswordModel.getCodeByUserId(user[0].id);
+
+    if (isResetRequested.length > 0) {
+      const oldCode = new Date(isResetRequested[0].created_at);
+      const now = new Date();
+
+      const divider = ENVIRONMENT === 'development' ? 1000 : (60 * 1000);
+
+      console.log(divider);
+
+      const diff = Math.round((now - oldCode) / divider);
+
+      if (diff < 2) {
+        return returningError(res, 400, 'You have already requested a password reset');
+      }
+      forgotPasswordModel.deleteCode(isResetRequested[0].id);
+    }
+
+    // generate code
+    const code = Math.abs(Math.floor(Math.random() * (999999 - 100000) + 100000));
+
+    const results = await forgotPasswordModel.insertRequest(user[0].id, code);
+
+    const info = await mail.sendMail({
+      from: APP_EMAIL,
+      to: data.email,
+      subject: 'Password Reset | Vehicle Rent',
+      text: `${code}`,
+      html: `<p>Your code for reset password is: ${code}</p>`
+    });
+
+    console.log(info);
+
+    if (results.affectedRows > 0) {
+      return returningSuccess(res, 200, 'Email confirmation sent');
+    }
+
+    return returningError(res, 500, 'Failed to reset password');
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to reset password');
+  }
+};
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const rules = {
+      user_id: 'number|required',
+      code: 'string|required',
+      password: 'password|required',
+      confirm_password: 'password|required'
+    };
+
+    const data = requestMapping(req.body, rules);
+
+    const nullData = noNullData(data, rules);
+
+    if (nullData) {
+      return returningError(res, 400, nullData);
+    }
+
+    // check if password must has at least 6 characters
+    if (data.password.length < 6) {
+      return returningError(res, 400, 'Password must be at least 6 characters');
+    }
+
+    // check if password and confirm password is same
+    if (data.password !== data.confirm_password) {
+      return returningError(res, 400, 'Password and confirm password is not same');
+    }
+
+    // check if code is valid
+    const code = await forgotPasswordModel.findCode(data.code, data.user_id);
+
+    if (code.length < 1) {
+      return returningError(res, 400, 'Code is not valid');
+    }
+
+    // check if code is expired
+    if (code[0].is_expired === 1) {
+      forgotPasswordModel.deleteCode(code[0].id);
+      return returningError(res, 400, 'Code is expired');
+    }
+
+    const resetCode = await forgotPasswordModel.setExpiryCode(code[0].id);
+
+    // console.log(resetCode);
+
+    if (resetCode.affectedRows < 1) {
+      return returningError(res, 500, 'Failed to reset password');
+    }
+
+    const salt = bcrypt.genSaltSync(10);
+    const hashePassword = bcrypt.hashSync(data.password, salt);
+
+    const results = await usersModel.updateUser(code[0].user_id, {
+      password: hashePassword
+    });
+
+    if (results.affectedRows === 1) {
+      return returningSuccess(res, 200, 'Success reset password');
+    }
+
+    return returningError(res, 500, 'Failed to reset password');
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Unexpected error');
   }
 };
