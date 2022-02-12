@@ -147,8 +147,6 @@ exports.addHistory = async (req, res) => {
       return returningError(res, 400, `Now, you can only book up to a maximum of ${available} vehicles`);
     }
 
-    // console.log(data);
-
     // check if vehicle is available to pre-payment
     if (Number(data.prepayment) > 0) {
       // check if user already pay
@@ -290,7 +288,6 @@ exports.upadateHistory = async (req, res) => {
 
     return returningSuccess(res, 200, 'History has been updated', updatedHistory[0]);
   } catch (error) {
-    console.log(error);
     console.error(error);
     return returningError(res, 500, 'Failed to update history');
   }

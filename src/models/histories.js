@@ -166,8 +166,6 @@ exports.getFilteredHistories = (data) => {
         resolve(results);
       }
     });
-
-    // console.log(ss.sql);
   });
 };
 

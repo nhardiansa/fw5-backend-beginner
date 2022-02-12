@@ -57,8 +57,6 @@ exports.addCategory = async (req, res) => {
       name: 'string'
     });
 
-    console.log(data);
-
     if (Object.keys(data).length < 1) {
       return returningError(res, 400, 'Name not validated');
     }
