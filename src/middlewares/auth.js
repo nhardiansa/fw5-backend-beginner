@@ -51,6 +51,10 @@ exports.verifyAdmin = (req, res, next) => {
 exports.verifyUser = (req, res, next) => {
   const verifyUser = verify(req, res);
 
+  if (!verifyUser.confirmed) {
+    return returningError(res, 403, 'User not confirmed');
+  }
+
   if (!verifyUser) {
     return returningError(res, 401, 'Unauthorized');
   }
