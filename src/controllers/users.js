@@ -27,7 +27,7 @@ const {
 } = require('../helpers/validator');
 
 const usersModel = require('../models/users');
-const forgotPasswordModel = require('../models/forgotPasswords');
+const verificationCodesModel = require('../models/verificationCodes');
 
 const {
   APP_EMAIL,
@@ -50,8 +50,6 @@ exports.getUser = async (req, res) => {
     if (user.length < 1) {
       return returningError(res, 404, 'User not found');
     }
-
-    console.log(user);
 
     return returningSuccess(res, 200, 'Success getting a user', user[0]);
   } catch (error) {
@@ -352,7 +350,8 @@ exports.loginUser = async (req, res) => {
     }
 
     const data = {
-      id: user[0].id
+      id: user[0].id,
+      confirmed: Number(user[0].confirmed)
     };
 
     if (user[0].email.includes('@vehicle.rent.mail.com')) {
@@ -370,11 +369,18 @@ exports.loginUser = async (req, res) => {
   }
 };
 
-exports.forgotPassword = async (req, res) => {
+exports.sentConfirmationCode = async (req, res) => {
   try {
     const rules = {
       email: 'email|required'
     };
+
+    console.log(req.body.verify);
+
+    // if user want to confirm email
+    if (req.body.verify !== undefined) {
+      rules.verify = 'boolean|required';
+    }
 
     const data = requestMapping(req.body, rules);
 
@@ -385,6 +391,12 @@ exports.forgotPassword = async (req, res) => {
       return returningError(res, 400, nullData);
     }
 
+    if (data.verify) {
+      if (!Number(data.verify)) {
+        return returningError(res, 400, "Don't send 'verify' if you not want to verify email");
+      }
+    }
+
     // check if email is registered
     const user = await usersModel.findEmail(data.email, true);
 
@@ -392,29 +404,39 @@ exports.forgotPassword = async (req, res) => {
       return returningError(res, 400, 'Email is not registered');
     }
 
-    // check if user has already requested a password reset
-    const isResetRequested = await forgotPasswordModel.getCodeByUserId(user[0].id);
+    // if email not confirmed
+    if (!data.verify) {
+      if (!Number(user[0].confirmed)) {
+        return returningError(res, 400, 'Confirm your email first');
+      }
+    }
+
+    if (Number(user[0].confirmed) && Number(data.verify)) {
+      return returningError(res, 400, 'Email already confirmed');
+    }
+
+    // check if user has already requested a code
+    const isResetRequested = await verificationCodesModel.getCodeByUserId(user[0].id);
 
     if (isResetRequested.length > 0) {
       const oldCode = new Date(isResetRequested[0].created_at);
       const now = new Date();
-
       const divider = ENVIRONMENT === 'development' ? 1000 : (60 * 1000);
-
-      console.log(divider);
-
       const diff = Math.round((now - oldCode) / divider);
 
-      if (diff < 2) {
-        return returningError(res, 400, 'You have already requested a password reset');
+      console.log(diff);
+
+      if (diff < 5) {
+        return returningError(res, 400, 'Wait 1 minute before requesting another code');
       }
-      forgotPasswordModel.deleteCode(isResetRequested[0].id);
+      verificationCodesModel.deleteCode(isResetRequested[0].id);
     }
 
     // generate code
     const code = Math.abs(Math.floor(Math.random() * (999999 - 100000) + 100000));
 
-    const results = await forgotPasswordModel.insertRequest(user[0].id, code);
+    // insert verification code to database
+    const results = await verificationCodesModel.insertRequest(user[0].id, code);
 
     const info = await mail.sendMail({
       from: APP_EMAIL,
@@ -427,13 +449,13 @@ exports.forgotPassword = async (req, res) => {
     console.log(info);
 
     if (results.affectedRows > 0) {
-      return returningSuccess(res, 200, 'Email confirmation sent');
+      return returningSuccess(res, 200, 'Check your email for code');
     }
 
-    return returningError(res, 500, 'Failed to reset password');
+    return returningError(res, 500, 'Failed to sent email confirmation');
   } catch (error) {
     console.error(error);
-    return returningError(res, 500, 'Failed to reset password');
+    return returningError(res, 500, 'Unexpected error');
   }
 };
 
@@ -454,6 +476,15 @@ exports.resetPassword = async (req, res) => {
       return returningError(res, 400, nullData);
     }
 
+    const user = await usersModel.getUser(data.user_id);
+
+    console.log(user);
+
+    // check if user is verified
+    if (Number(user[0].confirmed) !== 1) {
+      return returningError(res, 400, 'You need to confirm your email first');
+    }
+
     // check if password must has at least 6 characters
     if (data.password.length < 6) {
       return returningError(res, 400, 'Password must be at least 6 characters');
@@ -465,7 +496,7 @@ exports.resetPassword = async (req, res) => {
     }
 
     // check if code is valid
-    const code = await forgotPasswordModel.findCode(data.code, data.user_id);
+    const code = await verificationCodesModel.findCode(data.code, data.user_id);
 
     if (code.length < 1) {
       return returningError(res, 400, 'Code is not valid');
@@ -473,21 +504,21 @@ exports.resetPassword = async (req, res) => {
 
     // check if code is expired
     if (code[0].is_expired === 1) {
-      forgotPasswordModel.deleteCode(code[0].id);
+      verificationCodesModel.deleteCode(code[0].id);
       return returningError(res, 400, 'Code is expired');
     }
 
-    const resetCode = await forgotPasswordModel.setExpiryCode(code[0].id);
-
-    // console.log(resetCode);
+    const resetCode = await verificationCodesModel.setExpiryCode(code[0].id);
 
     if (resetCode.affectedRows < 1) {
       return returningError(res, 500, 'Failed to reset password');
     }
 
+    // generate hashed password
     const salt = bcrypt.genSaltSync(10);
     const hashePassword = bcrypt.hashSync(data.password, salt);
 
+    // update password
     const results = await usersModel.updateUser(code[0].user_id, {
       password: hashePassword
     });
@@ -496,7 +527,74 @@ exports.resetPassword = async (req, res) => {
       return returningSuccess(res, 200, 'Success reset password');
     }
 
-    return returningError(res, 500, 'Failed to reset password');
+    return returningError(res, 500, 'Unexpected error occurred');
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Unexpected error');
+  }
+};
+
+exports.emailVerifcation = async (req, res) => {
+  try {
+    const rules = {
+      email: 'email|required',
+      code: 'string|required'
+    };
+
+    const data = requestMapping(req.body, rules);
+
+    const nullData = noNullData(data, rules);
+
+    if (nullData) {
+      return returningError(res, 400, nullData);
+    }
+
+    // check if email is registered and confirmed
+    const user = await usersModel.findEmail(data.email, true);
+
+    if (user.length < 1) {
+      return returningError(res, 400, 'Email is not registered');
+    }
+
+    if (Number(user[0].confirmed)) {
+      return returningError(res, 400, 'Email is already verified');
+    }
+
+    // check if code is valid
+    const code = await verificationCodesModel.findCode(data.code, user[0].id);
+
+    if (code.length < 1) {
+      return returningError(res, 400, 'Code is not valid');
+    }
+
+    // check if code is expired
+    const oldCode = new Date(code[0].created_at);
+    const now = new Date();
+    const divider = ENVIRONMENT === 'development' ? (60 * 1000) : (60 * 60 * 1000);
+
+    const diff = Math.round((now - oldCode) / divider);
+
+    if (code[0].is_expired || diff > 1) {
+      verificationCodesModel.deleteCode(code[0].id);
+      return returningError(res, 400, 'Code is expired');
+    }
+
+    const setExpiryCode = await verificationCodesModel.setExpiryCode(code[0].id);
+
+    if (setExpiryCode.affectedRows < 1) {
+      return returningError(res, 500, 'Failed to verify email');
+    }
+
+    // update user status
+    const updateUser = await usersModel.updateUser(user[0].id, {
+      confirmed: 1
+    });
+
+    if (updateUser.affectedRows === 1) {
+      return returningSuccess(res, 200, 'Success verify email');
+    }
+
+    return returningError(res, 500, 'Failed to verify email');
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Unexpected error');
