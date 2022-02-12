@@ -43,12 +43,12 @@ exports.requestMapping = (data, rules) => {
   const dump = {};
   const keysCollection = Object.keys(data);
 
-  for (const key in rules) {
-    if (!keysCollection.includes(key) && rules[key].includes('required')) {
-      dump[key] = null;
-    }
+  // clear space
+  for (const key in data) {
+    data[key] = data[key].trim();
   }
 
+  // check if data valid as rules
   for (const k in data) {
     if (keysCollection.includes(k)) {
       if (rules[k].includes('string')) {
@@ -122,6 +122,13 @@ exports.requestMapping = (data, rules) => {
           dump[k] = null;
         }
       }
+    }
+  }
+
+  // check if has required rules
+  for (const key in rules) {
+    if (!keysCollection.includes(key) && rules[key].includes('required')) {
+      dump[key] = null;
     }
   }
 
