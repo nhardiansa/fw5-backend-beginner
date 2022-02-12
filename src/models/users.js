@@ -4,10 +4,15 @@ const {
   whereLikeCreator
 } = require('../helpers/queryCreator');
 
-exports.getUser = (id) => {
+exports.getUser = (id, noData = false) => {
   return new Promise((resolve, reject) => {
-    db.query(`
-      SELECT id, name, email, phone, gender, birthdate, address, image, created_at, updated_at FROM ${table} WHERE id = ?`, [id], (err, results) => {
+    const query = `
+    SELECT 
+    ${noData ? "COUNT(*) AS 'rows'" : 'id, name, email, confirmed, phone, gender, birthdate, address, image, created_at, updated_at'} 
+    FROM ${table} 
+    WHERE id = ?`;
+
+    db.query(query, [id], (err, results) => {
       if (err) {
         reject(err);
       }
