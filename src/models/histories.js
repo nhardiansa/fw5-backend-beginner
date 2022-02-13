@@ -4,6 +4,9 @@ const {
   vehiclesTable,
   categoriesTable
 } = require('../helpers/constant');
+const {
+  dateNow
+} = require('../helpers/date');
 
 exports.getHistories = (keys, data) => {
   const {
@@ -58,16 +61,7 @@ exports.deleteHistory = (id) => {
 
 exports.deleteHistoryUser = (id) => {
   return new Promise((resolve, reject) => {
-    const dateTime = new Date();
-
-    const year = dateTime.getFullYear();
-    const month = dateTime.getMonth() + 1;
-    const day = dateTime.getDate();
-    const hour = dateTime.getHours();
-    const minute = dateTime.getMinutes();
-    const seconds = dateTime.getSeconds();
-
-    const time = `${year}-${month}-${day} ${hour}:${minute}:${seconds}`;
+    const time = dateNow();
 
     db.query(`UPDATE ${table} SET deleted_at = ? WHERE id = ?`, [time, id], (err, results) => {
       if (err) {
