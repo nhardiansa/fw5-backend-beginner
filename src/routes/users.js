@@ -26,7 +26,7 @@ users.get('/:id', auth.verifyUser, getUser);
 users.post('/', auth.verifyAdmin, uploadMiddleware('image'), addUser);
 users.post('/register', registerUser);
 users.post('/auth/login', loginUser);
-users.post('/forgotPassword', sentConfirmationCode);
+users.post('/sentConfirmationCode', sentConfirmationCode);
 users.post('/resetPassword', resetPassword);
 users.post('/emailVerifcation', emailVerifcation);
 
