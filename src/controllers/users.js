@@ -574,6 +574,7 @@ exports.emailVerifcation = async (req, res) => {
 
     const diff = Math.round((now - oldCode) / divider);
 
+    // delete old code
     if (code[0].is_expired || diff > 1) {
       verificationCodesModel.deleteCode(code[0].id);
       return returningError(res, 400, 'Code is expired');
