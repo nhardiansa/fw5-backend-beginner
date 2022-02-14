@@ -67,6 +67,7 @@ exports.pageInfoCreator = (totalDataCount, url, values) => {
   const totalPages = Math.ceil(totalData / limit) || 1;
 
   return ({
+    totalData,
     totalPages,
     currentPage: page,
     nextPage: page < totalPages ? next : null,
