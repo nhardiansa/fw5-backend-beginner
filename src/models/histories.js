@@ -141,7 +141,8 @@ exports.getFilteredHistories = (data) => {
     sort_date: sortDate,
     sort_name: sortName,
     sort_returned: sortReturned,
-    sort_payment: sortPayment
+    sort_payment: sortPayment,
+    admin
   } = data;
 
   const offset = (page - 1) * limit;
@@ -159,6 +160,7 @@ exports.getFilteredHistories = (data) => {
       ${startRent ? `AND h.start_rent >= '${startRent}'` : ''}
       ${categoryId ? `AND v.category_id = ${categoryId}` : ''}
       ${userId ? `AND h.user_id = ${userId}` : ''}
+      ${admin ? '' : 'AND deleted_at IS NULL'}
       ORDER BY
       ${sortDate ? `h.start_rent ${sortDate},` : ''}
       ${sortName ? `v.name ${sortName},` : ''}
@@ -181,7 +183,8 @@ exports.getFilteredHistoriesCount = (data) => {
     user_id: userId,
     start_rent: startRent,
     category_id: categoryId,
-    vehicle_name: vehicleName
+    vehicle_name: vehicleName,
+    admin
   } = data;
 
   return new Promise((resolve, reject) => {
@@ -197,6 +200,7 @@ exports.getFilteredHistoriesCount = (data) => {
       ${startRent ? `AND h.start_rent = '${startRent}'` : ''}
       ${categoryId ? `AND v.category_id = ${categoryId}` : ''}
       ${userId ? `AND h.user_id = ${userId}` : ''}
+      ${admin ? '' : 'AND deleted_at IS NULL'}
     `, (err, results) => {
       if (err) {
         reject(err);
