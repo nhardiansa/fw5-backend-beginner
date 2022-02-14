@@ -59,6 +59,18 @@ exports.updateUser = (id, data) => {
   });
 };
 
+exports.findUserByData = (data, noData = false) => {
+  return new Promise((resolve, reject) => {
+    db.query(`SELECT ${noData ? '*' : "COUNT(*) AS 'rows'"} FROM ${table} WHERE ?`, data, (err, res) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(res);
+      }
+    });
+  });
+};
+
 exports.findEmail = (email, data = false) => {
   return new Promise((resolve, reject) => {
     db.query(`SELECT ${data ? '*' : "COUNT(*) AS 'rows'"} FROM ${table} WHERE email = ?`, [email], (err, res) => {
