@@ -478,7 +478,9 @@ exports.sentConfirmationCode = async (req, res) => {
     console.log(info);
 
     if (results.affectedRows > 0) {
-      return returningSuccess(res, 200, 'Check your email for code');
+      return returningSuccess(res, 200, 'Check your email for code', {
+        user_id: user[0].id
+      });
     }
 
     return returningError(res, 500, 'Failed to sent email confirmation');
