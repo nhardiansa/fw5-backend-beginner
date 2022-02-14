@@ -84,11 +84,15 @@ exports.addNewVehicle = async (req, res) => {
     };
     const data = requestMapping(req.body, rules);
 
+    // check if image is uploaded
     if (!req.file) {
       return returningError(res, 400, 'Vehicle picture must be uploaded');
     }
 
-    data.image = req.file.path;
+    // change backslash to slash
+    data.image = req.file.path.replace(/\\/g, '/');
+
+    // return returningError(res, 500, 'not yet implemented');
 
     // check if all data is valid
     const checkData = noNullData(data, rules);
