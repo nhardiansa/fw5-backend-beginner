@@ -74,6 +74,19 @@ exports.deleteHistoryUser = (id) => {
   });
 };
 
+exports.deleteHistoryUserPermanent = (id) => {
+  return new Promise((resolve, reject) => {
+    db.query(`DELETE FROM ${table} WHERE id = ?`, [id], (err, results) => {
+      if (err) {
+        console.error(err);
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
 exports.getHistory = (id) => {
   return new Promise((resolve, reject) => {
     db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {

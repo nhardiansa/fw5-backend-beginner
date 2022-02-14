@@ -375,3 +375,47 @@ exports.getFilteredHistories = async (req, res) => {
     return returningError(res, 500, 'Failed to get filtered histories');
   }
 };
+
+exports.deleteHistoryPermanent = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.params;
+
+    // validate inputed id
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
+    }
+
+    // check if history exist
+    const history = await historiesModel.getHistory(id);
+
+    // check if vehicle is returned
+    if (!Number(history[0].returned)) {
+      return returningError(res, 400, 'This vehicle is not returned yet');
+    }
+
+    // if history exist
+    if (history.length > 0) {
+      // delete history
+      const result = await historiesModel.deleteHistoryUserPermanent(id);
+
+      // if history can't to delete
+      if (result.affectedRows < 1) {
+        return returningError(res, 500, "Can't delete history");
+      }
+
+      const historyDeleted = await historiesModel.getHistory(id);
+
+      // if history deleted
+      return returningSuccess(res, 200, 'History has been deleted', historyDeleted[0]);
+    }
+
+    // if history not exist
+    return returningError(res, 404, 'History not found');
+  } catch (error) {
+    // if error exist
+    console.log(error);
+    return returningError(res, 500, 'Failed to delete history');
+  }
+};

@@ -8,7 +8,8 @@ const {
   deleteHistory,
   upadateHistory,
   getHistory,
-  getFilteredHistories
+  getFilteredHistories,
+  deleteHistoryPermanent
 } = require('../controllers/histories');
 
 histories.get('/', auth.verifyAdmin, getFilteredHistories);
@@ -20,5 +21,6 @@ histories.post('/', auth.verifyUser, addHistory);
 histories.patch('/:id', auth.verifyAdmin, upadateHistory);
 
 histories.delete('/:id', auth.verifyUser, deleteHistory);
+histories.delete('/:id/admin', auth.verifyAdmin, deleteHistoryPermanent);
 
 module.exports = histories;
