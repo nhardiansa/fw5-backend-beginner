@@ -281,6 +281,7 @@ exports.registerUser = async (req, res) => {
     const rules = {
       name: 'string|required',
       email: 'email|required',
+      username: 'string|required',
       phone: 'phone number|required',
       password: 'string|required'
     };
@@ -300,6 +301,15 @@ exports.registerUser = async (req, res) => {
 
     if (isEmailExist[0].rows > 0) {
       return returningError(res, 400, 'Email already registered');
+    }
+
+    // check if username is new
+    const isUsernameExist = await usersModel.findUserByData({
+      username: data.username
+    });
+
+    if (isUsernameExist[0].rows > 0) {
+      return returningError(res, 400, 'Username already used!');
     }
 
     // check if phone is new
@@ -332,21 +342,40 @@ exports.loginUser = async (req, res) => {
   try {
     const {
       email,
+      username,
       password
     } = req.body;
 
-    // check if email is registered
-    const user = await usersModel.findEmail(email, true);
+    const fieldName = email ? 'email' : 'username';
+
+    if ((username !== undefined) && (email !== undefined)) {
+      return returningError(res, 400, 'You can only use one of these fields: username or email');
+    }
+
+    // check if user is registered or not
+    let user;
+    if (email) {
+      user = await usersModel.findEmail(email, true);
+    } else {
+      user = await usersModel.findUserByData({
+        username
+      }, true);
+    }
+
+    console.log(user);
+    console.log(fieldName);
+
+    // return returningError(res, 500, 'Not implemented yet!');
 
     if (user.length < 1) {
-      return returningError(res, 403, 'Password or email is incorrect');
+      return returningError(res, 403, `Password or ${fieldName} is incorrect`);
     }
 
     // check if password is correct
     const isPasswordCorrect = bcrypt.compareSync(password, user[0].password);
 
     if (!isPasswordCorrect) {
-      return returningError(res, 403, 'Password or email is incorrect');
+      return returningError(res, 403, `Password or ${fieldName} is incorrect`);
     }
 
     const data = {
