@@ -42,6 +42,21 @@ exports.requestReceiver = (data, keys) => {
 exports.requestMapping = (data, rules) => {
   const dump = {};
   const keysCollection = Object.keys(data);
+  const rulesCollection = Object.keys(rules);
+
+  // check if has required rules
+  for (const key in rules) {
+    if (!keysCollection.includes(key) && rules[key].includes('required')) {
+      dump[key] = null;
+    }
+  }
+
+  // check if has valid rules
+  for (const key in data) {
+    if (!rulesCollection.includes(key)) {
+      delete data[key];
+    }
+  }
 
   // clear space
   for (const key in data) {
@@ -122,13 +137,6 @@ exports.requestMapping = (data, rules) => {
           dump[k] = null;
         }
       }
-    }
-  }
-
-  // check if has required rules
-  for (const key in rules) {
-    if (!keysCollection.includes(key) && rules[key].includes('required')) {
-      dump[key] = null;
     }
   }
 
