@@ -344,6 +344,8 @@ exports.getFilteredHistories = async (req, res) => {
       }
 
       data.user_id = userId;
+    } else {
+      data.admin = true;
     }
 
     nullDataResponse(res, data, rules);
