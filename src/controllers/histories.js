@@ -72,7 +72,7 @@ exports.listHistories = async (req, res) => {
 exports.addHistory = async (req, res) => {
   try {
     const rules = {
-      user_id: 'number|required',
+      user_id: 'number|required', // from auth middleware
       vehicle_id: 'number|required',
       payment: 'boolean|required',
       returned: 'boolean|required',
@@ -83,6 +83,10 @@ exports.addHistory = async (req, res) => {
     };
 
     const data = requestMapping(req.body, rules);
+
+    console.log(data);
+
+    // return returningError(res, 500, 'Not yet implemented');
 
     // validate inputed data
     for (const key in data) {
@@ -332,9 +336,7 @@ exports.getFilteredHistories = async (req, res) => {
       limit: 'number'
     };
 
-    const {
-      userId
-    } = req.params;
+    const userId = req.body.id;
 
     const data = requestMapping(req.query, rules);
 
