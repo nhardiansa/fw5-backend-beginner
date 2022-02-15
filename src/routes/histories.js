@@ -8,13 +8,12 @@ const {
   deleteHistory,
   upadateHistory,
   getHistory,
-  getFilteredHistories,
-  deleteHistoryPermanent
+  deleteHistoryPermanent,
+  listHistories
 } = require('../controllers/histories');
 
-histories.get('/', auth.verifyAdmin, getFilteredHistories);
-histories.get('/filter/:userId', auth.verifyUser, getFilteredHistories);
-histories.get('/:id', getHistory);
+histories.get('/', auth.verifyUser, listHistories);
+histories.get('/:id', auth.verifyUser, getHistory);
 
 histories.post('/', auth.verifyUser, addHistory);
 
