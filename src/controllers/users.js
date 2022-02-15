@@ -187,7 +187,12 @@ exports.updateUser = async (req, res) => {
       data.image = req.file.path;
     }
 
-    // return returningError(res, 500, 'Not implemented yet!', data.image);
+    // check if logged in user is the same user
+    const loggedUser = req.headers.user;
+
+    if (loggedUser.id !== id) {
+      return returningError(res, 403, 'You are not authorized to update this user', data.image);
+    }
 
     const findUser = await usersModel.getUser(id);
 
@@ -355,7 +360,9 @@ exports.loginUser = async (req, res) => {
     // check if user is registered or not
     let user;
     if (email) {
-      user = await usersModel.findEmail(email, true);
+      user = await usersModel.findUserByData({
+        email
+      }, true);
     } else {
       user = await usersModel.findUserByData({
         username
@@ -380,12 +387,9 @@ exports.loginUser = async (req, res) => {
 
     const data = {
       id: user[0].id,
-      confirmed: Number(user[0].confirmed)
+      confirmed: Number(user[0].confirmed),
+      role: user[0].role
     };
-
-    if (user[0].email.includes('@vehicle.rent.mail.com')) {
-      data.role = 'admin';
-    }
 
     const token = jwt.sign(data, SECRET_KEY);
 
