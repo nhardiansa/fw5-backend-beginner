@@ -1,4 +1,7 @@
 const db = require('../helpers/db');
+const {
+  rolesTable
+} = require('../helpers/constant');
 const table = require('../helpers/constant').usersTable;
 const {
   whereLikeCreator
@@ -8,9 +11,11 @@ exports.getUser = (id, noData = false) => {
   return new Promise((resolve, reject) => {
     const query = `
     SELECT 
-    ${noData ? "COUNT(*) AS 'rows'" : 'id, name, email, confirmed, phone, gender, birthdate, address, image, created_at, updated_at'} 
-    FROM ${table} 
-    WHERE id = ?`;
+    ${noData ? "COUNT(*) AS 'rows'" : 'u.id, u.name, u.email, u.confirmed, u.phone, u.gender, u.birthdate, u.address, u.image, u.created_at, u.updated_at'} 
+    FROM ${table} u
+    LEFT JOIN ${rolesTable} r
+    ON u.role_id = r.id
+    WHERE u.id = ?`;
 
     db.query(query, [id], (err, results) => {
       if (err) {
@@ -61,7 +66,15 @@ exports.updateUser = (id, data) => {
 
 exports.findUserByData = (data, noData = false) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT ${noData ? '*' : "COUNT(*) AS 'rows'"} FROM ${table} WHERE ?`, data, (err, res) => {
+    const query = `
+      SELECT ${noData ? 'u.*, r.name as role' : "COUNT(*) AS 'rows'"} 
+      FROM ${table} u
+      LEFT JOIN ${rolesTable} r
+      ON u.role_id = r.id
+      WHERE u.?
+    `;
+
+    db.query(query, data, (err, res) => {
       if (err) {
         reject(err);
       } else {
