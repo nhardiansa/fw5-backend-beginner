@@ -33,41 +33,41 @@ const codeGenerator = (vehicleName) => {
   return result + num;
 };
 
-exports.listHistories = async (req, res) => {
-  try {
-    const id = Number(req.query.user_id) || null;
-    const data = {
-      limit: Number(req.query.limit) || 5,
-      page: Number(req.query.page) || 1
-    };
-    const keys = [
-      'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
-      'prepayment'
-    ];
+// exports.listHistories = async (req, res) => {
+//   try {
+//     const id = Number(req.query.user_id) || null;
+//     const data = {
+//       limit: Number(req.query.limit) || 5,
+//       page: Number(req.query.page) || 1
+//     };
+//     const keys = [
+//       'id', 'user_id', 'vehicle_id', 'payment_code', 'payment', 'returned',
+//       'prepayment'
+//     ];
 
-    if (!validateId(id) || id === null) {
-      return returningError(res, 400, 'user_id must be a number');
-    }
+//     if (!validateId(id) || id === null) {
+//       return returningError(res, 400, 'user_id must be a number');
+//     }
 
-    const results = await historiesModel.getHistories(keys, {
-      ...data,
-      id
-    });
+//     const results = await historiesModel.getHistories(keys, {
+//       ...data,
+//       id
+//     });
 
-    const countHistories = await historiesModel.countHistories(id);
-    const countResult = countHistories[0].rows;
+//     const countHistories = await historiesModel.countHistories(id);
+//     const countResult = countHistories[0].rows;
 
-    const pageInfo = pageInfoCreator(countResult, `${baseURL}/histories?`, {
-      ...data,
-      user_id: id
-    });
+//     const pageInfo = pageInfoCreator(countResult, `${baseURL}/histories?`, {
+//       ...data,
+//       user_id: id
+//     });
 
-    return returningSuccess(res, 200, 'Success getting histories', results, pageInfo);
-  } catch (error) {
-    console.error(error);
-    return returningError(res, 500, 'Failed to get list of history');
-  }
-};
+//     return returningSuccess(res, 200, 'Success getting histories', results, pageInfo);
+//   } catch (error) {
+//     console.error(error);
+//     return returningError(res, 500, 'Failed to get list of history');
+//   }
+// };
 
 exports.addHistory = async (req, res) => {
   try {
@@ -322,7 +322,7 @@ exports.getHistory = async (req, res) => {
   }
 };
 
-exports.getFilteredHistories = async (req, res) => {
+exports.listHistories = async (req, res) => {
   try {
     const rules = {
       category_id: 'number',
@@ -336,18 +336,19 @@ exports.getFilteredHistories = async (req, res) => {
       limit: 'number'
     };
 
-    const userId = req.body.id;
+    // get user id by token
 
     const data = requestMapping(req.query, rules);
 
-    if (userId) {
-      if (!validateId(userId)) {
-        return returningError(res, 400, 'Id must be a number');
-      }
+    const {
+      role,
+      id
+    } = req.headers.user;
 
-      data.user_id = userId;
-    } else {
+    if (role === 'administrator') {
       data.admin = true;
+    } else {
+      data.user_id = id;
     }
 
     nullDataResponse(res, data, rules);
@@ -368,8 +369,8 @@ exports.getFilteredHistories = async (req, res) => {
       data.limit = 5;
     }
 
-    const histories = await historiesModel.getFilteredHistories(data);
-    const historiesCount = await historiesModel.getFilteredHistoriesCount(data);
+    const histories = await historiesModel.getHistories(data);
+    const historiesCount = await historiesModel.getHistoriesCount(data);
 
     const pageInfo = pageInfoCreator(historiesCount[0].rows, `${baseURL}/histories`, data);
 
