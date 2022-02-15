@@ -8,5 +8,6 @@ module.exports = {
   vehiclesTable: 'vehicles',
   categoriesTable: 'categories',
   confirmationsTable: 'verification_codes',
+  rolesTable: 'roles',
   baseURL: APP_URL
 };
