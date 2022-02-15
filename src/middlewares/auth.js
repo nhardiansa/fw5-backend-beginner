@@ -30,37 +30,51 @@ const verify = (req, res) => {
     return decoded;
   } catch (error) {
     console.error(error);
-    return returningError(res, 401, 'User not verified');
+    return returningError(res, 500, 'Unexpected error');
   }
 };
 
 exports.verifyAdmin = (req, res, next) => {
-  const verifyUser = verify(req, res);
+  try {
+    const verifyUser = verify(req, res);
 
-  if (!verifyUser) {
-    return returningError(res, 401, 'Unauthorized');
+    if (!verifyUser) {
+      return returningError(res, 401, 'Unauthorized');
+    }
+
+    if (verifyUser.role !== 'administrator') {
+      return returningError(res, 403, 'Just admin can do this');
+    }
+
+    next();
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Unexpected error');
   }
-
-  if (verifyUser.role !== 'admin') {
-    return returningError(res, 403, 'Just admin can do this');
-  }
-
-  next();
 };
 
 exports.verifyUser = (req, res, next) => {
-  const verifyUser = verify(req, res);
+  try {
+    const verifyUser = verify(req, res);
 
-  // check if user is confirmed
-  if (!verifyUser.confirmed) {
-    return returningError(res, 403, 'User not confirmed');
+    // check if user is confirmed
+    if (!verifyUser.confirmed) {
+      return returningError(res, 403, 'User not confirmed');
+    }
+
+    if (!verifyUser) {
+      return returningError(res, 401, 'Unauthorized');
+    }
+
+    // put user data to headers object
+    req.headers.user = {
+      id: String(verifyUser.id),
+      role: verifyUser.role
+    };
+
+    next();
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Unexpected error');
   }
-
-  if (!verifyUser) {
-    return returningError(res, 401, 'Unauthorized');
-  }
-
-  req.body.user_id = verifyUser.id.toString();
-
-  next();
 };
