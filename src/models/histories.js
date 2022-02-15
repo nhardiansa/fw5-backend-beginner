@@ -8,30 +8,30 @@ const {
   dateNow
 } = require('../helpers/date');
 
-exports.getHistories = (keys, data) => {
-  const {
-    id,
-    limit,
-    page
-  } = data;
+// exports.getHistories = (keys, data) => {
+//   const {
+//     id,
+//     limit,
+//     page
+//   } = data;
 
-  const offset = (page - 1) * limit;
+//   const offset = (page - 1) * limit;
 
-  return new Promise((resolve, reject) => {
-    db.query(`
-      SELECT ?? FROM ${table}
-      ${id ? `WHERE user_id = ${id}` : ''}
-      LIMIT ? OFFSET ?
-    `, [keys, limit, offset], (err, results) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-};
+//   return new Promise((resolve, reject) => {
+//     db.query(`
+//       SELECT ?? FROM ${table}
+//       ${id ? `WHERE user_id = ${id}` : ''}
+//       LIMIT ? OFFSET ?
+//     `, [keys, limit, offset], (err, results) => {
+//       if (err) {
+//         console.error(err);
+//         reject(err);
+//       } else {
+//         resolve(results);
+//       }
+//     });
+//   });
+// };
 
 exports.addHistory = (data) => {
   return new Promise((resolve, reject) => {
@@ -113,24 +113,26 @@ exports.updateHistory = (id, data) => {
   });
 };
 
-exports.countHistories = (id = null) => {
-  return new Promise((resolve, reject) => {
-    db.query(`
-        SELECT COUNT(*) AS 'rows' 
-        FROM ${table}
-        ${id ? `WHERE user_id = ${id}` : ''}
-      `, (err, results) => {
-      if (err) {
-        console.error(err);
-        reject(err);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-};
+// exports.countHistories = (id = null) => {
+//   return new Promise((resolve, reject) => {
+//     db.query(`
+//         SELECT COUNT(*) AS 'rows'
+//         FROM ${table}
+//         ${id ? `WHERE user_id = ${id}` : ''}
+//       `, (err, results) => {
+//       if (err) {
+//         console.error(err);
+//         reject(err);
+//       } else {
+//         resolve(results);
+//       }
+//     });
+//   });
+// };
 
-exports.getFilteredHistories = (data) => {
+/* =============== List of Histories with filter feature =============== */
+
+exports.getHistories = (data) => {
   const {
     user_id: userId,
     start_rent: startRent,
@@ -178,7 +180,7 @@ exports.getFilteredHistories = (data) => {
   });
 };
 
-exports.getFilteredHistoriesCount = (data) => {
+exports.getHistoriesCount = (data) => {
   const {
     user_id: userId,
     start_rent: startRent,
