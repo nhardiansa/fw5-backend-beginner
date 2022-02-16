@@ -3,7 +3,7 @@ const vehicles = new express.Router();
 
 const {
   uploadMiddleware
-} = require('../helpers/upload');
+} = require('../middlewares/upload');
 
 const auth = require('../middlewares/auth');
 

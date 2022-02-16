@@ -2,7 +2,7 @@ const express = require('express');
 const users = new express.Router();
 const {
   uploadMiddleware
-} = require('../helpers/upload');
+} = require('../middlewares/upload');
 
 const {
   getUser,
