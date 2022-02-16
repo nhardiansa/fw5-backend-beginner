@@ -37,7 +37,8 @@ exports.dateValidator = (date) => {
 exports.noNullData = (data, rules) => {
   for (const key in data) {
     if (data[key] === null) {
-      return `Your ${key} must be ${rules[key].split('|').shift()}`;
+      const ruleName = rules[key].split('|').shift();
+      return `Your ${key} must be ${ruleName === key ? 'have a valid type' : ruleName}`;
     }
   }
 
@@ -47,7 +48,8 @@ exports.noNullData = (data, rules) => {
 exports.nullDataResponse = (res, data, rules, deletePath) => {
   for (const key in data) {
     if (data[key] === null) {
-      return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`, deletePath);
+      const ruleName = rules[key].split('|').shift();
+      return returningError(res, 400, `Your ${key} must be ${ruleName === key ? 'have a valid type' : ruleName}`, deletePath);
     }
   }
 };
