@@ -7,7 +7,7 @@ module.exports = {
   historiesTable: 'histories',
   vehiclesTable: 'vehicles',
   categoriesTable: 'categories',
-  confirmationsTable: 'verification_codes',
+  otpCodes: 'otp_codes',
   rolesTable: 'roles',
   baseURL: APP_URL
 };
