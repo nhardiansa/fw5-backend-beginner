@@ -58,6 +58,13 @@ exports.requestMapping = (data, rules) => {
     }
   }
 
+  // check if data is undefined
+  for (const key in data) {
+    if (data[key] === undefined) {
+      data[key] = '';
+    }
+  }
+
   // clear space
   for (const key in data) {
     data[key] = data[key].trim();
