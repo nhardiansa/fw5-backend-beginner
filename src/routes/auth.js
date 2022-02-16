@@ -1,18 +1,18 @@
 const express = require('express');
+
 const {
   loginUser,
   registerUser,
-  sentConfirmationCode,
-  emailVerifcation,
-  resetPassword
-} = require('../controllers/users');
+  confirmReset
+} = require('../controllers/auth');
+
 const auth = new express.Router();
 
 auth.post('/login', loginUser);
 auth.post('/register', registerUser);
-auth.post('/sentConfirmation', sentConfirmationCode);
-auth.post('/emailVerification', emailVerifcation);
+auth.post('/confirm-reset', confirmReset);
+// auth.post('/emailVerification', emailVerifcation);
 
-auth.patch('/resetPassword', resetPassword);
+// auth.patch('/resetPassword', resetPassword);
 
 module.exports = auth;
