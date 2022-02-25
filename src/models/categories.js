@@ -75,7 +75,7 @@ exports.updateCategory = (id, data) => {
 
 exports.getCategoryByName = (name) => {
   return new Promise((resolve, reject) => {
-    db.query(`SELECT name FROM ${table} WHERE name = ?`, [name], (err, results) => {
+    db.query(`SELECT id, name FROM ${table} WHERE name = ?`, [name], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);

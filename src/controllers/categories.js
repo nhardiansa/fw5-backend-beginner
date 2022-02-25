@@ -51,6 +51,25 @@ exports.getCategory = async (req, res) => {
   }
 };
 
+exports.getCategoryByName = async (req, res) => {
+  try {
+    const {
+      name
+    } = req.params;
+
+    const category = await categoriesModel.getCategoryByName(name);
+
+    if (category.length < 1) {
+      return returningError(res, 404, 'Category not found');
+    }
+
+    return returningSuccess(res, 200, 'Success getting category', category[0]);
+  } catch (err) {
+    console.error(err);
+    return returningError(res, 500, 'Internal server error');
+  }
+};
+
 exports.addCategory = async (req, res) => {
   try {
     const data = requestMapping(req.body, {

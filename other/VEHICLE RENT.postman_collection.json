@@ -6,6 +6,217 @@
 	},
 	"item": [
 		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "LOGIN USER",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "vosesif312",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "admin@vehicle.rent.mail.com",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "ilyasana95@gmail.com",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "yinivih443",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "password",
+									"value": "asdasd",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/login",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "REGISTER USER",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "name",
+									"value": "yinivih",
+									"type": "text"
+								},
+								{
+									"key": "email",
+									"value": "yinivih443@alfaceti.com",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "yinivih443",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "phone",
+									"value": "082134552989",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/register",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"register"
+							],
+							"query": [
+								{
+									"key": "resend",
+									"value": "true",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "RESET PASSWORD",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "code",
+									"value": "335904",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "confirm_password",
+									"value": "123456",
+									"type": "text"
+								},
+								{
+									"key": "user_id",
+									"value": "42",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/resetPassword",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"resetPassword"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "CONFIRM USER & RESET PASSWORD",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "email",
+									"value": "yinivih443@alfaceti.com",
+									"type": "text"
+								},
+								{
+									"key": "code",
+									"value": "332809",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "asdasd",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "confirm_password",
+									"value": "asdasd",
+									"type": "text",
+									"disabled": true
+								},
+								{
+									"key": "email",
+									"value": "ahsan@nmail.com",
+									"type": "text",
+									"disabled": true
+								}
+							]
+						},
+						"url": {
+							"raw": "{{baseURL}}/auth/confirm-reset",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"auth",
+								"confirm-reset"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "vehicles",
 			"item": [
 				{
@@ -14,7 +225,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/vehicles/filter",
+							"raw": "{{baseURL}}/vehicles/filter?name=br&location=solo",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -25,21 +236,20 @@
 							"query": [
 								{
 									"key": "page",
-									"value": "2",
+									"value": "1",
 									"description": "number",
 									"disabled": true
 								},
 								{
 									"key": "limit",
-									"value": "",
+									"value": "1",
 									"description": "number",
 									"disabled": true
 								},
 								{
 									"key": "name",
-									"value": "bro",
-									"description": "string",
-									"disabled": true
+									"value": "br",
+									"description": "string"
 								},
 								{
 									"key": "minPrice",
@@ -74,8 +284,7 @@
 								{
 									"key": "location",
 									"value": "solo",
-									"description": "string",
-									"disabled": true
+									"description": "string"
 								},
 								{
 									"key": "sort_price",
@@ -116,7 +325,7 @@
 							"query": [
 								{
 									"key": "page",
-									"value": "4",
+									"value": "5",
 									"disabled": true
 								},
 								{
@@ -151,7 +360,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "34"
+									"value": "19"
 								}
 							]
 						}
@@ -164,7 +373,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/vehicles/popular",
+							"raw": "{{baseURL}}/vehicles/popular?limit=4",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -175,9 +384,8 @@
 							"query": [
 								{
 									"key": "limit",
-									"value": "1",
-									"description": "number",
-									"disabled": true
+									"value": "4",
+									"description": "number"
 								},
 								{
 									"key": "page",
@@ -221,45 +429,38 @@
 								},
 								{
 									"key": "name",
-									"value": "all new toyota agya",
-									"type": "text",
-									"disabled": true
+									"value": "toyota supra",
+									"type": "text"
 								},
 								{
 									"key": "price",
 									"value": "300000",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								},
 								{
 									"key": "prepayment",
 									"value": "1",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								},
 								{
 									"key": "capacity",
 									"value": "2",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								},
 								{
 									"key": "qty",
 									"value": "5",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								},
 								{
 									"key": "location",
 									"value": "wajo",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								},
 								{
 									"key": "category_id",
 									"value": "2",
-									"type": "text",
-									"disabled": true
+									"type": "text"
 								}
 							]
 						},
@@ -296,13 +497,13 @@
 								{
 									"key": "image",
 									"type": "file",
-									"src": [],
-									"disabled": true
+									"src": "/C:/Users/Nabil/Downloads/2.motorbike/oliver-walthard-Nynx8Z9Y-mQ-unsplash.jpg"
 								},
 								{
 									"key": "name",
 									"value": "honda civic",
-									"type": "text"
+									"type": "text",
+									"disabled": true
 								}
 							]
 						},
@@ -318,7 +519,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "51"
+									"value": "46"
 								}
 							]
 						}
@@ -485,7 +686,7 @@
 							"variable": [
 								{
 									"key": "id",
-									"value": "33",
+									"value": "45",
 									"description": "number"
 								}
 							]
@@ -614,112 +815,6 @@
 					"response": []
 				},
 				{
-					"name": "REGISTER USER",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "name",
-									"value": "admin",
-									"type": "text"
-								},
-								{
-									"key": "email",
-									"value": "admin@mail.com",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "admin",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "123456",
-									"type": "text"
-								},
-								{
-									"key": "phone",
-									"value": "082134552123",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseURL}}/users/register",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"users",
-								"register"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "LOGIN USER",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "ihsanul@nmail.com",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "email",
-									"value": "admin@vehicle.rent.mail.com",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "email",
-									"value": "ilyasana95@gmail.com",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "444444",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "username",
-									"value": "admi",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "password",
-									"value": "123456",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseURL}}/users/auth/login",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"users",
-								"auth",
-								"login"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "UPDATE AN USER",
 					"request": {
 						"auth": {
@@ -744,14 +839,13 @@
 								},
 								{
 									"key": "name",
-									"value": "",
+									"value": "asd",
 									"type": "text"
 								},
 								{
 									"key": "email",
-									"value": "",
-									"type": "text",
-									"disabled": true
+									"value": "da",
+									"type": "text"
 								},
 								{
 									"key": "gender",
@@ -835,122 +929,6 @@
 						}
 					},
 					"response": []
-				},
-				{
-					"name": "REQUEST CONFIRMATION CODE",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "aris@nmail.com",
-									"type": "text",
-									"disabled": true
-								},
-								{
-									"key": "email",
-									"value": "ilyasana95@gmail.com",
-									"type": "text"
-								},
-								{
-									"key": "verify",
-									"value": "1",
-									"type": "text",
-									"disabled": true
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseURL}}/users/sentConfirmationCode",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"users",
-								"sentConfirmationCode"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "RESET PASSWORD",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "code",
-									"value": "335904",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "123456",
-									"type": "text"
-								},
-								{
-									"key": "confirm_password",
-									"value": "123456",
-									"type": "text"
-								},
-								{
-									"key": "user_id",
-									"value": "42",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseURL}}/users/resetPassword",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"users",
-								"resetPassword"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "EMAIL CONFIRMATION",
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "email",
-									"value": "aris@nmail.com",
-									"type": "text"
-								},
-								{
-									"key": "code",
-									"value": "734304",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{baseURL}}/users/emailVerifcation",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"users",
-								"emailVerifcation"
-							]
-						}
-					},
-					"response": []
 				}
 			]
 		},
@@ -973,7 +951,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{baseURL}}/histories?page=3",
+							"raw": "{{baseURL}}/histories",
 							"host": [
 								"{{baseURL}}"
 							],
@@ -989,8 +967,9 @@
 								},
 								{
 									"key": "page",
-									"value": "3",
-									"description": "number"
+									"value": "4",
+									"description": "number",
+									"disabled": true
 								},
 								{
 									"key": "category_id",
@@ -1034,92 +1013,7 @@
 					"response": []
 				},
 				{
-					"name": "FILTER HISTORIES",
-					"request": {
-						"auth": {
-							"type": "bearer",
-							"bearer": [
-								{
-									"key": "token",
-									"value": "{{token}}",
-									"type": "string"
-								}
-							]
-						},
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "{{baseURL}}/histories/filter/:userId",
-							"host": [
-								"{{baseURL}}"
-							],
-							"path": [
-								"histories",
-								"filter",
-								":userId"
-							],
-							"query": [
-								{
-									"key": "limit",
-									"value": "2",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "page",
-									"value": "4",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "category_id",
-									"value": "4",
-									"description": "number",
-									"disabled": true
-								},
-								{
-									"key": "start_rent",
-									"value": "2022-02-04",
-									"description": "date YYYY-MM-DD",
-									"disabled": true
-								},
-								{
-									"key": "sort_date",
-									"value": "desc",
-									"description": "asc or desc",
-									"disabled": true
-								},
-								{
-									"key": "sort_name",
-									"value": "asc",
-									"description": "asc or desc",
-									"disabled": true
-								},
-								{
-									"key": "sort_returned",
-									"value": "desc",
-									"description": "asc or desc",
-									"disabled": true
-								},
-								{
-									"key": "sort_payment",
-									"value": "desc",
-									"description": "asc or desc",
-									"disabled": true
-								}
-							],
-							"variable": [
-								{
-									"key": "userId",
-									"value": "42"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "GET A HISTORIES",
+					"name": "GET A HISTORY",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -1182,13 +1076,8 @@
 							"mode": "urlencoded",
 							"urlencoded": [
 								{
-									"key": "user_id",
-									"value": "42",
-									"type": "text"
-								},
-								{
 									"key": "vehicle_id",
-									"value": "20",
+									"value": "19",
 									"type": "text"
 								},
 								{
@@ -1213,12 +1102,17 @@
 								},
 								{
 									"key": "start_rent",
-									"value": "2022-02-14",
+									"value": "2022-02-24",
 									"type": "text"
 								},
 								{
 									"key": "end_rent",
-									"value": "2022-02-15",
+									"value": "2022-02-25",
+									"type": "text"
+								},
+								{
+									"key": "asda",
+									"value": "asdasd",
 									"type": "text"
 								}
 							]
@@ -1446,6 +1340,43 @@
 								{
 									"key": "id",
 									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET A CATEGORY BY CATEGORY NAME",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseURL}}/categories/name/:name",
+							"host": [
+								"{{baseURL}}"
+							],
+							"path": [
+								"categories",
+								"name",
+								":name"
+							],
+							"query": [
+								{
+									"key": "page",
+									"value": "2",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "1",
+									"disabled": true
+								}
+							],
+							"variable": [
+								{
+									"key": "name",
+									"value": "bike"
 								}
 							]
 						}
