@@ -82,9 +82,10 @@ exports.addHistory = async (req, res) => {
       end_rent: 'date|required'
     };
 
-    const data = requestMapping(req.body, rules);
+    // put user id from header into request body
+    req.body.user_id = req.headers.user.id;
 
-    console.log(data);
+    const data = requestMapping(req.body, rules);
 
     // return returningError(res, 500, 'Not yet implemented');
 
