@@ -251,7 +251,7 @@ exports.getPopularVehicles = async (req, res) => {
 
     const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/popular?`, data);
 
-    return returningSuccess(res, 200, 'List of popular vehicles', results, pageInfo);
+    return returningSuccess(res, 200, 'List of popular vehicles', dataMapping(results), pageInfo);
   } catch (error) {
     console.log(error);
     return returningError(res, error, 'Failed to get popular vehicles');
@@ -308,7 +308,7 @@ exports.getFilterVehicles = async (req, res) => {
 
     const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/filter?`, data);
 
-    return returningSuccess(res, 200, 'List of filter vehicles', results, pageInfo);
+    return returningSuccess(res, 200, 'List of filter vehicles', dataMapping(results), pageInfo);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get filter vehicles');
