@@ -50,8 +50,8 @@ exports.pageInfoCreator = (totalDataCount, url, values) => {
   keys.forEach((el, idx) => {
     if (values[el]) {
       if (el === 'page') {
-        next += el + '=' + (values[el] + 1) + '&';
-        prev += el + '=' + (values[el] - 1) + '&';
+        next += el + '=' + (Number(values[el]) + 1) + '&';
+        prev += el + '=' + (Number(values[el]) - 1) + '&';
       } else if (idx < (keys.length - 1)) {
         next += el + '=' + values[el] + '&';
         prev += el + '=' + values[el] + '&';
