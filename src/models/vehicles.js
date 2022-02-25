@@ -247,7 +247,7 @@ exports.getFilterVehicles = (data) => {
       ${sortCapacity ? `v.capacity ${sortCapacity},` : ''}
       v.id ASC
       LIMIT ? OFFSET ?;
-    `, [limit, offset], (err, results) => {
+    `, [Number(limit), offset], (err, results) => {
       if (err) {
         reject(err);
       } else {
