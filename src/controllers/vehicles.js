@@ -240,14 +240,37 @@ exports.deleteVehicle = async (req, res) => {
 
 exports.getPopularVehicles = async (req, res) => {
   try {
-    const data = {
-      page: Number(req.query.page) || 1,
-      limit: Number(req.query.limit) || 5,
-      search: req.query.search || ''
+    const rules = {
+      page: 'number',
+      limit: 'number',
+      search: 'string',
+      location: 'string',
+      category_id: 'number',
+      prepayment: 'boolean'
     };
 
+    const data = requestMapping(req.query, rules);
+
+    for (const key in data) {
+      if (!data[key]) {
+        return returningError(res, 400, `Your ${key} must be ${rules[key].split('|').shift()}`);
+      }
+    }
+
+    const {
+      page,
+      limit
+    } = req.query;
+
+    if (!page) {
+      data.page = 1;
+    }
+    if (!limit) {
+      data.limit = 5;
+    }
+
     const results = await vehiclesModel.getPopularVehicles(data);
-    const resultCount = await vehiclesModel.countPopularVehicles();
+    const resultCount = await vehiclesModel.countPopularVehicles(data);
 
     const pageInfo = pageInfoCreator(resultCount[0].rows, `${baseURL}/vehicles/popular?`, data);
 
@@ -394,5 +417,16 @@ exports.updateVehiclePartial = async (req, res) => {
     console.error(error);
     const imagePath = req.file ? req.file.path : '';
     return returningError(res, 500, 'Failed to update vehicle', imagePath);
+  }
+};
+
+exports.locationList = async (req, res) => {
+  try {
+    const results = await vehiclesModel.locationList();
+
+    return returningSuccess(res, 200, 'List of location', results);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get location list');
   }
 };

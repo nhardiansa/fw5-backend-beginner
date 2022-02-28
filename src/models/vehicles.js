@@ -130,37 +130,40 @@ exports.countData = () => {
   });
 };
 
+// exports.getPopularVehicles = (data) => {
+//   const {
+//     limit,
+//     page,
+//     search
+//   } = data;
+//   const offset = (page - 1) * limit;
+
+//   return new Promise((resolve, reject) => {
+//     db.query(`
+//       SELECT v.id, v.name , v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location
+//       FROM ${table} v
+//       LEFT JOIN ${categoryTable} c
+//       ON v.category_id = c.id
+//       WHERE v.name LIKE '${search}%'
+//       ORDER BY v.rentCount  DESC
+//       LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
+//       if (err) {
+//         reject(err);
+//       } else {
+//         resolve(results);
+//       }
+//     });
+//   });
+// };
+
 exports.getPopularVehicles = (data) => {
   const {
     limit,
     page,
-    search
-  } = data;
-  const offset = (page - 1) * limit;
-
-  return new Promise((resolve, reject) => {
-    db.query(`
-      SELECT v.id, v.name , v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location 
-      FROM ${table} v
-      LEFT JOIN ${categoryTable} c
-      ON v.category_id = c.id
-      WHERE v.name LIKE '${search}%'
-      ORDER BY v.rentCount  DESC
-      LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results);
-      }
-    });
-  });
-};
-
-exports.getPopularVehicles = (data) => {
-  const {
-    limit,
-    page,
-    search
+    search,
+    location,
+    category_id: categoryId,
+    prepayment
   } = data;
   const offset = (page - 1) * limit;
 
@@ -172,11 +175,15 @@ exports.getPopularVehicles = (data) => {
       ON h.vehicle_id = v.id
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
-      WHERE v.name LIKE '${search}%'
+      WHERE 
+      v.name LIKE '${search || ''}%' AND
+      ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
+      ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
+      v.location LIKE '%${location || ''}%'
       GROUP BY v.name
       ORDER BY rentCount DESC
       LIMIT ? OFFSET ?;
-      `, [limit, offset], (err, results) => {
+      `, [Number(limit), offset], (err, results) => {
       if (err) {
         reject(err);
       } else {
@@ -186,7 +193,14 @@ exports.getPopularVehicles = (data) => {
   });
 };
 
-exports.countPopularVehicles = () => {
+exports.countPopularVehicles = (data) => {
+  const {
+    search,
+    location,
+    category_id: categoryId,
+    prepayment
+  } = data;
+
   return new Promise((resolve, reject) => {
     db.query(`
       SELECT COUNT(*) AS 'rows'
@@ -197,6 +211,11 @@ exports.countPopularVehicles = () => {
         ON h.vehicle_id = v.id
         LEFT JOIN ${categoryTable} c
         ON v.category_id = c.id
+        WHERE 
+        v.name LIKE '${search || ''}%' AND
+        ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
+        ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
+        v.location LIKE '%${location || ''}%'
         GROUP BY v.name
       ) AS t;
       `, (err, results) => {
@@ -239,7 +258,7 @@ exports.getFilterVehicles = (data) => {
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
       ${qty ? 'v.qty > 0 AND' : ''}
-      ${prepayment ? 'v.prepayment = 1 AND' : ''}
+      ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
       v.location LIKE '%${location || ''}%'
       ORDER BY
       ${sortPrice ? `v.price ${sortPrice},` : ''}
@@ -282,6 +301,22 @@ exports.countFilterVehicles = (data) => {
       ${qty ? 'v.qty > 0 AND' : ''}
       ${prepayment ? 'v.prepayment = 1 AND' : ''}
       v.location LIKE '%${location || ''}%';
+    `, (err, results) => {
+      if (err) {
+        reject(err);
+      } else {
+        resolve(results);
+      }
+    });
+  });
+};
+
+exports.locationList = () => {
+  return new Promise((resolve, reject) => {
+    db.query(`
+      SELECT DISTINCT location
+      FROM ${table}
+      ORDER BY location ASC;
     `, (err, results) => {
       if (err) {
         reject(err);

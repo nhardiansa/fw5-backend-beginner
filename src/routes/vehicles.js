@@ -15,12 +15,14 @@ const {
   deleteVehicle,
   getPopularVehicles,
   getFilterVehicles,
-  updateVehiclePartial
+  updateVehiclePartial,
+  locationList
 } = require('../controllers/vehicles');
 
 vehicles.get('/', getVehicles);
 vehicles.get('/popular', getPopularVehicles);
 vehicles.get('/filter', getFilterVehicles);
+vehicles.get('/location', locationList);
 vehicles.get('/:id', getVehicle);
 
 vehicles.post('/', auth.verifyAdmin, uploadMiddleware('image'), addNewVehicle);
