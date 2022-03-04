@@ -77,6 +77,7 @@ exports.loginUser = async (req, res) => {
     const token = jwt.sign(data, SECRET_KEY);
 
     return returningSuccess(res, 200, 'Success login', {
+      id: data.id,
       token
     });
   } catch (error) {
