@@ -5,6 +5,7 @@ const {
 const {
   deleteFile
 } = require('../helpers/fileHandler');
+const { dateFormat } = require('../helpers/formatter');
 const {
   validateId,
   requestMapping
@@ -40,7 +41,7 @@ exports.getUser = async (req, res) => {
       return returningError(res, 404, 'User not found');
     }
 
-    return returningSuccess(res, 200, 'Success getting a user', user[0]);
+    return returningSuccess(res, 200, 'Success getting a user', dataMapping(user)[0]);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get user');
@@ -49,6 +50,12 @@ exports.getUser = async (req, res) => {
 
 exports.addUser = async (req, res) => {
   try {
+    const birthdate = req.body.birthdate;
+
+    if (birthdate) {
+      req.body.birthdate = dateFormat(birthdate);
+    }
+
     const data = requestMapping(req.body, {
       name: 'string',
       email: 'email',
@@ -170,6 +177,11 @@ exports.updateUser = async (req, res) => {
       address: 'string'
     };
 
+    const birthdate = req.body.birthdate;
+
+    if (birthdate) {
+      req.body.birthdate = dateFormat(birthdate);
+    }
     const data = requestMapping(req.body, rules);
 
     if (req.file) {
@@ -234,7 +246,7 @@ exports.updateUser = async (req, res) => {
 
     if (results.affectedRows > 0) {
       const user = await usersModel.getUser(id);
-      return returningSuccess(res, 200, 'Success updating a user', dataMapping(user));
+      return returningSuccess(res, 200, 'Success updating a user', dataMapping(user)[0]);
     }
 
     return returningError(res, 500, 'Failed to update an user', data.image);
