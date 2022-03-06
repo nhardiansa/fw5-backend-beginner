@@ -17,7 +17,7 @@ histories.get('/:id', auth.verifyUser, getHistory);
 
 histories.post('/', auth.verifyUser, addHistory);
 
-histories.patch('/:id', auth.verifyAdmin, upadateHistory);
+histories.patch('/:id', auth.verifyUser, upadateHistory);
 
 histories.delete('/:id', auth.verifyUser, deleteHistory);
 histories.delete('/:id/admin', auth.verifyAdmin, deleteHistoryPermanent);
