@@ -8,7 +8,8 @@ const {
 const {
   returningError,
   returningSuccess,
-  pageInfoCreator
+  pageInfoCreator,
+  dataMapping
 } = require('../helpers/responseHandler');
 
 const historiesModel = require('../models/histories');
@@ -177,9 +178,9 @@ exports.addHistory = async (req, res) => {
     }
 
     // check if user not pay
-    if (!Number(data.payment) && !Number(data.prepayment)) {
-      return returningError(res, 400, 'You must pay or prepay');
-    }
+    // if (!Number(data.payment) && !Number(data.prepayment)) {
+    //   return returningError(res, 400, 'You must pay or prepay');
+    // }
 
     // return returningError(res, 500, 'Not yet implemented');
 
@@ -193,7 +194,7 @@ exports.addHistory = async (req, res) => {
       return returningError(res, 500, "Can't add history");
     }
 
-    const history = await historiesModel.getHistory(historyResult.insertId);
+    const history = await historiesModel.getHistory({ id: historyResult.insertId });
 
     return returningSuccess(res, 201, 'History has been added', history[0]);
   } catch (error) {
@@ -208,13 +209,20 @@ exports.deleteHistory = async (req, res) => {
       id
     } = req.params;
 
+    const { user } = req.headers;
+
     // validate inputed id
     if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
     }
 
     // check if history exist
-    const history = await historiesModel.getHistory(id);
+    let history;
+    if (user.role === 'administrator') {
+      history = await historiesModel.getHistory({ id });
+    } else {
+      history = await historiesModel.getHistory({ id, userId: user.id });
+    }
 
     // check if vehicle is returned
     if (!Number(history[0].returned)) {
@@ -231,7 +239,9 @@ exports.deleteHistory = async (req, res) => {
         return returningError(res, 500, "Can't delete history");
       }
 
-      const historyDeleted = await historiesModel.getHistory(id);
+      const historyDeleted = await historiesModel.getHistory({ id });
+
+      console.log(historyDeleted);
 
       // if history deleted
       return returningSuccess(res, 200, 'History has been deleted', historyDeleted[0]);
@@ -251,6 +261,8 @@ exports.upadateHistory = async (req, res) => {
     const {
       id
     } = req.params;
+
+    const { role, id: userId } = req.headers.user;
 
     const rules = {
       payment: 'boolean',
@@ -272,8 +284,15 @@ exports.upadateHistory = async (req, res) => {
       return returningError(res, 400, 'Id must be a number');
     }
 
+    console.log(id, role, userId);
+
     // check if history exist
-    const history = await historiesModel.getHistory(id);
+    let history;
+    if (role === 'administrator') {
+      history = await historiesModel.getHistory({ id });
+    } else {
+      history = await historiesModel.getHistory({ id, userId });
+    }
 
     // if history not exist
     if (history.length < 1) {
@@ -289,7 +308,7 @@ exports.upadateHistory = async (req, res) => {
     }
 
     // get updated history
-    const updatedHistory = await historiesModel.getHistory(id);
+    const updatedHistory = await historiesModel.getHistory({ id });
 
     return returningSuccess(res, 200, 'History has been updated', updatedHistory[0]);
   } catch (error) {
@@ -304,12 +323,22 @@ exports.getHistory = async (req, res) => {
       id
     } = req.params;
 
+    const { role, id: userId } = req.headers.user;
+
+    console.log(role);
+
     // validate inputed id
     if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
     }
 
-    const result = await historiesModel.getHistory(id);
+    let result;
+
+    if (role === 'administrator') {
+      result = await historiesModel.getHistory({ id });
+    } else {
+      result = await historiesModel.getHistory({ id, userId });
+    }
 
     // if history not exist
     if (result.length < 1) {
@@ -333,6 +362,7 @@ exports.listHistories = async (req, res) => {
       sort_name: 'sorter',
       sort_returned: 'sorter',
       sort_payment: 'sorter',
+      created: 'sorter',
       page: 'number',
       limit: 'number'
     };
@@ -349,7 +379,7 @@ exports.listHistories = async (req, res) => {
     if (role === 'administrator') {
       data.admin = true;
     } else {
-      data.user_id = id;
+      data.user_id = Number(id);
     }
 
     nullDataResponse(res, data, rules);
@@ -362,6 +392,8 @@ exports.listHistories = async (req, res) => {
       }
     }
 
+    console.log(data);
+
     if (!data.page) {
       data.page = 1;
     }
@@ -373,9 +405,9 @@ exports.listHistories = async (req, res) => {
     const histories = await historiesModel.getHistories(data);
     const historiesCount = await historiesModel.getHistoriesCount(data);
 
-    const pageInfo = pageInfoCreator(historiesCount[0].rows, `${baseURL}/histories`, data);
+    const pageInfo = pageInfoCreator(historiesCount[0].rows, `${baseURL}/histories?`, data);
 
-    return returningSuccess(res, 200, 'Success getting histories', histories, pageInfo);
+    return returningSuccess(res, 200, 'Success getting histories', dataMapping(histories), pageInfo);
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Failed to get filtered histories');
@@ -394,7 +426,7 @@ exports.deleteHistoryPermanent = async (req, res) => {
     }
 
     // check if history exist
-    const history = await historiesModel.getHistory(id);
+    const history = await historiesModel.getHistory({ id });
 
     // check if vehicle is returned
     if (!Number(history[0].returned)) {
