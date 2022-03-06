@@ -87,9 +87,17 @@ exports.deleteHistoryUserPermanent = (id) => {
   });
 };
 
-exports.getHistory = (id) => {
+exports.getHistory = (data) => {
+  const { id, userId } = data;
   return new Promise((resolve, reject) => {
-    db.query(`SELECT * FROM ${table} WHERE id = ?`, [id], (err, results) => {
+    const query = `
+      SELECT ${table}.*, (${vehiclesTable}.price * ${table}.qty) as total_paid
+      FROM ${table}
+      LEFT JOIN ${vehiclesTable}
+      ON ${table}.vehicle_id = ${vehiclesTable}.id
+      WHERE ${table}.id = ? ${userId ? `AND ${table}.user_id = ${userId}` : ''}
+    `;
+    db.query(query, [Number(id)], (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
@@ -144,6 +152,7 @@ exports.getHistories = (data) => {
     sort_name: sortName,
     sort_returned: sortReturned,
     sort_payment: sortPayment,
+    created,
     admin
   } = data;
 
@@ -151,7 +160,7 @@ exports.getHistories = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT h.id, h.payment, h.returned, h.prepayment, h.start_rent, h.end_rent, v.name, c.name as type
+      SELECT h.id, h.payment, h.returned, h.prepayment, h.start_rent, h.end_rent, v.name, c.name as type, v.image as image
       FROM ${table} h
       LEFT JOIN ${vehiclesTable} v
       ON h.vehicle_id = v.id
@@ -164,13 +173,14 @@ exports.getHistories = (data) => {
       ${userId ? `AND h.user_id = ${userId}` : ''}
       ${admin ? '' : 'AND deleted_at IS NULL'}
       ORDER BY
+      ${created ? `h.created_at ${created},` : ''}
       ${sortDate ? `h.start_rent ${sortDate},` : ''}
       ${sortName ? `v.name ${sortName},` : ''}
       ${sortReturned ? `h.returned ${sortReturned},` : ''}
       ${sortPayment ? `h.payment ${sortPayment},` : ''}
       h.id ASC
       LIMIT ? OFFSET ?
-    `, [limit, offset], (err, results) => {
+    `, [Number(limit), Number(offset)], (err, results) => {
       if (err) {
         reject(err);
       } else {
