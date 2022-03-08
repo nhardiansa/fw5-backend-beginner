@@ -357,6 +357,8 @@ exports.listHistories = async (req, res) => {
     const rules = {
       category_id: 'number',
       vehicle_name: 'string',
+      returned_status: 'boolean',
+      payment_status: 'boolean',
       start_rent: 'sorter',
       sort_date: 'sorter',
       sort_name: 'sorter',

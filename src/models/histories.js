@@ -153,6 +153,8 @@ exports.getHistories = (data) => {
     sort_returned: sortReturned,
     sort_payment: sortPayment,
     created,
+    returned_status: returnedStatus,
+    payment_status: paymentStatus,
     admin
   } = data;
 
@@ -170,6 +172,8 @@ exports.getHistories = (data) => {
       v.name LIKE '%${vehicleName || ''}%'
       ${startRent ? `AND h.start_rent >= '${startRent}'` : ''}
       ${categoryId ? `AND v.category_id = ${categoryId}` : ''}
+      ${returnedStatus ? `AND h.returned = '${returnedStatus}'` : ''}
+      ${paymentStatus ? `AND h.payment = '${paymentStatus}'` : ''}
       ${userId ? `AND h.user_id = ${userId}` : ''}
       ${admin ? '' : 'AND deleted_at IS NULL'}
       ORDER BY
@@ -196,6 +200,8 @@ exports.getHistoriesCount = (data) => {
     start_rent: startRent,
     category_id: categoryId,
     vehicle_name: vehicleName,
+    returned_status: returnedStatus,
+    payment_status: paymentStatus,
     admin
   } = data;
 
@@ -211,6 +217,8 @@ exports.getHistoriesCount = (data) => {
       v.name LIKE '%${vehicleName || ''}%'
       ${startRent ? `AND h.start_rent = '${startRent}'` : ''}
       ${categoryId ? `AND v.category_id = ${categoryId}` : ''}
+      ${returnedStatus ? `AND h.returned = '${returnedStatus}'` : ''}
+      ${paymentStatus ? `AND h.payment = '${paymentStatus}'` : ''}
       ${userId ? `AND h.user_id = ${userId}` : ''}
       ${admin ? '' : 'AND deleted_at IS NULL'}
     `, (err, results) => {
