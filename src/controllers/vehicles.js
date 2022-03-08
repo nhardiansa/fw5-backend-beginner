@@ -243,10 +243,11 @@ exports.getPopularVehicles = async (req, res) => {
     const rules = {
       page: 'number',
       limit: 'number',
-      search: 'string',
+      name: 'string',
       location: 'string',
       category_id: 'number',
-      prepayment: 'boolean'
+      prepayment: 'boolean',
+      sort_price: 'sorter'
     };
 
     const data = requestMapping(req.query, rules);
@@ -294,6 +295,8 @@ exports.getFilterVehicles = async (req, res) => {
       sort_price: 'sorter',
       sort_qty: 'sorter',
       sort_capacity: 'sorter',
+      created: 'sorter',
+      popularity: 'sorter',
       page: 'number',
       limit: 'number'
     };

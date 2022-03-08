@@ -130,40 +130,15 @@ exports.countData = () => {
   });
 };
 
-// exports.getPopularVehicles = (data) => {
-//   const {
-//     limit,
-//     page,
-//     search
-//   } = data;
-//   const offset = (page - 1) * limit;
-
-//   return new Promise((resolve, reject) => {
-//     db.query(`
-//       SELECT v.id, v.name , v.price, v.prepayment, v.capacity, v.qty, c.name as type, v.location
-//       FROM ${table} v
-//       LEFT JOIN ${categoryTable} c
-//       ON v.category_id = c.id
-//       WHERE v.name LIKE '${search}%'
-//       ORDER BY v.rentCount  DESC
-//       LIMIT ? OFFSET ?`, [limit, offset], (err, results) => {
-//       if (err) {
-//         reject(err);
-//       } else {
-//         resolve(results);
-//       }
-//     });
-//   });
-// };
-
 exports.getPopularVehicles = (data) => {
   const {
     limit,
     page,
-    search,
+    name,
     location,
     category_id: categoryId,
-    prepayment
+    prepayment,
+    sort_price: sortPrice
   } = data;
   const offset = (page - 1) * limit;
 
@@ -176,12 +151,14 @@ exports.getPopularVehicles = (data) => {
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
       WHERE 
-      v.name LIKE '${search || ''}%' AND
+      v.name LIKE '${name || ''}%' AND
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
       ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
       v.location LIKE '%${location || ''}%'
       GROUP BY v.name
-      ORDER BY rentCount DESC
+      ORDER BY
+      ${sortPrice ? `v.price ${sortPrice},` : ''}
+      rentCount DESC
       LIMIT ? OFFSET ?;
       `, [Number(limit), offset], (err, results) => {
       if (err) {
@@ -195,7 +172,7 @@ exports.getPopularVehicles = (data) => {
 
 exports.countPopularVehicles = (data) => {
   const {
-    search,
+    name,
     location,
     category_id: categoryId,
     prepayment
@@ -212,7 +189,7 @@ exports.countPopularVehicles = (data) => {
         LEFT JOIN ${categoryTable} c
         ON v.category_id = c.id
         WHERE 
-        v.name LIKE '${search || ''}%' AND
+        v.name LIKE '${name || ''}%' AND
         ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
         ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
         v.location LIKE '%${location || ''}%'
@@ -241,26 +218,33 @@ exports.getFilterVehicles = (data) => {
     page,
     sort_price: sortPrice,
     sort_qty: sortQty,
-    sort_capacity: sortCapacity
+    sort_capacity: sortCapacity,
+    created,
+    popularity
   } = data;
 
   const offset = (page - 1) * limit;
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, v.image 
+      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rent_count, v.image
       FROM ${table} v
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
+      LEFT JOIN ${historiesTable} h
+      ON h.vehicle_id = v.id
       WHERE
       v.name LIKE '%${name || ''}%' AND
       ${minPrice ? `v.price >= ${minPrice} AND` : ''}
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
-      ${qty ? 'v.qty > 0 AND' : ''}
+      ${qty ? `v.qty >= ${qty} AND` : ''}
       ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
       v.location LIKE '%${location || ''}%'
+      GROUP BY v.id
       ORDER BY
+      ${popularity ? `rent_count ${popularity},` : ''}
+      ${created ? `v.created_at ${created},` : ''}
       ${sortPrice ? `v.price ${sortPrice},` : ''}
       ${sortQty ? `v.qty ${sortQty},` : ''}
       ${sortCapacity ? `v.capacity ${sortCapacity},` : ''}
@@ -289,18 +273,20 @@ exports.countFilterVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT COUNT(*) AS 'rows'
+      SELECT COUNT(DISTINCT v.id) AS 'rows'
       FROM ${table} v
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
+      LEFT JOIN ${historiesTable} h
+      ON h.vehicle_id = v.id
       WHERE
       v.name LIKE '%${name || ''}%' AND
       ${minPrice ? `v.price >= ${minPrice} AND` : ''}
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
-      ${qty ? 'v.qty > 0 AND' : ''}
-      ${prepayment ? 'v.prepayment = 1 AND' : ''}
-      v.location LIKE '%${location || ''}%';
+      ${qty ? `v.qty >= ${qty} AND` : ''}
+      ${prepayment ? `v.prepayment = '${prepayment}' AND` : ''}
+      v.location LIKE '%${location || ''}%'
     `, (err, results) => {
       if (err) {
         reject(err);
