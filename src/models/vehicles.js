@@ -207,7 +207,7 @@ exports.countPopularVehicles = (data) => {
 
 exports.getFilterVehicles = (data) => {
   const {
-    name,
+    vehicle_name: vehicleName,
     minPrice,
     maxPrice,
     category_id: categoryId,
@@ -234,7 +234,7 @@ exports.getFilterVehicles = (data) => {
       LEFT JOIN ${historiesTable} h
       ON h.vehicle_id = v.id
       WHERE
-      v.name LIKE '%${name || ''}%' AND
+      v.name LIKE '%${vehicleName || ''}%' AND
       ${minPrice ? `v.price >= ${minPrice} AND` : ''}
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}
@@ -262,7 +262,7 @@ exports.getFilterVehicles = (data) => {
 
 exports.countFilterVehicles = (data) => {
   const {
-    name,
+    vehicle_name: vehicleName,
     minPrice,
     maxPrice,
     category_id: categoryId,
@@ -280,7 +280,7 @@ exports.countFilterVehicles = (data) => {
       LEFT JOIN ${historiesTable} h
       ON h.vehicle_id = v.id
       WHERE
-      v.name LIKE '%${name || ''}%' AND
+      v.name LIKE '%${vehicleName || ''}%' AND
       ${minPrice ? `v.price >= ${minPrice} AND` : ''}
       ${maxPrice ? `v.price <= ${maxPrice} AND` : ''}
       ${categoryId ? `v.category_id = ${categoryId} AND` : ''}

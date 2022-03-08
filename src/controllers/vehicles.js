@@ -285,7 +285,7 @@ exports.getPopularVehicles = async (req, res) => {
 exports.getFilterVehicles = async (req, res) => {
   try {
     const rules = {
-      name: 'string',
+      vehicle_name: 'string',
       minPrice: 'number',
       maxPrice: 'number',
       category_id: 'number',
