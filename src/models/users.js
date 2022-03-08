@@ -64,10 +64,10 @@ exports.updateUser = (id, data) => {
   });
 };
 
-exports.findUserByData = (data, noData = false) => {
+exports.findUserByData = (data, withData = false) => {
   return new Promise((resolve, reject) => {
     const query = `
-      SELECT ${noData ? 'u.*, r.name as role' : "COUNT(*) AS 'rows'"} 
+      SELECT ${withData ? 'u.*, r.name as role' : "COUNT(*) AS 'rows'"} 
       FROM ${table} u
       LEFT JOIN ${rolesTable} r
       ON u.role_id = r.id
