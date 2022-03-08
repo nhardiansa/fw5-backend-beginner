@@ -36,12 +36,10 @@ exports.setExpiryCode = (id) => {
     const time = dateNow();
     const query = `UPDATE ${table} SET is_expired=1, expired_at=? WHERE id=? AND is_expired=0`;
 
-    const ss = db.query(query, [time, id], (err, result) => {
+    db.query(query, [time, id], (err, result) => {
       if (err) reject(err);
       resolve(result);
     });
-
-    console.log(ss.sql);
   });
 };
 
