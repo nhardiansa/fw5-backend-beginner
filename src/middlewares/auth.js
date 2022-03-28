@@ -29,8 +29,8 @@ const verify = (req, res) => {
 
     return decoded;
   } catch (error) {
-    console.error(error);
-    return returningError(res, 500, 'Unexpected error');
+    console.error(error.message);
+    return false;
   }
 };
 
@@ -57,13 +57,13 @@ exports.verifyUser = (req, res, next) => {
   try {
     const verifyUser = verify(req, res);
 
+    if (!verifyUser) {
+      return returningError(res, 401, 'Unauthorized');
+    }
+
     // check if user is confirmed
     if (!verifyUser.confirmed) {
       return returningError(res, 403, 'User not confirmed');
-    }
-
-    if (!verifyUser) {
-      return returningError(res, 401, 'Unauthorized');
     }
 
     // put user data to headers object
