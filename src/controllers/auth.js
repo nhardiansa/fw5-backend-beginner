@@ -140,7 +140,7 @@ exports.registerUser = async (req, res) => {
 
     const results = await usersModel.insertUser(data);
 
-    // send verification code
+    // // send verification code
     if (results.affectedRows > 0) {
       const sendedCode = await sendCode(res, {
         email: data.email,
@@ -156,6 +156,48 @@ exports.registerUser = async (req, res) => {
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Unexpected error');
+  }
+};
+
+const resendCode = async (res, data) => {
+  try {
+    const {
+      email,
+      userId
+    } = data;
+
+    // check if email is registered
+    const insertedEmail = await usersModel.findEmail(email);
+
+    if (insertedEmail[0].rows < 1) {
+      return returningError(res, 400, 'Email is not registered');
+    }
+
+    // check if user is verified
+    const insertedUser = await usersModel.findUserByData({
+      id: userId
+    }, true);
+
+    if (insertedUser[0].confirmed === 1) {
+      return returningError(res, 400, 'Your account is already verified');
+    }
+
+    // send verification code
+    const sendedCode = await sendCode(res, {
+      email,
+      userId
+    });
+
+    console.log(sendedCode);
+
+    if (sendedCode) {
+      return returningSuccess(res, 200, 'Verification code has been sent');
+    }
+
+    return returningError(res, 500, 'Failed to resend verification code');
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to resend verification code');
   }
 };
 
@@ -178,7 +220,7 @@ const sendCode = async (res, data, reset = false) => {
     if (diff < 5) {
       return returningError(res, 400, 'Wait 1 minute before requesting another code');
     }
-    otpCodesModel.deleteCode(isResetRequested[0].id);
+    await otpCodesModel.deleteCode(isResetRequested[0].id);
   }
 
   // generate code
@@ -374,6 +416,14 @@ exports.confirmReset = async (req, res) => {
     if (!Number(user[0].confirmed) && data.code) {
       return verifyUser(res, {
         code: data.code,
+        userId: user[0].id
+      });
+    }
+
+    // sent code to verify account
+    if (!Number(user[0].confirmed) && !data.code) {
+      return resendCode(res, {
+        email: user[0].email,
         userId: user[0].id
       });
     }
