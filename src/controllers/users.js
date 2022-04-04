@@ -5,7 +5,9 @@ const {
 const {
   deleteFile
 } = require('../helpers/fileHandler');
-const { dateFormat } = require('../helpers/formatter');
+const {
+  dateFormat
+} = require('../helpers/formatter');
 const {
   validateId,
   requestMapping
@@ -30,6 +32,28 @@ exports.getUser = async (req, res) => {
     const {
       id
     } = req.params;
+
+    if (!validateId(id)) {
+      return returningError(res, 400, 'Id must be a number');
+    }
+
+    const user = await usersModel.getUser(id);
+
+    if (user.length < 1) {
+      return returningError(res, 404, 'User not found');
+    }
+
+    return returningSuccess(res, 200, 'Success getting a user', dataMapping(user)[0]);
+  } catch (error) {
+    console.error(error);
+    return returningError(res, 500, 'Failed to get user');
+  }
+};
+exports.getProfile = async (req, res) => {
+  try {
+    const {
+      id
+    } = req.headers.user;
 
     if (!validateId(id)) {
       return returningError(res, 400, 'Id must be a number');
