@@ -1,5 +1,6 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const validator = require('validator');
 
 const usersModel = require('../models/users');
 const otpCodesModel = require('../models/otpCodes');
@@ -49,6 +50,8 @@ exports.loginUser = async (req, res) => {
       }, true);
     }
 
+    console.log(user);
+
     // return returningError(res, 500, 'Not implemented yet!');
 
     // check if user has registered or not
@@ -93,7 +96,7 @@ exports.registerUser = async (req, res) => {
       email: 'email|required',
       username: 'string|required',
       phone: 'phone number|required',
-      password: 'string|required'
+      password: 'password|required'
     };
 
     const data = requestMapping(req.body, rules);
@@ -105,10 +108,21 @@ exports.registerUser = async (req, res) => {
       return returningError(res, 400, nullData);
     }
 
-    // check if password must has at least 6 characters
-    if (data.password.length < 6) {
-      return returningError(res, 400, 'Password must be at least 6 characters');
+    // check if password must has valid type
+    const passwordRules = {
+      minLength: 6,
+      maxLength: 12,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    };
+
+    if (!validator.isStrongPassword(data.password, passwordRules)) {
+      return returningError(res, 400, 'Password must be at least 6 characters long, maximum 12 characters long, must contain at least one lowercase letter, one uppercase letter, one number, and one special character');
     }
+
+    // return returningError(res, 500, 'Not implemented yet!');
 
     // check if email is new
     const isEmailExist = await usersModel.findEmail(data.email);
