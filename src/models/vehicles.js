@@ -227,7 +227,7 @@ exports.getFilterVehicles = (data) => {
 
   return new Promise((resolve, reject) => {
     db.query(`
-      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, COUNT(*) AS rent_count, v.image
+      SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty, v.location, c.name AS type, COUNT(*) AS rent_count, v.image
       FROM ${table} v
       LEFT JOIN ${categoryTable} c
       ON v.category_id = c.id
