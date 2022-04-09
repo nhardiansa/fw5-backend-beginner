@@ -381,7 +381,8 @@ const resetPassword = async (res, data) => {
 exports.confirmReset = async (req, res) => {
   try {
     const rules = {
-      email: 'email|required',
+      email: 'email',
+      username: 'string',
       code: 'string',
       password: 'string',
       confirm_password: 'string'
@@ -396,12 +397,29 @@ exports.confirmReset = async (req, res) => {
       return returningError(res, 400, nullData);
     }
 
-    // check if email is registered
-    const user = await usersModel.findEmail(data.email, true);
+    if (!data.email && !data.username) {
+      return returningError(res, 400, 'Email or username is required');
+    }
+
+    if (data.username && data.email) {
+      return returningError(res, 400, 'Please enter either email or username');
+    }
+
+    // check if user is registered
+    let user;
+    if (data.email) {
+      user = await usersModel.findEmail(data.email, true);
+    } else {
+      user = await usersModel.findUserByData({
+        username: data.username
+      }, true);
+    }
 
     if (user.length < 1) {
-      return returningError(res, 400, 'Email is not registered');
+      return returningError(res, 400, 'User is not registered');
     }
+
+    console.log(user);
 
     // reset password
     if (Number(user[0].confirmed) && data.code) {
@@ -416,7 +434,7 @@ exports.confirmReset = async (req, res) => {
     // sent code to reset password
     if (Number(user[0].confirmed) && !data.code) {
       const codeSended = await sendCode(res, {
-        email: data.email,
+        email: user[0].email,
         userId: user[0].id
       }, true);
 
