@@ -300,8 +300,8 @@ const resetPassword = async (res, data) => {
     const rules = {
       userId: 'number|required',
       code: 'string|required',
-      password: 'string|required',
-      confirmPassword: 'string|required'
+      password: 'password|required',
+      confirmPassword: 'password|required'
     };
 
     const filteredData = requestMapping(data, rules);
@@ -327,9 +327,19 @@ const resetPassword = async (res, data) => {
       return returningError(res, 400, 'Code for reset password is not valid');
     }
 
-    // check if password must has at least 6 characters
-    if (password.length < 6) {
-      return returningError(res, 400, 'Password must be at least 6 characters');
+    // check if password is has valid rules
+
+    const passwordRules = {
+      minLength: 6,
+      maxLength: 12,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    };
+
+    if (!validator.isStrongPassword(password, passwordRules)) {
+      return returningError(res, 400, 'Password must be at least 6 characters long, maximum 12 characters long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character');
     }
 
     // check if password and confirm password is same
@@ -384,8 +394,8 @@ exports.confirmReset = async (req, res) => {
       email: 'email',
       username: 'string',
       code: 'string',
-      password: 'string',
-      confirm_password: 'string'
+      password: 'password',
+      confirm_password: 'password'
     };
 
     const data = requestMapping(req.body, rules);
