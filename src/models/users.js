@@ -11,7 +11,7 @@ exports.getUser = (id, noData = false) => {
   return new Promise((resolve, reject) => {
     const query = `
     SELECT 
-    ${noData ? "COUNT(*) AS 'rows'" : 'u.id, u.name, u.email, u.confirmed, u.phone, u.gender, u.birthdate, u.address, u.image, u.created_at, u.updated_at'} 
+    ${noData ? "COUNT(*) AS 'rows'" : 'u.id, u.name, u.email, u.confirmed, u.phone, u.gender, u.birthdate, u.address, r.name as role,u.image, u.created_at, u.updated_at'} 
     FROM ${table} u
     LEFT JOIN ${rolesTable} r
     ON u.role_id = r.id

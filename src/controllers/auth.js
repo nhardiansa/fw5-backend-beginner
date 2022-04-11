@@ -300,8 +300,8 @@ const resetPassword = async (res, data) => {
     const rules = {
       userId: 'number|required',
       code: 'string|required',
-      password: 'string|required',
-      confirmPassword: 'string|required'
+      password: 'password|required',
+      confirmPassword: 'password|required'
     };
 
     const filteredData = requestMapping(data, rules);
@@ -327,9 +327,19 @@ const resetPassword = async (res, data) => {
       return returningError(res, 400, 'Code for reset password is not valid');
     }
 
-    // check if password must has at least 6 characters
-    if (password.length < 6) {
-      return returningError(res, 400, 'Password must be at least 6 characters');
+    // check if password is has valid rules
+
+    const passwordRules = {
+      minLength: 6,
+      maxLength: 12,
+      minLowercase: 1,
+      minUppercase: 1,
+      minNumbers: 1,
+      minSymbols: 1
+    };
+
+    if (!validator.isStrongPassword(password, passwordRules)) {
+      return returningError(res, 400, 'Password must be at least 6 characters long, maximum 12 characters long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character');
     }
 
     // check if password and confirm password is same
@@ -381,10 +391,11 @@ const resetPassword = async (res, data) => {
 exports.confirmReset = async (req, res) => {
   try {
     const rules = {
-      email: 'email|required',
+      email: 'email',
+      username: 'string',
       code: 'string',
-      password: 'string',
-      confirm_password: 'string'
+      password: 'password',
+      confirm_password: 'password'
     };
 
     const data = requestMapping(req.body, rules);
@@ -396,12 +407,29 @@ exports.confirmReset = async (req, res) => {
       return returningError(res, 400, nullData);
     }
 
-    // check if email is registered
-    const user = await usersModel.findEmail(data.email, true);
+    if (!data.email && !data.username) {
+      return returningError(res, 400, 'Email or username is required');
+    }
+
+    if (data.username && data.email) {
+      return returningError(res, 400, 'Please enter either email or username');
+    }
+
+    // check if user is registered
+    let user;
+    if (data.email) {
+      user = await usersModel.findEmail(data.email, true);
+    } else {
+      user = await usersModel.findUserByData({
+        username: data.username
+      }, true);
+    }
 
     if (user.length < 1) {
-      return returningError(res, 400, 'Email is not registered');
+      return returningError(res, 400, 'User is not registered');
     }
+
+    console.log(user);
 
     // reset password
     if (Number(user[0].confirmed) && data.code) {
@@ -416,7 +444,7 @@ exports.confirmReset = async (req, res) => {
     // sent code to reset password
     if (Number(user[0].confirmed) && !data.code) {
       const codeSended = await sendCode(res, {
-        email: data.email,
+        email: user[0].email,
         userId: user[0].id
       }, true);
 
