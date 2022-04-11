@@ -9,7 +9,7 @@
     "start-dev": "forever -c node index.js",
     "delete-app": "pm2 delete fw5-vehicle-rent-api",
     "see-logs": "pm2 logs",
-    "start": "pm2 start index.js --name fw5-vehicle-rent-api",
+    "start": "pm2 start index.js --deep-monitoring --attach",
     "check-lint": "npx eslint **/*.js",
     "lint": "npx eslint **/*.js --fix"
   },
