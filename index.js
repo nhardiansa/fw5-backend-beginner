@@ -29,7 +29,10 @@ app.use('/uploads', express.static('uploads'));
   'delete'
 ].forEach(el => {
   app[el]('*', (req, res) => {
-    categoriesModel.getCategories().then(categories => {
+    categoriesModel.getCategories({
+      limit: 1,
+      page: 1
+    }).then(categories => {
       console.log(categories);
     }).catch(err => {
       console.log(err);
