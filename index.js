@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
+const categoriesModel = require('./src/models/categories');
 
 require('dotenv').config();
 
@@ -28,6 +29,12 @@ app.use('/uploads', express.static('uploads'));
   'delete'
 ].forEach(el => {
   app[el]('*', (req, res) => {
+    categoriesModel.getCategories().then(categories => {
+      console.log(categories);
+    }).catch(err => {
+      console.log(err);
+    });
+
     res.status(404);
     res.json({
       success: false,
