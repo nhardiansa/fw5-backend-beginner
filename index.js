@@ -33,15 +33,18 @@ app.use('/uploads', express.static('uploads'));
       limit: 1,
       page: 1
     }).then(categories => {
-      console.log(categories);
+      res.status(404);
+      res.json({
+        success: false,
+        message: 'Destination not found'
+      });
     }).catch(err => {
-      console.log(err);
-    });
-
-    res.status(404);
-    res.json({
-      success: false,
-      message: 'Destination not found'
+      res.status(500);
+      res.json({
+        success: false,
+        message: 'Something went wrong',
+        error: err.message
+      });
     });
   });
 });
