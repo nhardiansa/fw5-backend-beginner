@@ -88,16 +88,19 @@ exports.deleteHistoryUserPermanent = (id) => {
 };
 
 exports.getHistory = (data) => {
-  const { id, userId } = data;
+  const {
+    id,
+    userId
+  } = data;
   return new Promise((resolve, reject) => {
     const query = `
       SELECT ${table}.*, (${vehiclesTable}.price * ${table}.qty) as total_paid
       FROM ${table}
       LEFT JOIN ${vehiclesTable}
       ON ${table}.vehicle_id = ${vehiclesTable}.id
-      WHERE ${table}.id = ? ${userId ? `AND ${table}.user_id = ${userId}` : ''}
+      WHERE ${table}.id = ${id} ${userId ? `AND ${table}.user_id = ${userId}` : ''}
     `;
-    db.query(query, [Number(id)], (err, results) => {
+    db.query(query, (err, results) => {
       if (err) {
         console.error(err);
         reject(err);
