@@ -194,7 +194,9 @@ exports.addHistory = async (req, res) => {
       return returningError(res, 500, "Can't add history");
     }
 
-    const history = await historiesModel.getHistory({ id: historyResult.insertId });
+    const history = await historiesModel.getHistory({
+      id: historyResult.insertId
+    });
 
     return returningSuccess(res, 201, 'History has been added', history[0]);
   } catch (error) {
@@ -209,7 +211,9 @@ exports.deleteHistory = async (req, res) => {
       id
     } = req.params;
 
-    const { user } = req.headers;
+    const {
+      user
+    } = req.headers;
 
     // validate inputed id
     if (!validateId(id)) {
@@ -219,9 +223,14 @@ exports.deleteHistory = async (req, res) => {
     // check if history exist
     let history;
     if (user.role === 'administrator') {
-      history = await historiesModel.getHistory({ id });
+      history = await historiesModel.getHistory({
+        id
+      });
     } else {
-      history = await historiesModel.getHistory({ id, userId: user.id });
+      history = await historiesModel.getHistory({
+        id,
+        userId: user.id
+      });
     }
 
     // check if vehicle is returned
@@ -239,7 +248,9 @@ exports.deleteHistory = async (req, res) => {
         return returningError(res, 500, "Can't delete history");
       }
 
-      const historyDeleted = await historiesModel.getHistory({ id });
+      const historyDeleted = await historiesModel.getHistory({
+        id
+      });
 
       console.log(historyDeleted);
 
@@ -262,7 +273,10 @@ exports.upadateHistory = async (req, res) => {
       id
     } = req.params;
 
-    const { role, id: userId } = req.headers.user;
+    const {
+      role,
+      id: userId
+    } = req.headers.user;
 
     const rules = {
       payment: 'boolean',
@@ -289,9 +303,14 @@ exports.upadateHistory = async (req, res) => {
     // check if history exist
     let history;
     if (role === 'administrator') {
-      history = await historiesModel.getHistory({ id });
+      history = await historiesModel.getHistory({
+        id
+      });
     } else {
-      history = await historiesModel.getHistory({ id, userId });
+      history = await historiesModel.getHistory({
+        id,
+        userId
+      });
     }
 
     // if history not exist
@@ -308,7 +327,9 @@ exports.upadateHistory = async (req, res) => {
     }
 
     // get updated history
-    const updatedHistory = await historiesModel.getHistory({ id });
+    const updatedHistory = await historiesModel.getHistory({
+      id
+    });
 
     return returningSuccess(res, 200, 'History has been updated', updatedHistory[0]);
   } catch (error) {
@@ -323,7 +344,10 @@ exports.getHistory = async (req, res) => {
       id
     } = req.params;
 
-    const { role, id: userId } = req.headers.user;
+    const {
+      role,
+      id: userId
+    } = req.headers.user;
 
     console.log(role);
 
@@ -335,9 +359,14 @@ exports.getHistory = async (req, res) => {
     let result;
 
     if (role === 'administrator') {
-      result = await historiesModel.getHistory({ id });
+      result = await historiesModel.getHistory({
+        id
+      });
     } else {
-      result = await historiesModel.getHistory({ id, userId });
+      result = await historiesModel.getHistory({
+        id,
+        userId
+      });
     }
 
     // if history not exist
@@ -428,14 +457,18 @@ exports.deleteHistoryPermanent = async (req, res) => {
     }
 
     // check if history exist
-    const history = await historiesModel.getHistory({ id });
+    const history = await historiesModel.getHistory({
+      id
+    });
+
+    // return returningSuccess(res, 200, 'History has been deleted', history[0]);
 
     // check if vehicle is returned
     if (!Number(history[0].returned)) {
       return returningError(res, 400, 'This vehicle is not returned yet');
     }
 
-    // if history exist
+    // // if history exist
     if (history.length > 0) {
       // delete history
       const result = await historiesModel.deleteHistoryUserPermanent(id);
@@ -445,10 +478,8 @@ exports.deleteHistoryPermanent = async (req, res) => {
         return returningError(res, 500, "Can't delete history");
       }
 
-      const historyDeleted = await historiesModel.getHistory(id);
-
       // if history deleted
-      return returningSuccess(res, 200, 'History has been deleted', historyDeleted[0]);
+      return returningSuccess(res, 200, 'History has been deleted', history[0]);
     }
 
     // if history not exist
