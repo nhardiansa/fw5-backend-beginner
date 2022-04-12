@@ -15,28 +15,28 @@ const config = {
   database: DB_NAME
 };
 
-let connection;
+// let connection;
+const connection = mysql.createPool(config);
 
-const handleDisconnect = () => {
-  connection = mysql.createConnection(config);
-  connection.connect((err) => {
-    if (err) {
-      console.log('error when connecting to db:', err);
-      setTimeout(handleDisconnect, 2000);
-    }
-  });
+// const handleDisconnect = () => {
+//   connection.connect((err) => {
+//     if (err) {
+//       console.log('error when connecting to db:', err);
+//       setTimeout(handleDisconnect, 2000);
+//     }
+//   });
 
-  connection.on('error', (err) => {
-    console.log('db error', err);
-    if (err.code === 'PROTOCOL_CONNECTION_LOST') {
-      handleDisconnect();
-    } else {
-      throw err;
-    }
-  });
-};
+//   connection.on('error', (err) => {
+//     console.log('db error', err);
+//     if (err.code === 'PROTOCOL_CONNECTION_LOST') {
+//       handleDisconnect();
+//     } else {
+//       throw err;
+//     }
+//   });
+// };
 
-handleDisconnect();
+// handleDisconnect();
 console.log('db connected');
 
 module.exports = connection;
