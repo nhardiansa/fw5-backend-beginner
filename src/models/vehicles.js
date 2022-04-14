@@ -34,7 +34,7 @@ exports.getVehicle = (id) => {
     db.query(`
         SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty,
           SUM(( SELECT h.qty WHERE h.vehicle_id=${id} AND h.returned='0' )) AS booked,
-        v.location, c.id as category_id, c.name as category_name, v.image, v.created_at, v.updated_at
+        v.location, c.id AS category_id, c.name AS category_name, v.image, v.created_at, v.updated_at
         FROM ${table} v
         RIGHT JOIN ${historiesTable} h
         ON v.id=h.vehicle_id
