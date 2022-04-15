@@ -33,15 +33,15 @@ exports.getVehicle = (id) => {
   return new Promise((resolve, reject) => {
     db.query(`
         SELECT v.id, v.name, v.price, v.prepayment, v.capacity, v.qty,
-          SUM(( SELECT h.qty WHERE h.vehicle_id=${id} AND h.returned='0' )) AS booked,
-        v.location, c.id as category_id, c.name as category_name, v.image, v.created_at, v.updated_at
+          SUM(h.qty) AS booked,
+        v.location, c.id AS category_id, c.name AS category_name, v.image, v.created_at, v.updated_at
         FROM ${table} v
         RIGHT JOIN ${historiesTable} h
-        ON v.id=h.vehicle_id
+        ON v.id=h.vehicle_id AND h.returned='0'
         RIGHT JOIN ${categoryTable} c
         ON v.category_id = c.id
         WHERE v.id = ?
-      `, [id], (err, results) => {
+      `, [id, id], (err, results) => {
       if (err) {
         reject(err);
       } else {
