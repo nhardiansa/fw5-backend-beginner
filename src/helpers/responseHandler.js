@@ -87,7 +87,11 @@ exports.dataMapping = (data) => {
   data.map(el => {
     if (el.image !== null) {
       const path = el.image.replace(/\\/g, '/');
-      el.image = `${APP_URL}/${path}`;
+      if (path.includes('http')) {
+        el.image = path;
+      } else {
+        el.image = `${APP_URL}/${path}`;
+      }
     } else {
       el.image = null;
     }
