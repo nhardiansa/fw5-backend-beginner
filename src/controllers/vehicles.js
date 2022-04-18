@@ -123,7 +123,11 @@ exports.addNewVehicle = async (req, res) => {
     return returningSuccess(res, 201, 'Success add new vehicle', dataMapping(vehicle)[0]);
   } catch (error) {
     console.error(error);
-    return returningError(res, 500, 'Failed to add new vehicle');
+    if (req.file) {
+      return returningError(res, 500, 'Failed to add new vehicle', req.file.path);
+    } else {
+      return returningError(res, 500, 'Failed to add new vehicle');
+    }
   }
 };
 
@@ -187,6 +191,12 @@ exports.updateVehicle = async (req, res) => {
 
     if (existingVehicle.length < 1) {
       return returningError(res, 404, 'Vehicle not found', imagePath);
+    } else {
+      const existingVehicle = await vehiclesModel.getVehicle(id);
+      const existingVehicleImage = existingVehicle[0].image;
+      if (data.image) {
+        deleteFile(existingVehicleImage);
+      }
     }
 
     const results = await vehiclesModel.updateVehicle(id, data);
@@ -404,6 +414,12 @@ exports.updateVehiclePartial = async (req, res) => {
 
     if (vehicle.length < 1) {
       return returningError(res, 404, 'Vehicle not found', imagePath);
+    } else {
+      const existingVehicle = await vehiclesModel.getVehicle(id);
+      const existingVehicleImage = existingVehicle[0].image;
+      if (data.image) {
+        deleteFile(existingVehicleImage);
+      }
     }
 
     const results = await vehiclesModel.updateVehicle(id, data);
