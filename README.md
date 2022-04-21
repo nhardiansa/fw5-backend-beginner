@@ -1,14 +1,30 @@
-# BE Vehicle Rent
+# Oto Rent API Documentation
 
 ## About
 
-This is the repository of Fazztrack Backend Project that I learn while in this bootcamp
+This is the documentation for the Oto Rent API. Oto Rent is a platform for renting cars and other vehicles. It is a web application that allows users to rent vehicles with a wide range of options. The API is a RESTful API that allows users to access the data in the database. The API is also available as a mobile application.
+
+## How to use this API
+
+1. Clone this repository to your local machine
+2. Install dependencies with ```npm install```
+3. Import the database in ``` other/vehicle_rent.sql ``` to your local mysql database
+4. Create ``` .env ``` file with your database credentials, cloudinary credentials and other configurations
+5. Run the server with ```npm run dev``` for auto reloading
+6. Run the server with ```npm start``` for production
+
+## Endpoints
+
+### Postman Documentation
+
+For more updated documentation, please visit [Oto Rent API Postman Documentation](https://www.postman.com/planetary-robot-492100/workspace/public-workspace/collection/18341304-1965c150-cde1-4622-86d9-1103ea5ebafa?action=share&creator=18341304).
 
 ### Vehicle Endpoint
 
 | METHOD | API | REMARKS|
 | :------: | --- | ------ |
 | **GET** | /vehicles | List data of vehicles |
+| **GET** | /vehicles/filter | List data of vehicles |
 | **GET** | /vehicles/popular | Get list of popular vehicles |
 | **GET** | /vehicles/:id | Get a vehicle data by id |
 | **POST** | /vehicles | Input data to table of vehicles |
@@ -22,6 +38,7 @@ This is the repository of Fazztrack Backend Project that I learn while in this b
 | :------: | --- | ------ |
 | **GET** | /users | List data of users |
 | **GET** | /users/:id | Get an users data by id |
+| **GET** | /users/profile | Get an users data by id that embeded in auth token |
 | **POST** | /users | Input data to table of users |
 | **PATCH** | /users/:id | Update data a user partially by user id |
 | **DELETE** | /users/:id | Delete an user by user id |
@@ -61,7 +78,6 @@ This is the repository of Fazztrack Backend Project that I learn while in this b
 | minPrice |```number```| get vehicles that has minimum price from request |
 | maxPrice |```number```| get vehicles that has maximum price from request |
 | category_id |```category_id``` ```number```| get vehicles that has same category or type |
-| available |```boolean```| get vehicles just only available |
 | prepayment |```boolean```| get vehicles just only can do prepayment |
 | location |```string```| get vehicles that has like same location |
 | sort_price |```asc``` ```desc```| sort vehicles data by price  |
