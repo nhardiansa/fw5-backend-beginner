@@ -17,7 +17,7 @@ This is the documentation for the Oto Rent API. Oto Rent is a platform for renti
 
 ### Postman Documentation
 
-For more updated documentation, please visit [Oto Rent API Postman Documentation](https://www.postman.com/planetary-robot-492100/workspace/public-workspace/collection/18341304-1965c150-cde1-4622-86d9-1103ea5ebafa?action=share&creator=18341304).
+For more updated documentation, please visit [Oto Rent API Postman Documentation](https://www.postman.com/planetary-robot-492100/workspace/public-workspace/collection/18341304-1965c150-cde1-4622-86d9-1103ea5ebafa?action=share&creator=18341304). And for environment variable documentation [here](https://www.postman.com/planetary-robot-492100/workspace/nabil-s-public-collection/environment/18341304-7cae8070-361c-4c1a-aa4e-fc8ace943f82)
 
 ### Vehicle Endpoint
 
