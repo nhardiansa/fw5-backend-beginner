@@ -34,8 +34,12 @@ exports.loginUser = async (req, res) => {
 
     const fieldName = email ? 'email' : 'username';
 
-    if ((username !== undefined) && (email !== undefined)) {
-      return returningError(res, 400, 'You can only use one of these fields: username or email');
+    if (username !== undefined && email !== undefined) {
+      return returningError(
+        res,
+        400,
+        'You can only use one of these fields: username or email'
+      );
     }
 
     // check if user is registered or not
@@ -43,11 +47,15 @@ exports.loginUser = async (req, res) => {
     if (email) {
       user = await usersModel.findUserByData({
         email
-      }, true);
+      },
+      true
+      );
     } else {
       user = await usersModel.findUserByData({
         username
-      }, true);
+      },
+      true
+      );
     }
 
     console.log(user);
@@ -61,7 +69,7 @@ exports.loginUser = async (req, res) => {
 
     // check if user is verified or not
     if (!Number(user[0].confirmed)) {
-      return returningError(res, 403, 'Your account is not verified yet, check your email to verify your account');
+      return returningError(res, 403, 'User is not registered yet');
     }
 
     // check if password is correct
@@ -119,16 +127,27 @@ exports.registerUser = async (req, res) => {
     };
 
     if (!validator.isStrongPassword(data.password, passwordRules)) {
-      return returningError(res, 400, 'Password must be at least 6 characters long, maximum 12 characters long, must contain at least one lowercase letter, one uppercase letter, one number, and one special character');
+      return returningError(
+        res,
+        400,
+        'Password must be at least 6 characters long, maximum 12 characters long, must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+      );
     }
 
     // return returningError(res, 500, 'Not implemented yet!');
 
     // check if email is new
-    const isEmailExist = await usersModel.findEmail(data.email);
+    const isEmailExist = await usersModel.findEmail(data.email, true);
 
-    if (isEmailExist[0].rows > 0) {
-      return returningError(res, 400, 'Email already registered');
+    console.log(isEmailExist[0].id);
+
+    if (isEmailExist.length > 0) {
+      if (Number(isEmailExist[0].confirmed)) {
+        return returningError(res, 400, 'Email already registered');
+      } else {
+        // return returningError(res, 400, 'Email already registered, but not verified');
+        await usersModel.deleteUser(isEmailExist[0].id);
+      }
     }
 
     // check if username is new
@@ -161,7 +180,11 @@ exports.registerUser = async (req, res) => {
         userId: results.insertId
       });
       if (sendedCode) {
-        return returningSuccess(res, 201, 'Check your email to verify your account');
+        return returningSuccess(
+          res,
+          201,
+          'Check your email to verify your account'
+        );
       }
       return returningError(res, 500, 'Failed to send verification code');
     }
@@ -190,7 +213,9 @@ const resendCode = async (res, data) => {
     // check if user is verified
     const insertedUser = await usersModel.findUserByData({
       id: userId
-    }, true);
+    },
+    true
+    );
 
     if (insertedUser[0].confirmed === 1) {
       return returningError(res, 400, 'Your account is already verified');
@@ -226,13 +251,17 @@ const sendCode = async (res, data, reset = false) => {
   if (isResetRequested.length > 0) {
     const oldCode = new Date(isResetRequested[0].created_at);
     const now = new Date();
-    const divider = ENVIRONMENT === 'development' ? 1000 : (60 * 1000);
+    const divider = ENVIRONMENT === 'development' ? 1000 : 60 * 1000;
     const diff = Math.round((now - oldCode) / divider);
 
     console.log(diff);
 
     if (diff < 5) {
-      return returningError(res, 400, 'Wait 1 minute before requesting another code');
+      return returningError(
+        res,
+        400,
+        'Wait 1 minute before requesting another code'
+      );
     }
     await otpCodesModel.deleteCode(isResetRequested[0].id);
   }
@@ -248,7 +277,9 @@ const sendCode = async (res, data, reset = false) => {
     to: email,
     subject: `${reset ? 'Password reset' : 'Verify Account'} | Vehicle Rent`,
     text: `${code}`,
-    html: `<p>Your code for ${reset ? 'reset password' : 'verify account'} is: ${code}</p>`
+    html: `<p>Your code for ${
+      reset ? 'reset password' : 'verify account'
+    } is: ${code}</p>`
   });
 
   console.log(info);
@@ -339,18 +370,28 @@ const resetPassword = async (res, data) => {
     };
 
     if (!validator.isStrongPassword(password, passwordRules)) {
-      return returningError(res, 400, 'Password must be at least 6 characters long, maximum 12 characters long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character');
+      return returningError(
+        res,
+        400,
+        'Password must be at least 6 characters long, maximum 12 characters long, contain at least 1 lowercase letter, 1 uppercase letter, 1 number and 1 special character'
+      );
     }
 
     // check if password and confirm password is same
     if (password !== confirmPassword) {
-      return returningError(res, 400, 'Password and confirm password must be same');
+      return returningError(
+        res,
+        400,
+        'Password and confirm password must be same'
+      );
     }
 
     // check if user is confirmed
     const user = await usersModel.findUserByData({
       id: userId
-    }, true);
+    },
+    true
+    );
 
     if (!Number(user[0].confirmed)) {
       return returningError(res, 400, 'User is not confirmed');
@@ -362,7 +403,9 @@ const resetPassword = async (res, data) => {
       return returningError(res, 400, 'Code is expired');
     }
 
-    const setExpirationCode = await otpCodesModel.setExpiryCode(insertedCode[0].id);
+    const setExpirationCode = await otpCodesModel.setExpiryCode(
+      insertedCode[0].id
+    );
 
     if (setExpirationCode.affectedRows < 1) {
       return returningError(res, 500, 'Failed to reset password');
@@ -422,7 +465,9 @@ exports.confirmReset = async (req, res) => {
     } else {
       user = await usersModel.findUserByData({
         username: data.username
-      }, true);
+      },
+      true
+      );
     }
 
     if (user.length < 1) {
@@ -443,13 +488,20 @@ exports.confirmReset = async (req, res) => {
 
     // sent code to reset password
     if (Number(user[0].confirmed) && !data.code) {
-      const codeSended = await sendCode(res, {
-        email: user[0].email,
-        userId: user[0].id
-      }, true);
+      const codeSended = await sendCode(
+        res, {
+          email: user[0].email,
+          userId: user[0].id
+        },
+        true
+      );
 
       if (codeSended) {
-        return returningSuccess(res, 200, 'Check your email for reset password code');
+        return returningSuccess(
+          res,
+          200,
+          'Check your email for reset password code'
+        );
       }
       return returningError(res, 500, 'Failed to send reset password code');
     }
@@ -470,7 +522,11 @@ exports.confirmReset = async (req, res) => {
       });
     }
 
-    return returningError(res, 400, 'You must confirm your email before reset password');
+    return returningError(
+      res,
+      400,
+      'You must confirm your email before reset password'
+    );
   } catch (error) {
     console.error(error);
     return returningError(res, 500, 'Unexpected error');
